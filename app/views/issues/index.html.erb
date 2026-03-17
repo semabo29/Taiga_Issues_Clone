@@ -1,14 +1,27 @@
-<p style="color: green"><%= notice %></p>
-
-<h1>Issues</h1>
-
-<div id="issues">
-  <% @issues.each do |issue| %>
-    <%= render issue %>
-    <p>
-      <%= link_to "Show this issue", issue %>
-    </p>
-  <% end %>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <h1>Issues</h1>
+  <%= link_to "New Issue", new_issue_path, style: "background: green; color: white; padding: 10px; text-decoration: none;" %>
 </div>
 
-<%= link_to "New issue", new_issue_path %>
+<table style="width: 100%; border-collapse: collapse;">
+  <thead style="background-color: #f4f4f4; text-align: left;">
+    <tr>
+      <th style="padding: 10px;">Subject</th>
+      <th>Status</th>
+      <th>Severity</th>
+      <th>Priority</th>
+      <th>Assigned to</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @issues.each do |issue| %>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 10px;"><%= link_to issue.subject, issue %></td>
+        <td><span style="background: #eee; padding: 3px 8px; border-radius: 4px;"><%= issue.status %></span></td>
+        <td><%= issue.severity %></td>
+        <td><%= issue.priority %></td>
+        <td><%= issue.user.username %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

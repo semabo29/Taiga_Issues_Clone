@@ -1,24 +1,23 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* Migrar base de dades
 
-Things you may want to cover:
+rails db:migrate
 
-* Ruby version
+* Crear usuari per defecte
 
-* System dependencies
+rails db:seed
 
-* Configuration
+* Engegar servidor
 
-* Database creation
+bin/rails server -b 0.0.0.0
 
-* Database initialization
+* Entrar a la consola (per si voleu veure el contingut de la bd)
 
-* How to run the test suite
+rails console
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Exemples: 
+Issue.all (veure totes les issues)
+User.first (veure l'usuari de prova)
+Issue.count (quantes n'hi ha)
+exit (per sortir)
