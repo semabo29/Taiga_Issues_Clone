@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  subject: MyString
+  description: MyText
+  status: MyString
+  priority: MyString
+  severity: MyString
+  user: one
+
+two:
+  subject: MyString
+  description: MyText
+  status: MyString
+  priority: MyString
+  severity: MyString
+  user: two
