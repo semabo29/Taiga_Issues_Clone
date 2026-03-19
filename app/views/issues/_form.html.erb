@@ -1,8 +1,7 @@
 <%= form_with(model: issue) do |form| %>
   <% if issue.errors.any? %>
-    <div style="color: red">
+    <div style="color: red; padding: 10px; border: 1px solid red; margin-bottom: 20px;">
       <h2><%= pluralize(issue.errors.count, "error") %> prohibited this issue from being saved:</h2>
-
       <ul>
         <% issue.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,36 +10,54 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :subject, style: "display: block" %>
-    <%= form.text_field :subject %>
-  </div>
+  <div class="form-layout">
+    <div class="form-left">
+      <div>
+        <%= form.text_field :subject, class: "taiga-input", placeholder: "Subject", required: true %>
+      </div>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.text_area :description %>
-  </div>
+      <div>
+        <span style="color: #1fbdb8; font-size: 14px; cursor: pointer;">Add tag +</span>
+      </div>
 
-    <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
-  </div>
+      <div>
+        <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
+      </div>
 
-  <div>
-    <%= form.label :priority, style: "display: block" %>
-    <%= form.text_field :priority %>
-  </div>
+      <div style="background: #f4f4f4; border: 2px dashed #ccc; padding: 30px; text-align: center; color: #888; border-radius: 4px;">
+        Drop attachments here!
+      </div>
 
-  <div>
-    <%= form.label :severity, style: "display: block" %>
-    <%= form.text_field :severity %>
-  </div>
+      <div>
+        <%= form.submit "CREATE", class: "btn-taiga btn-block" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
-  </div> 
+    <div class="form-right">
+      <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+        <span style="color: #888; font-size: 12px; text-transform: uppercase;">Assign to</span><br>
+        <strong><%= current_user.username %></strong>
+      </div>
 
-  <div>
-    <%= form.submit %>
+      <div>
+        <label style="color: #888; font-size: 12px;">TYPE</label>
+        <%= form.select :issue_type, ['Bug', 'Question', 'Enhancement'], {}, class: "taiga-select" %>
+      </div>
+
+      <div>
+        <label style="color: #888; font-size: 12px;">SEVERITY</label>
+        <%= form.select :severity, ['Wishlist', 'Minor', 'Normal', 'Important', 'Critical'], {selected: 'Normal'}, class: "taiga-select" %>
+      </div>
+
+      <div>
+        <label style="color: #888; font-size: 12px;">PRIORITY</label>
+        <%= form.select :priority, ['Low', 'Normal', 'High'], {selected: 'Normal'}, class: "taiga-select" %>
+      </div>
+
+      <div>
+        <label style="color: #888; font-size: 12px;">STATUS</label>
+        <%= form.select :status, ['New', 'In progress', 'Ready for test', 'Closed', 'Needs info', 'Rejected', 'Postponed'], {selected: 'New'}, class: "taiga-select" %>
+      </div>
+    </div>
   </div>
 <% end %>
