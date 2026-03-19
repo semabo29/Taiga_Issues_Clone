@@ -1,56 +1,108 @@
 /* app/assets/stylesheets/application.css */
 
-/* Estilos Generales */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   color: #333;
-  background-color: #f9fdfd;
+  background-color: #fff;
   margin: 0;
   padding: 20px 40px;
 }
 
-/* Botones estilo Taiga */
-.btn-taiga {
-  background-color: #25c2a0; 
+/* Bolitas de colores de Taiga */
+.color-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.dot-red { background-color: #E44057; }
+.dot-green { background-color: #A8E43D; }
+.dot-yellow { background-color: #E4A33D; }
+.dot-teal { background-color: #00b19d; }
+
+/* Botones */
+.btn-new-issue {
+  background-color: #66d9c0; 
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   border-radius: 3px;
   font-weight: 600;
-  cursor: pointer;
   text-decoration: none;
-  text-align: center;
-  display: inline-block;
 }
-.btn-taiga:hover { background-color: #1e9d82; }
-.btn-taiga.btn-block { width: 100%; padding: 15px; margin-top: 20px; }
-
-/* Formularios inputs */
-.taiga-input, .taiga-select, .taiga-textarea {
+.btn-create {
+  background-color: #66d9c0;
+  color: #02202b;
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 15px;
+  padding: 15px;
+  border: none;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* Formularios */
+.taiga-subject {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border: 1px solid #1fbdb8;
+  border-radius: 3px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.taiga-textarea {
+  width: 100%;
+  padding: 12px;
+  min-height: 150px;
   border: 1px solid #ccc;
   border-radius: 3px;
   box-sizing: border-box;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  resize: vertical;
 }
-.taiga-textarea { min-height: 150px; resize: vertical; }
 
-/* Layout de dos columnas para el formulario */
+/* Layout Formulario */
 .form-layout {
   display: flex;
-  gap: 30px;
+  gap: 40px;
   margin-top: 20px;
 }
 .form-left { flex: 2; }
-.form-right { 
-  flex: 1; 
-  background-color: #fff; 
-  padding: 20px; 
-  border: 1px solid #eee; 
+.form-right { flex: 1; }
+
+.sidebar-box {
+  background-color: #f9fdfd;
+  border: 1px solid #e2eaf0;
+  padding: 20px;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.status-select {
+  background-color: #6a7c92;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 3px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.attr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.attr-label {
+  color: #888;
+  font-size: 12px;
+  text-transform: lowercase;
 }
 
 /* Tabla de Issues */
@@ -58,21 +110,18 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  background-color: white;
-  border: 1px solid #eee;
 }
 .taiga-table th {
   text-align: left;
-  padding: 15px;
-  color: #888;
-  font-size: 12px;
+  padding: 10px;
+  color: #b0c1d4;
+  font-size: 11px;
   text-transform: uppercase;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid #f4f4f4;
 }
 .taiga-table td {
-  padding: 15px;
-  border-bottom: 1px solid #eee;
+  padding: 15px 10px;
+  border-bottom: 1px solid #f4f4f4;
   font-size: 14px;
 }
-.taiga-table tr:hover { background-color: #fcfcfc; }
-.issue-ref { color: #1fbdb8; text-decoration: none; font-weight: bold; }
+.issue-ref { color: #1fbdb8; text-decoration: none; }

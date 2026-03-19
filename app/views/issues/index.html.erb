@@ -1,31 +1,35 @@
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <h1 style="color: #02202b; font-weight: normal;">Issues</h1>
-  <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-taiga" %>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h1 style="color: #1fbdb8; font-weight: normal; margin: 0;">Issues</h1>
+  <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-new-issue" %>
 </div>
 
 <table class="taiga-table">
   <thead>
     <tr>
-      <th>Type</th>
-      <th>Severity</th>
-      <th>Priority</th>
+      <th style="width: 50px;">Type</th>
+      <th style="width: 80px;">Severity</th>
+      <th style="width: 80px;">Priority</th>
       <th>Issue</th>
-      <th>Status</th>
-      <th>Assign to</th>
+      <th style="text-align: right;">Status</th>
+      <th style="text-align: right;">Assign to</th>
     </tr>
   </thead>
   <tbody>
     <% @issues.each do |issue| %>
       <tr>
-        <td><%= issue.try(:issue_type) || 'Bug' %></td> 
-        <td><%= issue.severity %></td>
-        <td><%= issue.priority %></td>
+        <td><span class="color-dot dot-teal"></span></td> 
+        <td><span class="color-dot dot-red"></span></td>
+        <td><span class="color-dot dot-yellow"></span></td>
         <td>
           <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
           <%= issue.subject %>
         </td>
-        <td><%= issue.status %></td>
-        <td><%= issue.user.username %></td>
+        <td style="text-align: right; color: #888;"><%= issue.status %></td>
+        <td style="text-align: right;">
+          <span style="background: #ccc; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px; margin-right: 5px;">
+            <%= issue.user.username[0].upcase %>
+          </span>
+        </td>
       </tr>
     <% end %>
   </tbody>
