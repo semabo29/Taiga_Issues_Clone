@@ -1,10 +1,59 @@
-<p style="color: green"><%= notice %></p>
+<div class="taiga-main-container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+    <div>
+      <span style="color: #1fbdb8; font-weight: bold; font-size: 1.5rem;">#<%= @issue.id %></span>
+      <h1 style="display: inline; margin-left: 10px; font-size: 1.8rem; color: #333;"><%= @issue.subject %></h1>
+    </div>
+    <%= link_to "×", issues_path, class: "close-btn", title: "Volver a la lista" %>
+  </div>
 
-<%= render @issue %>
+  <div class="form-layout">
+    <div class="form-left">
+      <div style="background: #f9f9fb; padding: 20px; border-radius: 8px; border: 1px solid #e2eaf0; min-height: 200px;">
+        <h3 style="color: #888; font-size: 12px; text-transform: uppercase; margin-top: 0;">Description</h3>
+        <p style="color: #444; line-height: 1.6;"><%= @issue.description.presence || "No description provided." %></p>
+      </div>
 
-<div>
-  <%= link_to "Edit this issue", edit_issue_path(@issue) %> |
-  <%= link_to "Back to issues", issues_path %>
+      <div style="margin-top: 30px; display: flex; gap: 10px;">
+        <%= link_to "EDIT ISSUE", edit_issue_path(@issue), class: "btn-new-issue", style: "background-color: #00b19d;" %>
+        <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { confirm: "Are you sure?" }, class: "btn-new-issue", style: "background-color: #E44057; border: none; cursor: pointer;" %>
+      </div>
+    </div>
 
-  <%= button_to "Destroy this issue", @issue, method: :delete %>
+    <div class="form-right">
+      <div class="sidebar-box">
+        <div class="status-select" style="text-align: center; background-color: <%= @issue.status&.color %>;">
+          <%= @issue.status&.name&.upcase %>
+        </div>
+
+        <div class="attr-row">
+          <span class="attr-label">Type</span>
+          <span style="font-size: 13px; font-weight: bold;">
+            <%= @issue.issue_type&.name %>
+            <span class="color-dot" style="background-color: <%= @issue.issue_type&.color %>;"></span>
+          </span>
+        </div>
+
+        <div class="attr-row">
+          <span class="attr-label">Severity</span>
+          <span style="font-size: 13px; font-weight: bold;">
+            <%= @issue.severity&.name %>
+            <span class="color-dot" style="background-color: <%= @issue.severity&.color %>;"></span>
+          </span>
+        </div>
+
+        <div class="attr-row" style="border-bottom: none;">
+          <span class="attr-label">Priority</span>
+          <span style="font-size: 13px; font-weight: bold;">
+            <%= @issue.priority&.name %>
+            <span class="color-dot" style="background-color: <%= @issue.priority&.color %>;"></span>
+          </span>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center;">
+        <%= link_to "← Back to list", issues_path, style: "color: #1fbdb8; text-decoration: none; font-size: 14px; font-weight: bold;" %>
+      </div>
+    </div>
+  </div>
 </div>
