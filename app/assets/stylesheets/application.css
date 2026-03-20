@@ -24,8 +24,8 @@ body {
 
 /* Botones */
 .btn-new-issue {
-  background-color: #66d9c0; 
-  color: white;
+  background-color: #83EEDE; 
+  color: #02202b; 
   padding: 8px 16px;
   border: none;
   border-radius: 3px;
@@ -33,7 +33,7 @@ body {
   text-decoration: none;
 }
 .btn-create {
-  background-color: #66d9c0;
+  background-color: #83EEDE; 
   color: #02202b;
   width: 100%;
   padding: 15px;
@@ -83,7 +83,7 @@ body {
   border-radius: 4px;
 }
 .status-select {
-  background-color: #6a7c92;
+  background-color: #70728F; /* MODIFICADO */
   color: white;
   padding: 10px;
   width: 100%;
@@ -125,3 +125,13 @@ body {
   font-size: 14px;
 }
 .issue-ref { color: #1fbdb8; text-decoration: none; }
+
+/*Estilo para la "X"*/
+.close-btn {
+  font-size: 28px;
+  color: #02202b;
+  text-decoration: none;
+  font-weight: normal;
+  line-height: 1;
+}
+.close-btn:hover { color: #888; }
