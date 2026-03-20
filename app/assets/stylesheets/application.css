@@ -67,6 +67,13 @@ body {
   resize: vertical;
 }
 
+/*Contenedor centrado*/
+.taiga-main-container {
+  max-width: 750px;
+  margin: 0 auto;   
+  width: 100%;
+}
+
 /* Layout Formulario */
 .form-layout {
   display: flex;
@@ -83,7 +90,7 @@ body {
   border-radius: 4px;
 }
 .status-select {
-  background-color: #70728F; /* MODIFICADO */
+  background-color: #70728F; 
   color: white;
   padding: 10px;
   width: 100%;
@@ -108,21 +115,48 @@ body {
 /* Tabla de Issues */
 .taiga-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;     
   margin-top: 20px;
 }
+
 .taiga-table th {
   text-align: left;
-  padding: 10px;
+  padding: 0 15px 10px 15px;
   color: #b0c1d4;
   font-size: 11px;
   text-transform: uppercase;
-  border-bottom: 2px solid #f4f4f4;
 }
+
 .taiga-table td {
-  padding: 15px 10px;
-  border-bottom: 1px solid #f4f4f4;
+  padding: 15px;
+  background-color: #F9F9FB; 
   font-size: 14px;
+}
+
+/*Se redondean las esquinas de la primera y última celda de cada fila */
+.taiga-table td:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.taiga-table td:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/*hover*/
+.taiga-table tbody tr:hover td {
+  background-color: #ECEFF4;
+  transition: background-color 0.15s ease-in-out; /*cambio de color suave*/
+}
+
+/*transición también al estado normal*/
+.taiga-table td {
+  padding: 15px;
+  background-color: #F9F9FB;
+  font-size: 14px;
+  transition: background-color 0.15s ease-in-out;
 }
 .issue-ref { color: #1fbdb8; text-decoration: none; }
 
