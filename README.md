@@ -21,3 +21,7 @@ Issue.all (veure totes les issues)
 User.first (veure l'usuari de prova)
 Issue.count (quantes n'hi ha)
 exit (per sortir)
+
+* URL render
+
+https://dashboard.render.com/blueprint/exs-d6ukrgc50q8c7394d040/sync/exe-d6ukus9j16oc738o0oi0
