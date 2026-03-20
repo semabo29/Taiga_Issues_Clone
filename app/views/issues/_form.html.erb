@@ -1,46 +1,70 @@
 <%= form_with(model: issue) do |form| %>
-  <% if issue.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(issue.errors.count, "error") %> prohibited this issue from being saved:</h2>
+  <div class="form-layout">
+    
+    <div class="form-left">
+      <div>
+        <%= form.text_field :subject, class: "taiga-subject", placeholder: "Subject", required: true %>
+      </div>
 
-      <ul>
-        <% issue.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+      <div>
+        <span style="color: #1fbdb8; font-size: 14px; cursor: pointer; font-weight: bold;">Add tag +</span>
+      </div>
+
+      <div>
+        <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
+      </div>
+
+      <div style="background: #f4f8f9; border: 1px dashed #b0c1d4; padding: 40px; text-align: center; color: #6a7c92; font-size: 14px;">
+        <div style="background: #e2eaf0; padding: 10px; margin: -40px -40px 30px -40px; text-align: left; font-weight: bold;">
+          0 Attachments <span style="float: right;">+</span>
+        </div>
+        Drop attachments here!
+      </div>
+
+      <div>
+        <%= form.submit "CREATE", class: "btn-create" %>
+      </div>
     </div>
-  <% end %>
 
-  <div>
-    <%= form.label :subject, style: "display: block" %>
-    <%= form.text_field :subject %>
-  </div>
+    <div class="form-right">
+      <%= form.select :status, ['New', 'In progress', 'Ready for test', 'Closed'], {selected: 'New'}, class: "status-select" %>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.text_area :description %>
-  </div>
+      <div class="sidebar-box">
+        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+          <div style="background: #e2eaf0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <span style="color: white; font-size: 20px;">*</span>
+          </div>
+          <div>
+            <span style="color: #1fbdb8; font-weight: bold; cursor: pointer;">Assign</span> or <br>
+            <span style="color: #1fbdb8; font-weight: bold; cursor: pointer;">Assign to me</span>
+          </div>
+        </div>
 
-    <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
-  </div>
+        <div class="attr-row">
+          <span class="attr-label">type</span>
+          <div>
+            <%= form.select :issue_type, ['Bug', 'Question'], {}, style: "border:none; background:transparent; text-align:right; -webkit-appearance: none;" %>
+            <span class="color-dot dot-red"></span>
+          </div>
+        </div>
 
-  <div>
-    <%= form.label :priority, style: "display: block" %>
-    <%= form.text_field :priority %>
-  </div>
+        <div class="attr-row">
+          <span class="attr-label">severity</span>
+          <div>
+            <%= form.select :severity, ['Normal', 'Critical'], {selected: 'Normal'}, style: "border:none; background:transparent; text-align:right; -webkit-appearance: none;" %>
+            <span class="color-dot dot-green"></span>
+          </div>
+        </div>
 
-  <div>
-    <%= form.label :severity, style: "display: block" %>
-    <%= form.text_field :severity %>
-  </div>
+        <div class="attr-row" style="border-bottom: none;">
+          <span class="attr-label">priority</span>
+          <div>
+            <%= form.select :priority, ['Normal', 'High'], {selected: 'Normal'}, style: "border:none; background:transparent; text-align:right; -webkit-appearance: none;" %>
+            <span class="color-dot dot-yellow"></span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
-  </div> 
-
-  <div>
-    <%= form.submit %>
   </div>
 <% end %>

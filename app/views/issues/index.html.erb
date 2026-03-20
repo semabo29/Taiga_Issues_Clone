@@ -1,26 +1,35 @@
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <h1>Issues</h1>
-  <%= link_to "New Issue", new_issue_path, style: "background: green; color: white; padding: 10px; text-decoration: none;" %>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h1 style="font-family: 'Ubuntu-Medium', 'Arial', 'Helvetica', 'sans-serif'; font-size: 2.25rem; font-weight: 500; line-height: 34px; color: rgb(0, 138, 168); margin: 0;">Issues</h1>
+  <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-new-issue" %>
 </div>
 
-<table style="width: 100%; border-collapse: collapse;">
-  <thead style="background-color: #f4f4f4; text-align: left;">
+<table class="taiga-table">
+  <thead>
     <tr>
-      <th style="padding: 10px;">Subject</th>
-      <th>Status</th>
-      <th>Severity</th>
-      <th>Priority</th>
-      <th>Assigned to</th>
+      <th style="width: 50px;">Type</th>
+      <th style="width: 80px;">Severity</th>
+      <th style="width: 80px;">Priority</th>
+      <th>Issue</th>
+      <th style="text-align: right;">Status</th>
+      <th style="text-align: right;">Assign to</th>
     </tr>
   </thead>
   <tbody>
     <% @issues.each do |issue| %>
-      <tr style="border-bottom: 1px solid #ddd;">
-        <td style="padding: 10px;"><%= link_to issue.subject, issue %></td>
-        <td><span style="background: #eee; padding: 3px 8px; border-radius: 4px;"><%= issue.status %></span></td>
-        <td><%= issue.severity %></td>
-        <td><%= issue.priority %></td>
-        <td><%= issue.user.username %></td>
+      <tr>
+        <td><span class="color-dot dot-teal"></span></td> 
+        <td><span class="color-dot dot-red"></span></td>
+        <td><span class="color-dot dot-yellow"></span></td>
+        <td>
+          <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
+          <%= issue.subject %>
+        </td>
+        <td style="text-align: right; color: #888;"><%= issue.status %></td>
+        <td style="text-align: right;">
+          <span style="background: #ccc; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px; margin-right: 5px;">
+            <%= issue.user.username[0].upcase %>
+          </span>
+        </td>
       </tr>
     <% end %>
   </tbody>
