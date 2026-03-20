@@ -10,17 +10,50 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_13_144423) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_20_144340) do
+  create_table "issue_types", force: :cascade do |t|
+    t.string "name"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "issues", force: :cascade do |t|
     t.string "subject"
     t.text "description"
-    t.string "status"
-    t.string "priority"
-    t.string "severity"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status_id"
+    t.integer "priority_id"
+    t.integer "severity_id"
+    t.integer "issue_type_id"
+    t.index ["issue_type_id"], name: "index_issues_on_issue_type_id"
+    t.index ["priority_id"], name: "index_issues_on_priority_id"
+    t.index ["severity_id"], name: "index_issues_on_severity_id"
+    t.index ["status_id"], name: "index_issues_on_status_id"
     t.index ["user_id"], name: "index_issues_on_user_id"
+  end
+
+  create_table "priorities", force: :cascade do |t|
+    t.string "name"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "severities", force: :cascade do |t|
+    t.string "name"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "statuses", force: :cascade do |t|
+    t.string "name"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -30,5 +63,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_13_144423) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "issues", "issue_types"
+  add_foreign_key "issues", "priorities"
+  add_foreign_key "issues", "severities"
+  add_foreign_key "issues", "statuses"
   add_foreign_key "issues", "users"
 end
