@@ -14,9 +14,10 @@
         <p style="color: #444; line-height: 1.6;"><%= @issue.description.presence || "No description provided." %></p>
       </div>
 
-      <div style="margin-top: 30px; display: flex; gap: 10px;">
-        <%= link_to "EDIT ISSUE", edit_issue_path(@issue), class: "btn-new-issue", style: "background-color: #00b19d;" %>
-        <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { confirm: "Are you sure?" }, class: "btn-new-issue", style: "background-color: #E44057; border: none; cursor: pointer;" %>
+      <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center;">
+        <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
+        
+        <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { style: "margin: 0; display: flex;" }, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #E44057; cursor: pointer; border: none;" %>
       </div>
     </div>
 

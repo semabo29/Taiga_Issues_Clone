@@ -32,7 +32,7 @@ end
 [
   { name: "Wishlist", color: "#3366FF" },
   { name: "Minor", color: "#FFCC00" },
-  { name: "Normal", color: "#A8E43D" },
+  { name: "Normal", color: "#F57900" },
   { name: "Critical", color: "#E44057" }
 ].each do |sev|
   Severity.find_or_create_by!(name: sev[:name]) { |obj| obj.color = sev[:color] }

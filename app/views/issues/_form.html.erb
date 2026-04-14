@@ -24,7 +24,8 @@
       </div>
 
       <div>
-        <%= form.submit "CREATE", class: "btn-create" %>
+        <%# Esto pondrá 'Create Issue' si es nueva y 'Update Issue' si la estás editando %>
+        <%= form.submit (issue.new_record? ? "CREATE ISSUE" : "UPDATE ISSUE"), class: "btn-create" %>
       </div>
     </div>
 
@@ -51,8 +52,11 @@
         <div class="attr-row">
           <span class="attr-label">type</span>
           <div style="display: flex; align-items: center;">
-            <%= form.collection_select :issue_type_id, IssueType.all, :id, :name, {}, { style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px;" } %>
-            <span class="color-dot" style="background-color: <%= IssueType.first&.color || '#ccc' %>; margin-left: 8px;"></span>
+            <%= form.select :issue_type_id, 
+                  options_for_select(IssueType.all.map { |t| [t.name, t.id, { 'data-color' => t.color }] }, issue.issue_type_id), 
+                  {}, 
+                  { id: "select_issue_type", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_issue_type" style="background-color: <%= issue.issue_type&.color || IssueType.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
 
@@ -60,8 +64,11 @@
         <div class="attr-row">
           <span class="attr-label">severity</span>
           <div style="display: flex; align-items: center;">
-            <%= form.collection_select :severity_id, Severity.all, :id, :name, {}, { style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px;" } %>
-            <span class="color-dot" style="background-color: <%= Severity.first&.color || '#ccc' %>; margin-left: 8px;"></span>
+            <%= form.select :severity_id, 
+                  options_for_select(Severity.all.map { |s| [s.name, s.id, { 'data-color' => s.color }] }, issue.severity_id), 
+                  {}, 
+                  { id: "select_severity", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_severity" style="background-color: <%= issue.severity&.color || Severity.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
 
@@ -69,8 +76,11 @@
         <div class="attr-row" style="border-bottom: none;">
           <span class="attr-label">priority</span>
           <div style="display: flex; align-items: center;">
-            <%= form.collection_select :priority_id, Priority.all, :id, :name, {}, { style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px;" } %>
-            <span class="color-dot" style="background-color: <%= Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
+            <%= form.select :priority_id, 
+                  options_for_select(Priority.all.map { |p| [p.name, p.id, { 'data-color' => p.color }] }, issue.priority_id), 
+                  {}, 
+                  { id: "select_priority", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_priority" style="background-color: <%= issue.priority&.color || Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
       </div>
@@ -78,3 +88,26 @@
 
   </div>
 <% end %>
+
+<%# Script para actualizar el color de las bolitas en tiempo real %>
+<script>
+  document.addEventListener("turbo:load", function() {
+    const fields = ['issue_type', 'severity', 'priority'];
+    
+    fields.forEach(function(field) {
+      const selectElement = document.getElementById("select_" + field);
+      const dotElement = document.getElementById("dot_" + field);
+      
+      if (selectElement && dotElement) {
+        selectElement.addEventListener("change", function() {
+          const selectedOption = this.options[this.selectedIndex];
+          const newColor = selectedOption.getAttribute("data-color");
+          
+          if (newColor) {
+            dotElement.style.backgroundColor = newColor;
+          }
+        });
+      }
+    });
+  });
+</script>
