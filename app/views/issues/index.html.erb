@@ -6,6 +6,54 @@
   </div>
 </div>
 
+<%# --- BARRA DE BÚSQUEDA Y FILTROS --- %>
+<div style="background-color: #f9f9fb; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e2eaf0;">
+  <%= form_with(url: issues_path, method: :get, local: true) do |f| %>
+    <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+      
+      <%# Búsqueda de texto (Subject / Description) %>
+      <div style="flex: 1; min-width: 200px;">
+        <%= f.label :query, "Search in subject/description", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+        <%= f.text_field :query, value: params[:query], placeholder: "Search...", class: "taiga-subject", style: "margin-bottom: 0; padding: 8px; font-size: 14px; width: 100%; box-sizing: border-box;" %>
+      </div>
+
+      <%# Filtro: Tipo %>
+      <div>
+        <%= f.label :issue_type_id, "Type", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+        <%= f.collection_select :issue_type_id, IssueType.all, :id, :name, { include_blank: "All Types", selected: params[:issue_type_id] }, { style: "padding: 8px; border: 1px solid #1fbdb8; border-radius: 3px; background: white; min-width: 120px;" } %>
+      </div>
+
+      <%# Filtro: Severidad %>
+      <div>
+        <%= f.label :severity_id, "Severity", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+        <%= f.collection_select :severity_id, Severity.all, :id, :name, { include_blank: "All Severities", selected: params[:severity_id] }, { style: "padding: 8px; border: 1px solid #1fbdb8; border-radius: 3px; background: white; min-width: 120px;" } %>
+      </div>
+
+      <%# Filtro: Prioridad %>
+      <div>
+        <%= f.label :priority_id, "Priority", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+        <%= f.collection_select :priority_id, Priority.all, :id, :name, { include_blank: "All Priorities", selected: params[:priority_id] }, { style: "padding: 8px; border: 1px solid #1fbdb8; border-radius: 3px; background: white; min-width: 120px;" } %>
+      </div>
+
+      <%# Filtro: Estado %>
+      <div>
+        <%= f.label :status_id, "Status", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+        <%= f.collection_select :status_id, Status.all, :id, :name, { include_blank: "All Statuses", selected: params[:status_id] }, { style: "padding: 8px; border: 1px solid #1fbdb8; border-radius: 3px; background: white; min-width: 120px;" } %>
+      </div>
+
+      <%# Botones de Acción %>
+      <div style="display: flex; gap: 10px;">
+        <%= f.submit "SEARCH", style: "background-color: #00b19d; color: white; padding: 0 15px; border: none; border-radius: 3px; font-weight: bold; cursor: pointer; height: 35px; font-size: 13px;" %>
+        
+        <%# Botón para limpiar filtros (simplemente recarga la página sin parámetros) %>
+        <%= link_to "CLEAR", issues_path, style: "background-color: #e2eaf0; color: #333; padding: 0 15px; border: none; border-radius: 3px; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 35px; font-size: 13px; box-sizing: border-box;" %>
+      </div>
+
+    </div>
+  <% end %>
+</div>
+<%# --- FIN BARRA DE BÚSQUEDA --- %>
+
 <table class="taiga-table">
   <thead>
     <tr>
@@ -19,34 +67,42 @@
     </tr>
   </thead>
   <tbody>
-    <% @issues.each do |issue| %>
+    <% if @issues.any? %>
+      <% @issues.each do |issue| %>
+        <tr>
+          <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td> 
+          <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;" title="<%= issue.severity&.name %>"></span></td>
+          <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;" title="<%= issue.priority&.name %>"></span></td>
+          <td>
+            <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
+            <span style="margin-left:5px;"><%= issue.subject %></span>
+          </td>
+          <td>
+            <% if issue.deadline %>
+              <% is_overdue = issue.deadline < Date.today %>
+              <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
+                <%= issue.deadline.strftime("%d %b %Y") %>
+              </span>
+            <% else %>
+              <span style="color: #ccc; font-size: 13px;">-</span>
+            <% end %>
+          </td>
+          <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
+            <%= issue.status&.name&.upcase || "NEW" %>
+          </td>
+          <td style="text-align: right;">
+            <% if issue.user %>
+              <span style="background: #00b19d; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px;">
+                <%= issue.user.username[0].upcase %>
+              </span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    <% else %>
       <tr>
-        <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td> 
-        <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;" title="<%= issue.severity&.name %>"></span></td>
-        <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;" title="<%= issue.priority&.name %>"></span></td>
-        <td>
-          <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
-          <span style="margin-left:5px;"><%= issue.subject %></span>
-        </td>
-        <td>
-          <% if issue.deadline %>
-            <% is_overdue = issue.deadline < Date.today %>
-            <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
-              <%= issue.deadline.strftime("%d %b %Y") %>
-            </span>
-          <% else %>
-            <span style="color: #ccc; font-size: 13px;">-</span>
-          <% end %>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
-          <%= issue.status&.name&.upcase || "NEW" %>
-        </td>
-        <td style="text-align: right;">
-          <% if issue.user %>
-            <span style="background: #00b19d; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px;">
-              <%= issue.user.username[0].upcase %>
-            </span>
-          <% end %>
+        <td colspan="7" style="text-align: center; padding: 40px; color: #888;">
+          No issues found matching your criteria.
         </td>
       </tr>
     <% end %>
