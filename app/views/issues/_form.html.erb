@@ -83,6 +83,15 @@
             <span class="color-dot" id="dot_priority" style="background-color: <%= issue.priority&.color || Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
+        
+        <%# Atributo: DEADLINE %>
+        <div class="attr-row">
+          <span class="attr-label">deadline</span>
+          <div style="display: flex; align-items: center;">
+            <%# HTML5 date_field permite seleccionar la fecha e incluye un botón "X" para borrarla (eliminar deadline) %>
+            <%= form.date_field :deadline, onclick: "try { this.showPicker() } catch(e) {}", style: "border:none; background:transparent; text-align:right; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; color: #333;" %>
+          </div>
+        </div>
       </div>
     </div>
 

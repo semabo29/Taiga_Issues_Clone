@@ -10,6 +10,7 @@
       <th style="width: 80px;">Severity</th>
       <th style="width: 80px;">Priority</th>
       <th>Issue</th>
+      <th style="width: 120px;">Deadline</th>
       <th style="text-align: right;">Status</th>
       <th style="text-align: right;">Assign to</th>
     </tr>
@@ -17,12 +18,22 @@
   <tbody>
     <% @issues.each do |issue| %>
       <tr>
-        <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;"></span></td> 
-        <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;"></span></td>
-        <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;"></span></td>
+        <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td> 
+        <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;" title="<%= issue.severity&.name %>"></span></td>
+        <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;" title="<%= issue.priority&.name %>"></span></td>
         <td>
           <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
           <span style="margin-left:5px;"><%= issue.subject %></span>
+        </td>
+        <td>
+          <% if issue.deadline %>
+            <% is_overdue = issue.deadline < Date.today %>
+            <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
+              <%= issue.deadline.strftime("%d %b %Y") %>
+            </span>
+          <% else %>
+            <span style="color: #ccc; font-size: 13px;">-</span>
+          <% end %>
         </td>
         <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
           <%= issue.status&.name&.upcase || "NEW" %>

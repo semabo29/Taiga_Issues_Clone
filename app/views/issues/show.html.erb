@@ -43,11 +43,19 @@
           </span>
         </div>
 
-        <div class="attr-row" style="border-bottom: none;">
+        <div class="attr-row">
           <span class="attr-label">Priority</span>
           <span style="font-size: 13px; font-weight: bold;">
             <%= @issue.priority&.name %>
             <span class="color-dot" style="background-color: <%= @issue.priority&.color %>;"></span>
+          </span>
+        </div>
+        
+        <div class="attr-row" style="border-bottom: none;">
+          <span class="attr-label">Deadline</span>
+          <% is_overdue = @issue.deadline.present? && @issue.deadline < Date.today %>
+          <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
+            <%= @issue.deadline ? @issue.deadline.strftime("%d %b %Y") : "None" %>
           </span>
         </div>
       </div>
