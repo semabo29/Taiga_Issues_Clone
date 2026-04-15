@@ -1,5 +1,5 @@
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-  <h1 style="font-family: 'Ubuntu-Medium', 'Arial', 'Helvetica', 'sans-serif'; font-size: 2.25rem; font-weight: 500; line-height: 34px; color: rgb(0, 138, 168); margin: 0;">Issues</h1>
+  <h1 style="font-family: 'Ubuntu-Medium', Arial, sans-serif; font-size: 2.25rem; font-weight: 500; color: rgb(0, 138, 168); margin: 0;">Issues</h1>
   <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-new-issue" %>
 </div>
 
@@ -17,18 +17,22 @@
   <tbody>
     <% @issues.each do |issue| %>
       <tr>
-        <td><span class="color-dot dot-teal"></span></td> 
-        <td><span class="color-dot dot-red"></span></td>
-        <td><span class="color-dot dot-yellow"></span></td>
+        <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;"></span></td> 
+        <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;"></span></td>
+        <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;"></span></td>
         <td>
           <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
-          <%= issue.subject %>
+          <span style="margin-left:5px;"><%= issue.subject %></span>
         </td>
-        <td style="text-align: right; color: #888;"><%= issue.status %></td>
+        <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
+          <%= issue.status&.name&.upcase || "NEW" %>
+        </td>
         <td style="text-align: right;">
-          <span style="background: #ccc; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px; margin-right: 5px;">
-            <%= issue.user.username[0].upcase %>
-          </span>
+          <% if issue.user %>
+            <span style="background: #00b19d; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px;">
+              <%= issue.user.username[0].upcase %>
+            </span>
+          <% end %>
         </td>
       </tr>
     <% end %>

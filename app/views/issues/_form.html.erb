@@ -1,12 +1,13 @@
 <%= form_with(model: issue) do |form| %>
   <div class="form-layout">
     
+    <%# --- COLUMNA IZQUIERDA: Contenido --- %>
     <div class="form-left">
       <div>
         <%= form.text_field :subject, class: "taiga-subject", placeholder: "Subject", required: true %>
       </div>
 
-      <div>
+      <div style="margin: 10px 0;">
         <span style="color: #1fbdb8; font-size: 14px; cursor: pointer; font-weight: bold;">Add tag +</span>
       </div>
 
@@ -14,53 +15,72 @@
         <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
       </div>
 
-      <div style="background: #f4f8f9; border: 1px dashed #b0c1d4; padding: 40px; text-align: center; color: #6a7c92; font-size: 14px;">
+      <%# Zona de Attachments (Estática por ahora para el diseño) %>
+      <div style="background: #f4f8f9; border: 1px dashed #b0c1d4; padding: 40px; text-align: center; color: #6a7c92; font-size: 14px; margin-bottom: 20px;">
         <div style="background: #e2eaf0; padding: 10px; margin: -40px -40px 30px -40px; text-align: left; font-weight: bold;">
-          0 Attachments <span style="float: right;">+</span>
+          0 Attachments <span style="float: right; cursor: pointer;">+</span>
         </div>
         Drop attachments here!
       </div>
 
       <div>
-        <%= form.submit "CREATE", class: "btn-create" %>
+        <%# Esto pondrá 'Create Issue' si es nueva y 'Update Issue' si la estás editando %>
+        <%= form.submit (issue.new_record? ? "CREATE ISSUE" : "UPDATE ISSUE"), class: "btn-create" %>
       </div>
     </div>
 
+    <%# --- COLUMNA DERECHA: Sidebar --- %>
     <div class="form-right">
-      <%= form.select :status, ['New', 'In progress', 'Ready for test', 'Closed'], {selected: 'New'}, class: "status-select" %>
+      <%# Selector de Status dinámico %>
+      <%= form.collection_select :status_id, Status.all, :id, :name, {}, { class: "status-select" } %>
 
       <div class="sidebar-box">
         <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-          <div style="background: #e2eaf0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <span style="color: white; font-size: 20px;">*</span>
+          <div style="background: #00b19d; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+             <%# Inicial del usuario actual %>
+             <span style="color: white; font-size: 16px; font-weight: bold;">
+               <%= User.first.username[0].upcase %>
+             </span>
           </div>
-          <div>
+          <div style="font-size: 13px;">
             <span style="color: #1fbdb8; font-weight: bold; cursor: pointer;">Assign</span> or <br>
             <span style="color: #1fbdb8; font-weight: bold; cursor: pointer;">Assign to me</span>
           </div>
         </div>
 
+        <%# Atributo: TYPE %>
         <div class="attr-row">
           <span class="attr-label">type</span>
-          <div>
-            <%= form.select :issue_type, ['Bug', 'Question'], {}, style: "border:none; background:transparent; text-align:right; -webkit-appearance: none;" %>
-            <span class="color-dot dot-red"></span>
+          <div style="display: flex; align-items: center;">
+            <%= form.select :issue_type_id, 
+                  options_for_select(IssueType.all.map { |t| [t.name, t.id, { 'data-color' => t.color }] }, issue.issue_type_id), 
+                  {}, 
+                  { id: "select_issue_type", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_issue_type" style="background-color: <%= issue.issue_type&.color || IssueType.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
 
+        <%# Atributo: SEVERITY %>
         <div class="attr-row">
           <span class="attr-label">severity</span>
-          <div>
-            <%= form.select :severity, ['Normal', 'Critical'], {selected: 'Normal'}, style: "border:none; background:transparent; text-align:right; -webkit-appearance: none;" %>
-            <span class="color-dot dot-green"></span>
+          <div style="display: flex; align-items: center;">
+            <%= form.select :severity_id, 
+                  options_for_select(Severity.all.map { |s| [s.name, s.id, { 'data-color' => s.color }] }, issue.severity_id), 
+                  {}, 
+                  { id: "select_severity", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_severity" style="background-color: <%= issue.severity&.color || Severity.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
 
+        <%# Atributo: PRIORITY %>
         <div class="attr-row" style="border-bottom: none;">
           <span class="attr-label">priority</span>
-          <div>
-            <%= form.select :priority, ['Normal', 'High'], {selected: 'Normal'}, style: "border:none; background:transparent; text-align:right; -webkit-appearance: none;" %>
-            <span class="color-dot dot-yellow"></span>
+          <div style="display: flex; align-items: center;">
+            <%= form.select :priority_id, 
+                  options_for_select(Priority.all.map { |p| [p.name, p.id, { 'data-color' => p.color }] }, issue.priority_id), 
+                  {}, 
+                  { id: "select_priority", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_priority" style="background-color: <%= issue.priority&.color || Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
       </div>
@@ -68,3 +88,26 @@
 
   </div>
 <% end %>
+
+<%# Script para actualizar el color de las bolitas en tiempo real %>
+<script>
+  document.addEventListener("turbo:load", function() {
+    const fields = ['issue_type', 'severity', 'priority'];
+    
+    fields.forEach(function(field) {
+      const selectElement = document.getElementById("select_" + field);
+      const dotElement = document.getElementById("dot_" + field);
+      
+      if (selectElement && dotElement) {
+        selectElement.addEventListener("change", function() {
+          const selectedOption = this.options[this.selectedIndex];
+          const newColor = selectedOption.getAttribute("data-color");
+          
+          if (newColor) {
+            dotElement.style.backgroundColor = newColor;
+          }
+        });
+      }
+    });
+  });
+</script>

@@ -1,13 +1,18 @@
 Rails.application.routes.draw do
+  # El núcleo de la aplicación
   resources :issues
-  resources :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :users # Más adelante gestionaremos el perfil aquí
+  
+  # Apartado de Settings (Agrupado para el Lliurament)
+  # Esto hará que las URLs sean /settings/statuses, /settings/priorities...
+  scope :settings do
+    resources :statuses
+    resources :priorities
+    resources :severities
+    resources :issue_types
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Health check y Root
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
   root "issues#index"
-
 end
