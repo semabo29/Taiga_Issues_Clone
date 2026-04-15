@@ -4,6 +4,7 @@ class Issue < ApplicationRecord
   belongs_to :priority
   belongs_to :severity
   belongs_to :issue_type
+  has_many_attached :attachments
 
   has_many :issue_tags, dependent: :destroy
   has_many :tags, through: :issue_tags

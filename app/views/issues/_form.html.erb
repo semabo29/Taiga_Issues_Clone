@@ -23,13 +23,37 @@
         <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
       </div>
 
-      <%# Zona de Attachments (Estática por ahora para el diseño) %>
-      <div style="background: #f4f8f9; border: 1px dashed #b0c1d4; padding: 40px; text-align: center; color: #6a7c92; font-size: 14px; margin-bottom: 20px;">
-        <div style="background: #e2eaf0; padding: 10px; margin: -40px -40px 30px -40px; text-align: left; font-weight: bold;">
-          0 Attachments <span style="float: right; cursor: pointer;">+</span>
+      <%# --- ZONA DE ATTACHMENTS DINÁMICA --- %>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #4a5b6d; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2eaf0; padding-bottom: 5px;">Attachments</h3>
+
+        <%# 1. Llistar arxius existents amb opció d'esborrar %>
+        <% if issue.attachments.attached? %>
+          <ul style="list-style: none; padding: 0; margin-bottom: 15px;">
+            <% issue.attachments.each do |attachment| %>
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid #e2eaf0; border-radius: 4px; margin-bottom: 5px; background-color: #f9f9fb;">
+                <span style="font-size: 13px; color: #4a5b6d; word-break: break-all;">
+                  <%= attachment.filename %>
+                </span>
+                
+                <%# Utilitzem turbo_method: :delete en un link_to per no trencar el form_with principal %>
+                <%= link_to "✕", purge_attachment_issue_path(issue, attachment_id: attachment.id), 
+                    data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this file?" }, 
+                    style: "color: #E44057; text-decoration: none; font-weight: bold; font-size: 16px; margin-left: 10px;", title: "Remove file" %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <%# 2. Camp per pujar nous arxius %>
+        <div style="border: 2px dashed #b0c1d4; padding: 20px; text-align: center; border-radius: 4px; background-color: #f9fbfd;">
+          <span style="color: #6a7c92; font-weight: bold; margin-bottom: 10px; display: block; font-size: 13px;">
+            <%= issue.attachments.attached? ? "Upload more files" : "Upload files" %>
+          </span>
+          <%= form.file_field :attachments, multiple: true, style: "width: 100%; color: #6a7c92; font-size: 13px;" %>
         </div>
-        Drop attachments here!
       </div>
+      <%# --- FI ZONA ATTACHMENTS --- %>
 
       <div>
         <%# Esto pondrá 'Create Issue' si es nueva y 'Update Issue' si la estás editando %>
