@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   # El núcleo de la aplicación
-  resources :issues
+  resources :issues do
+    # Definim rutes a nivell de col·lecció (no requereixen un ID d'issue previ)
+    collection do
+      get 'bulk_new'
+      post 'bulk_create'
+    end
+  end
   resources :users # Más adelante gestionaremos el perfil aquí
   
   # Apartado de Settings (Agrupado para el Lliurament)

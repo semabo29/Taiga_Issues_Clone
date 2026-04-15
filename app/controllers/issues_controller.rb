@@ -11,6 +11,35 @@ class IssuesController < ApplicationController
   def new
     @issue = Issue.new
   end
+  
+  def bulk_new
+  end
+
+  def bulk_create
+    # Separem el text d'entrada per salts de línia i eliminem línies buides
+    subjects = params[:bulk_issues].to_s.split("\n").map(&:strip).reject(&:blank?)
+    
+    # Obtenim els valors per defecte. Si no existeixen, agafem el primer registre disponible
+    default_status = Status.find_by(name: "New") || Status.first
+    default_priority = Priority.find_by(name: "Normal") || Priority.first
+    default_severity = Severity.find_by(name: "Normal") || Severity.first
+    default_type = IssueType.find_by(name: "Bug") || IssueType.first
+    current_user = User.first
+
+    # Creem una issue per cada línia extreta del textarea
+    subjects.each do |subject|
+      Issue.create(
+        subject: subject,
+        status: default_status,
+        priority: default_priority,
+        severity: default_severity,
+        issue_type: default_type,
+        user: current_user
+      )
+    end
+
+    redirect_to issues_path, notice: "#{subjects.count} issues were successfully created."
+  end
 
   def edit
   end
@@ -27,15 +56,15 @@ class IssuesController < ApplicationController
   end
 
   def update
-  respond_to do |format|
-    if @issue.update(issue_params)
-      # Importante: redirigir a @issue (el show) para salir del modo edición
-      format.html { redirect_to issue_url(@issue), notice: "Issue was successfully updated." }
-    else
-      # Si hay error (ej: falta el subject), se queda en edit
-      format.html { render :edit, status: :unprocessable_entity }
+    respond_to do |format|
+      if @issue.update(issue_params)
+        # Importante: redirigir a @issue (el show) para salir del modo edición
+        format.html { redirect_to issue_url(@issue), notice: "Issue was successfully updated." }
+      else
+        # Si hay error (ej: falta el subject), se queda en edit
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
-  end
   end
 
   def destroy
