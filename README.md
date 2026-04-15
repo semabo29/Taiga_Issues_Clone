@@ -16,8 +16,11 @@ bin/rails server -b 0.0.0.0
 
 rails console
 
-Exemples: 
+Exemples:
 Issue.all (veure totes les issues)
 User.first (veure l'usuari de prova)
 Issue.count (quantes n'hi ha)
 exit (per sortir)
+
+ActiveRecord::Base.connection.tables (mirar que tablas (sus nombres) tenemos en la bd)
+User.all (ver todas las intancias de la tabla)
