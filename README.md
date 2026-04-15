@@ -23,4 +23,4 @@ Issue.count (quantes n'hi ha)
 exit (per sortir)
 
 ActiveRecord::Base.connection.tables (mirar que tablas (sus nombres) tenemos en la bd)
-User.all (ver todas las intancias de la tabla)
+User.all  (ver todas las intancias de la tabla)
