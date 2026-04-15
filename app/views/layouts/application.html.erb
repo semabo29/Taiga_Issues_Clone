@@ -7,10 +7,14 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "user_menu_taiga", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
+    <div class="top-navbar">
+    <%= render "shared/user_menu" %>
+    </div>
     <%= yield %>
   </body>
 </html>

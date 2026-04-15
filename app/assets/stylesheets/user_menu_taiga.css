@@ -1,0 +1,88 @@
+/* app/assets/stylesheets/user_menu_taiga.css */
+
+.top-navbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 40px;
+  background-color: #fff;
+}
+
+.user-menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* El círculo del avatar */
+.user-avatar-circle {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #8D99AE;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.user-avatar-circle:hover {
+  background-color: #7B879C;
+}
+
+/* El menú desplegable */
+.user-dropdown-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 220px;
+  background-color: white;
+  border: 1px solid #e2eaf0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 9999;
+  border-radius: 2px;
+}
+
+/* Info del usuario */
+.user-info-section {
+  padding: 15px;
+  border-bottom: 1px solid #83EEDE; /* Línea turquesa de Taiga */
+}
+
+.user-info-name {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.user-info-email {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Opciones del menú */
+.dropdown-options-list {
+  padding: 5px 0;
+}
+
+.logout-button-link {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  color: #00b19d;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.logout-button-link:hover {
+  background-color: #f4f8f9;
+}
