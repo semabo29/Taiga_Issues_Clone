@@ -72,12 +72,20 @@ class IssuesController < ApplicationController
     redirect_to issues_path, notice: "Issue was successfully destroyed."
   end
 
+  # Mètode per esborrar un adjunt específic
+  def purge_attachment
+    @attachment = ActiveStorage::Attachment.find(params[:attachment_id])
+    @attachment.purge
+    redirect_back fallback_location: issues_path, notice: "Attachment was successfully removed."
+  end
+
   private
     def set_issue
       @issue = Issue.find(params[:id])
     end
 
     def issue_params
-      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline)
+      # Permetem rebre un array d'adjunts
+      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, attachments: [])
     end
 end
