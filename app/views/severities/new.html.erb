@@ -1,9 +1,9 @@
-<h1>New severity</h1>
+<div class="taiga-main-container">
+  <h1 style="text-align: center; font-family: 'Ubuntu-Medium', Arial, sans-serif; color: #02202b; margin-bottom: 30px;">New Severity</h1>
+  
+  <%= render "form", severity: @severity %>
 
-<%= render "form", severity: @severity %>
-
-<br>
-
-<div>
-  <%= link_to "Back to severities", severities_path %>
+  <div style="margin-top: 20px; text-align: center;">
+    <%= link_to "Cancel", severities_path, style: "color: #888; text-decoration: none; font-size: 14px;" %>
+  </div>
 </div>

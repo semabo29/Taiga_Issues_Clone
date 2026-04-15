@@ -55,4 +55,18 @@ end
   priority.save!
 end
 
+# 6. TAGS (Etiquetas predeterminadas)
+[
+  { name: "Frontend", color: "#3366FF" },   # Azul
+  { name: "Backend", color: "#A8E43D" },    # Verde
+  { name: "Design", color: "#999999" },     # Gris
+  { name: "Urgent", color: "#E44057" },     # Rojo
+  { name: "Documentation", color: "#00B19D"}# Celeste
+].each do |t|
+  tag = Tag.find_or_initialize_by(name: t[:name])
+  tag.color = t[:color]
+  tag.save!
+end
+
+
 puts "¡Seeds cargados con éxito!"

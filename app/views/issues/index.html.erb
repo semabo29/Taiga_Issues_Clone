@@ -1,6 +1,9 @@
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
   <h1 style="font-family: 'Ubuntu-Medium', Arial, sans-serif; font-size: 2.25rem; font-weight: 500; color: rgb(0, 138, 168); margin: 0;">Issues</h1>
-  <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-new-issue" %>
+  <div>
+    <%= link_to "SETTINGS", settings_path, style: "color: #888; text-decoration: none; font-weight: bold; font-size: 13px; margin-right: 20px;" %>
+    <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-new-issue" %>
+  </div>
 </div>
 
 <table class="taiga-table">

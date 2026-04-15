@@ -27,15 +27,13 @@ class IssuesController < ApplicationController
   end
 
   def update
-  respond_to do |format|
     if @issue.update(issue_params)
       # Importante: redirigir a @issue (el show) para salir del modo edición
-      format.html { redirect_to issue_url(@issue), notice: "Issue was successfully updated." }
+      redirect_to issue_url(@issue), notice: "Issue was successfully updated."
     else
       # Si hay error (ej: falta el subject), se queda en edit
-      format.html { render :edit, status: :unprocessable_entity }
+      render :edit, status: :unprocessable_entity
     end
-  end
   end
 
   def destroy
@@ -49,6 +47,6 @@ class IssuesController < ApplicationController
     end
 
     def issue_params
-      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline)
+      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, tag_ids: [])
     end
 end
