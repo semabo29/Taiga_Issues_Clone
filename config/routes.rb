@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # El núcleo de la aplicación
   resources :issues
   resources :users # Más adelante gestionaremos el perfil aquí
-  
+
   # Apartado de Settings (Agrupado para el Lliurament)
   # Esto hará que las URLs sean /settings/statuses, /settings/priorities...
   scope :settings do
@@ -11,6 +11,11 @@ Rails.application.routes.draw do
     resources :severities
     resources :issue_types
   end
+
+  #Rutas de login del usuario
+  get '/auth/:provider/callback', to: 'sessions#create'
+  get '/auth/failure', to: redirect('/')
+  delete '/logout', to: 'sessions#destroy', as: :logout
 
   # Health check y Root
   get "up" => "rails/health#show", as: :rails_health_check

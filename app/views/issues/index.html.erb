@@ -3,6 +3,15 @@
   <%= link_to "+ NEW ISSUE", new_issue_path, class: "btn-new-issue" %>
 </div>
 
+<div style="background: #f4f8f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: right;">
+  <% if current_user %>
+    <span style="margin-right: 15px; color: #333;">Identificado como: <strong><%= current_user.username %></strong> (<%= current_user.email %>)</span>
+    <%= button_to "Cerrar sesión", logout_path, method: :delete, style: "background: #E44057; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" %>
+  <% else %>
+    <%= button_to "Iniciar sesión con Google", '/auth/google_oauth2', method: :post, data: { turbo: false }, style: "background: #4285F4; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;" %>
+  <% end %>
+</div>
+
 <table class="taiga-table">
   <thead>
     <tr>
@@ -18,11 +27,11 @@
   <tbody>
     <% @issues.each do |issue| %>
       <tr>
-        <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td> 
+        <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td>
         <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;" title="<%= issue.severity&.name %>"></span></td>
         <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;" title="<%= issue.priority&.name %>"></span></td>
         <td>
-          <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
+          <%= link_to "##{issue.id}", issue, class: "issue-ref" %>
           <span style="margin-left:5px;"><%= issue.subject %></span>
         </td>
         <td>

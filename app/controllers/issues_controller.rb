@@ -17,7 +17,7 @@ class IssuesController < ApplicationController
 
   def create
     @issue = Issue.new(issue_params)
-    @issue.user = User.first # Hardcoded para la Sesión 02 hasta tener Login
+    @issue.user = current_user #Usa el usuario logeado
 
     if @issue.save
       redirect_to issues_path, notice: "Issue was successfully created."
