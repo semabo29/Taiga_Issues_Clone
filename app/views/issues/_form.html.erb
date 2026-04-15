@@ -105,26 +105,3 @@
 
   </div>
 <% end %>
-
-<%# Script para actualizar el color de las bolitas en tiempo real %>
-<script>
-  document.addEventListener("turbo:load", function() {
-    const fields = ['issue_type', 'severity', 'priority'];
-    
-    fields.forEach(function(field) {
-      const selectElement = document.getElementById("select_" + field);
-      const dotElement = document.getElementById("dot_" + field);
-      
-      if (selectElement && dotElement) {
-        selectElement.addEventListener("change", function() {
-          const selectedOption = this.options[this.selectedIndex];
-          const newColor = selectedOption.getAttribute("data-color");
-          
-          if (newColor) {
-            dotElement.style.backgroundColor = newColor;
-          }
-        });
-      }
-    });
-  });
-</script>
