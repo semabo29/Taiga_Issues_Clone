@@ -1,10 +1,9 @@
-<h1>Editing issue type</h1>
+<div class="taiga-main-container">
+  <h1 style="text-align: center; font-family: 'Ubuntu-Medium', Arial, sans-serif; color: #02202b; margin-bottom: 30px;">Edit Issue Type</h1>
+  
+  <%= render "form", issue_type: @issue_type %>
 
-<%= render "form", issue_type: @issue_type %>
-
-<br>
-
-<div>
-  <%= link_to "Show this issue type", @issue_type %> |
-  <%= link_to "Back to issue types", issue_types_path %>
+  <div style="margin-top: 20px; text-align: center;">
+    <%= link_to "Cancel", issue_types_path, style: "color: #888; text-decoration: none; font-size: 14px;" %>
+  </div>
 </div>

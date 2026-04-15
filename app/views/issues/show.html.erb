@@ -13,6 +13,19 @@
         <h3 style="color: #888; font-size: 12px; text-transform: uppercase; margin-top: 0;">Description</h3>
         <p style="color: #444; line-height: 1.6;"><%= @issue.description.presence || "No description provided." %></p>
       </div>
+      
+      <% if @issue.tags.any? %>
+        <div style="margin-top: 20px;">
+          <h3 style="color: #888; font-size: 12px; text-transform: uppercase;">Tags</h3>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <% @issue.tags.each do |tag| %>
+              <span style="background-color: <%= tag.color %>; color: white; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: bold;">
+                <%= tag.name %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
       <%# --- SECCIÓ: Attachments --- %>
       <div style="margin-top: 40px;">
