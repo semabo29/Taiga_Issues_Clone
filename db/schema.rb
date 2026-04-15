@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_15_092613) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_15_235458) do
   create_table "comments", force: :cascade do |t|
     t.text "content"
     t.integer "issue_id", null: false
@@ -72,6 +72,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_092613) do
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "description"
   end
 
   add_foreign_key "comments", "issues"

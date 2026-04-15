@@ -8,6 +8,7 @@
       <div class="user-info-section">
         <span class="user-info-name"><%= current_user.username %></span>
         <span class="user-info-email"><%= current_user.email %></span>
+        <%= link_to "View profile", user_path(current_user), style: "display: block; margin-top: 8px; color: #00b19d; text-decoration: none; font-size: 13px; font-weight: 500;" %>
       </div>
 
       <div class="dropdown-options-list">

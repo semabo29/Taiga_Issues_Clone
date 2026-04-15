@@ -1,8 +1,7 @@
 <%= form_with(model: user) do |form| %>
   <% if user.errors.any? %>
-    <div style="color: red">
+    <div style="color: #E44057; margin-bottom: 20px;">
       <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
       <ul>
         <% user.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,17 +10,17 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :username, style: "display: block" %>
-    <%= form.text_field :username %>
+  <div style="margin-bottom: 15px;">
+    <%= form.label :username, "Nombre de Usuario", class: "attr-label", style: "display: block; margin-bottom: 5px;" %>
+    <%= form.text_field :username, class: "taiga-subject" %>
+  </div>
+
+  <div style="margin-bottom: 25px;">
+    <%= form.label :email, "Email (Google Account)", class: "attr-label", style: "display: block; margin-bottom: 5px;" %>
+    <%= form.text_field :email, class: "taiga-subject", disabled: true, style: "background-color: #f4f8f9; color: #888;" %>
   </div>
 
   <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.text_field :email %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <%= form.submit "SAVE PROFILE", class: "btn-create", style: "width: auto; padding: 10px 30px;" %>
   </div>
 <% end %>
