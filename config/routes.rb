@@ -7,11 +7,12 @@ Rails.application.routes.draw do
   # Esto hará que las URLs sean /settings/statuses, /settings/priorities...
   # Apartado de Settings
   scope :settings do
+    get "/" => "settings#index", as: :settings # Ruta base de settings
     resources :statuses
     resources :priorities
     resources :severities
     resources :issue_types
-    resources :tags 
+    resources :tags
   end
 
   # Health check y Root

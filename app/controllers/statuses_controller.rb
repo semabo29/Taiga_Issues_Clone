@@ -1,46 +1,44 @@
-class TagsController < ApplicationController
-  before_action :set_tag, only: %i[ edit update destroy ]
+class StatusesController < ApplicationController
+  before_action :set_status, only: %i[ edit update destroy ]
 
   def index
-    @tags = Tag.all.order(:name)
+    @statuses = Status.all
   end
 
   def new
-    @tag = Tag.new
+    @status = Status.new
   end
 
-  def edit
-  end
+  def edit; end
 
   def create
-    @tag = Tag.new(tag_params)
-
-    if @tag.save
-      redirect_to tags_path, notice: "Tag created successfully."
+    @status = Status.new(status_params)
+    if @status.save
+      redirect_to statuses_path, notice: "Status was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
   end
 
   def update
-    if @tag.update(tag_params)
-      redirect_to tags_path, notice: "Tag updated successfully."
+    if @status.update(status_params)
+      redirect_to statuses_path, notice: "Status was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @tag.destroy!
-    redirect_to tags_path, notice: "Tag deleted."
+    @status.destroy!
+    redirect_to statuses_path, notice: "Status was successfully destroyed."
   end
 
   private
-    def set_tag
-      @tag = Tag.find(params[:id])
+    def set_status
+      @status = Status.find(params[:id])
     end
 
-    def tag_params
-      params.require(:tag).permit(:name, :color)
+    def status_params
+      params.require(:status).permit(:name, :color)
     end
 end
