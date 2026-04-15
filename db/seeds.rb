@@ -1,50 +1,58 @@
-# --- LIMPIEZA (Opcional, activa si quieres empezar de cero siempre) ---
-# Issue.destroy_all
+puts "Limpiando base de datos y cargando nuevos datos de Taiga..."
 
-puts "Cargando datos iniciales de Taiga..."
-
-# 1. USUARIO DE PRUEBA
-user = User.find_or_create_by!(email: "prova@taiga.com") do |u|
+# 1. USUARIO DE PRUEBA (Para evitar errores hasta que hagáis el Login)
+User.find_or_create_by!(email: "prova@taiga.com") do |u|
   u.username = "Usuari prova"
 end
 
 # 2. STATUSES (Estados)
-# Usamos colores reales de la paleta de Taiga
 [
-  { name: "New", color: "#70728F" },
-  { name: "In progress", color: "#3366FF" },
-  { name: "Ready for test", color: "#FFCC00" },
-  { name: "Closed", color: "#A8E43D" }
+  { name: "New", color: "#70728F" },            # Gris azulado
+  { name: "In progress", color: "#3366FF" },    # Azul
+  { name: "Ready for test", color: "#FFCC00" }, # Amarillo
+  { name: "Closed", color: "#A8E43D" },         # Verde
+  { name: "Needs info", color: "#999999" },     # Gris medio
+  { name: "Rejected", color: "#E44057" },       # Rojo
+  { name: "Postponed", color: "#777777" }       # Gris oscuro
 ].each do |s|
-  Status.find_or_create_by!(name: s[:name]) { |obj| obj.color = s[:color] }
+  status = Status.find_or_initialize_by(name: s[:name])
+  status.color = s[:color]
+  status.save!
 end
 
-# 3. PRIORITIES (Prioridades)
+# 3. ISSUE TYPES (Tipos)
 [
-  { name: "Low", color: "#999999" },
-  { name: "Normal", color: "#A8E43D" },
-  { name: "High", color: "#E44057" }
-].each do |p|
-  Priority.find_or_create_by!(name: p[:name]) { |obj| obj.color = p[:color] }
+  { name: "Bug", color: "#E44057" },         # Rojo
+  { name: "Question", color: "#3366FF" },    # Azul
+  { name: "Enhancement", color: "#00B19D" }  # Celeste/Teal
+].each do |t|
+  type = IssueType.find_or_initialize_by(name: t[:name])
+  type.color = t[:color]
+  type.save!
 end
 
 # 4. SEVERITIES (Severidades)
 [
-  { name: "Wishlist", color: "#3366FF" },
-  { name: "Minor", color: "#FFCC00" },
-  { name: "Normal", color: "#F57900" },
-  { name: "Critical", color: "#E44057" }
+  { name: "Wishlist", color: "#999999" },    # Gris
+  { name: "Minor", color: "#3366FF" },       # Azul
+  { name: "Normal", color: "#A8E43D" },      # Verde
+  { name: "Important", color: "#F57900" },   # Naranja
+  { name: "Critical", color: "#E44057" }     # Rojo
 ].each do |sev|
-  Severity.find_or_create_by!(name: sev[:name]) { |obj| obj.color = sev[:color] }
+  severity = Severity.find_or_initialize_by(name: sev[:name])
+  severity.color = sev[:color]
+  severity.save!
 end
 
-# 5. ISSUE TYPES (Tipos)
+# 5. PRIORITIES (Prioridades)
 [
-  { name: "Bug", color: "#E44057" },
-  { name: "Question", color: "#00b19d" },
-  { name: "Enhancement", color: "#3366FF" }
-].each do |t|
-  IssueType.find_or_create_by!(name: t[:name]) { |obj| obj.color = t[:color] }
+  { name: "Low", color: "#A8E43D" },         # Verde claro
+  { name: "Normal", color: "#FFCC00" },      # Amarillo
+  { name: "High", color: "#FF6600" }         # Naranja fuerte
+].each do |p|
+  priority = Priority.find_or_initialize_by(name: p[:name])
+  priority.color = p[:color]
+  priority.save!
 end
 
 puts "¡Seeds cargados con éxito!"

@@ -169,3 +169,47 @@ body {
   line-height: 1;
 }
 .close-btn:hover { color: #888; }
+
+/* Contenedor de acciones */
+.issue-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+/* Evitar que el form de button_to rompa el flexbox */
+.issue-actions .button_to {
+  margin: 0;
+  display: flex; 
+}
+
+/* Estilo base unificado para los botones de acción */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  height: 40px; /* Mismo alto garantizado para ambos */
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.btn-action-edit {
+  background-color: #00b19d;
+}
+.btn-action-edit:hover {
+  background-color: #009688;
+}
+
+.btn-action-delete {
+  background-color: #E44057;
+}
+.btn-action-delete:hover {
+  background-color: #c93044;
+}
