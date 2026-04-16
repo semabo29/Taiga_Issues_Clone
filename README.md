@@ -3,7 +3,8 @@
 Aplicació web per a la gestió i seguiment d'incidències (Issue Tracker) inspirada en Taiga, desenvolupada per a l'assignatura d'Arquitectura de Programari i Web (ASW). 
 
 🌍 **Entorn de Producció (Render):** [https://taiga-app.onrender.com](https://taiga-app.onrender.com)
-🌲 **Taiga Oficial (Backlog):** [Projecte a tree.taiga.io](https://tree.taiga.io/project/victorsalinasmontanuy-asw2526q2-it212/backlog)
+
+🌲 **Taiga Oficial:** [Projecte a tree.taiga.io](https://tree.taiga.io/project/victorsalinasmontanuy-asw2526q2-it212)
 
 **Stack:** Ruby on Rails · PostgreSQL · Google OAuth2 · Docker · S3 Active Storage
 
