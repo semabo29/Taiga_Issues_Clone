@@ -20,6 +20,11 @@
     <%= form.text_field :email, class: "taiga-subject", disabled: true, style: "background-color: #f4f8f9; color: #888;" %>
   </div>
 
+  <div style="margin-bottom: 15px;">
+    <%= form.label :description, "Descripción / Bio", class: "attr-label", style: "display: block; margin-bottom: 5px;" %>
+    <%= form.text_area :description, rows: 4, class: "taiga-subject", style: "height: auto; font-family: inherit; padding: 10px;" %>
+  </div>
+
   <div>
     <%= form.submit "SAVE PROFILE", class: "btn-create", style: "width: auto; padding: 10px 30px;" %>
   </div>
