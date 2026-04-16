@@ -90,12 +90,23 @@
             <%= link_to "##{issue.id}", issue, class: "issue-ref" %>
             <span style="margin-left:5px;"><%= issue.subject %></span>
           </td>
+          <%# Columna Deadline con lógica de caducidad %>
           <td>
             <% if issue.deadline %>
               <% is_overdue = issue.deadline < Date.today %>
-              <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
-                <%= issue.deadline.strftime("%d %b %Y") %>
-              </span>
+              <% expires_soon = issue.deadline >= Date.today && issue.deadline <= 7.days.from_now.to_date %>
+              
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : (expires_soon ? '#FF9100' : '#333') %>;">
+                  <%= issue.deadline.strftime("%d %b %Y") %>
+                </span>
+                
+                <% if is_overdue %>
+                  <span style="background: #E44057; color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: bold; display: inline-block; width: max-content;">OVERDUE</span>
+                <% elsif expires_soon %>
+                  <span style="background: #FFF0D9; color: #CC7300; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: bold; border: 1px solid #FFD8A1; display: inline-block; width: max-content;">DUE SOON</span>
+                <% end %>
+              </div>
             <% else %>
               <span style="color: #ccc; font-size: 13px;">-</span>
             <% end %>

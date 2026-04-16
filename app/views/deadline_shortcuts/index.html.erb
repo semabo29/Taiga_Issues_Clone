@@ -1,0 +1,36 @@
+<div class="taiga-main-container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+    <h1 style="font-family: 'Ubuntu-Medium', Arial, sans-serif; font-size: 2rem; color: #02202b; margin: 0;">Due Dates Shortcuts</h1>
+    <%= link_to "+ NEW SHORTCUT", new_deadline_shortcut_path, class: "btn-new-issue", style: "padding: 8px 16px; font-size: 14px; text-transform: uppercase;" %>
+  </div>
+
+  <table class="taiga-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid #e2eaf0;">
+        <th style="padding: 10px; color: #b0c1d4; font-size: 11px; text-transform: uppercase;">Name</th>
+        <th style="padding: 10px; color: #b0c1d4; font-size: 11px; text-transform: uppercase;">Days from today</th>
+        <th style="padding: 10px; text-align: right;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @deadline_shortcuts.each do |shortcut| %>
+        <tr style="border-bottom: 1px solid #f0f4f8;">
+          <td style="padding: 15px 10px; font-weight: bold; color: #333;">
+            <%= shortcut.name %>
+          </td>
+          <td style="padding: 15px 10px; color: #6a7c92;">
+            + <%= shortcut.offset_days %> days
+          </td>
+          <td style="padding: 15px 10px; text-align: right;">
+            <%= link_to "Edit", edit_deadline_shortcut_path(shortcut), style: "color: #1fbdb8; font-size: 12px; text-decoration: none; margin-right: 15px; font-weight: bold;" %>
+            <%= link_to "Delete", shortcut, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, style: "color: #E44057; font-size: 12px; text-decoration: none; font-weight: bold;" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Settings", settings_path, style: "color: #888; text-decoration: none; font-size: 14px; font-weight: bold;" %>
+  </div>
+</div>
