@@ -1,0 +1,23 @@
+name: Auto Deploy to Render Branch
+on:
+  push:
+    branches:
+      - main
+
+
+permissions:
+  contents: write 
+
+
+jobs:
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Update DeployRender branch
+        run: |
+          git push origin main:DeployRender

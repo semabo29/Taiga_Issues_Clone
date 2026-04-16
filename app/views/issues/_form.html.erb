@@ -28,22 +28,21 @@
         <h3 style="color: #4a5b6d; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2eaf0; padding-bottom: 5px;">Attachments</h3>
 
         <%# 1. Llistar arxius existents amb opció d'esborrar %>
-        <% if issue.attachments.attached? %>
-          <ul style="list-style: none; padding: 0; margin-bottom: 15px;">
-            <% issue.attachments.each do |attachment| %>
-              <li style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid #e2eaf0; border-radius: 4px; margin-bottom: 5px; background-color: #f9f9fb;">
-                <span style="font-size: 13px; color: #4a5b6d; word-break: break-all;">
-                  <%= attachment.filename %>
-                </span>
-                
-                <%# Utilitzem turbo_method: :delete en un link_to per no trencar el form_with principal %>
-                <%= link_to "✕", purge_attachment_issue_path(issue, attachment_id: attachment.id), 
-                    data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this file?" }, 
-                    style: "color: #E44057; text-decoration: none; font-weight: bold; font-size: 16px; margin-left: 10px;", title: "Remove file" %>
-              </li>
-            <% end %>
-          </ul>
+        <% if issue.persisted? && issue.attachments.attached? %>
+      <ul style="list-style: none; padding: 0; margin-bottom: 15px;">
+        <% issue.attachments.each do |attachment| %>
+          <li style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid #e2eaf0; border-radius: 4px; margin-bottom: 5px; background-color: #f9f9fb;">
+            <span style="font-size: 13px; color: #4a5b6d; word-break: break-all;">
+              <%= attachment.filename %>
+            </span>
+        
+            <%= link_to "✕", purge_attachment_issue_path(issue, attachment_id: attachment.id), 
+                data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this file?" }, 
+                style: "color: #E44057; text-decoration: none; font-weight: bold; font-size: 16px; margin-left: 10px;", title: "Remove file" %>
+          </li>
         <% end %>
+      </ul>
+    <% end %>
 
         <%# 2. Camp per pujar nous arxius %>
         <div style="border: 2px dashed #b0c1d4; padding: 20px; text-align: center; border-radius: 4px; background-color: #f9fbfd;">
@@ -63,22 +62,40 @@
 
     <%# --- COLUMNA DERECHA: Sidebar --- %>
     <div class="form-right">
-      <%# Selector de Status dinámico %>
-      <%= form.collection_select :status_id, Status.all, :id, :name, {}, { class: "status-select" } %>
+  <%# Selector de Status dinámico %>
+  <%= form.collection_select :status_id, Status.all, :id, :name, {}, { class: "status-select" } %>
 
-      <div class="sidebar-box">
-        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-          <div style="background: #00b19d; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-             <%# Inicial del usuario actual %>
-             <span style="color: white; font-size: 16px; font-weight: bold;">
-               <%= User.first.username[0].upcase %>
-             </span>
-          </div>
-          <div style="font-size: 13px;">
-            <span style="color: #1fbdb8; font-weight: bold; cursor: pointer;">Assign</span> or <br>
-            <span style="color: #1fbdb8; font-weight: bold; cursor: pointer;">Assign to me</span>
-          </div>
-        </div>
+  <div class="sidebar-box">
+    <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+      <%# Avatar dinámico: Muestra la inicial del asignado, o '?' si no hay nadie %>
+      <div id="assignee_avatar" style="background: #00b19d; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+         <span style="color: white; font-size: 16px; font-weight: bold;">
+           <%= issue.assigned_to ? issue.assigned_to.username[0].upcase : "?" %>
+         </span>
+      </div>
+      
+      <div style="font-size: 13px; width: 100%;">
+        <span style="color: #6a7c92; display: block; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; font-size: 10px;">Assigned to</span>
+        <%# Selector de usuario %>
+        <%= form.collection_select :assigned_to_id, User.all, :id, :username, 
+              { include_blank: "Unassigned" }, 
+              { class: "attr-select-style", style: "width: 100%; border: none; background: transparent; color: #1fbdb8; font-weight: bold; padding: 0; cursor: pointer; outline: none;" } %>
+      </div>
+    </div>
+    
+      <a href="#" onclick="assignToMe(<%= current_user&.id %>); return false;" style="color: #1fbdb8; font-size: 11px; text-decoration: none; font-weight: bold;">
+        Assign to me
+      </a>
+
+      <script>
+        function assignToMe(userId) {
+          const select = document.querySelector('select[name="issue[assigned_to_id]"]');
+          if (select) {
+            select.value = userId;
+            select.dispatchEvent(new Event('change'));
+          }
+        }
+      </script>
 
         <%# Atributo: TYPE %>
         <div class="attr-row">
@@ -87,7 +104,7 @@
             <%= form.select :issue_type_id, 
                   options_for_select(IssueType.all.map { |t| [t.name, t.id, { 'data-color' => t.color }] }, issue.issue_type_id), 
                   {}, 
-                  { id: "select_issue_type", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+                  { id: "select_issue_type", onchange: "updateDotColor(this, 'dot_issue_type')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
             <span class="color-dot" id="dot_issue_type" style="background-color: <%= issue.issue_type&.color || IssueType.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
@@ -99,7 +116,7 @@
             <%= form.select :severity_id, 
                   options_for_select(Severity.all.map { |s| [s.name, s.id, { 'data-color' => s.color }] }, issue.severity_id), 
                   {}, 
-                  { id: "select_severity", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+                  { id: "select_severity", onchange: "updateDotColor(this, 'dot_severity')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
             <span class="color-dot" id="dot_severity" style="background-color: <%= issue.severity&.color || Severity.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
@@ -111,7 +128,7 @@
             <%= form.select :priority_id, 
                   options_for_select(Priority.all.map { |p| [p.name, p.id, { 'data-color' => p.color }] }, issue.priority_id), 
                   {}, 
-                  { id: "select_priority", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+                  { id: "select_priority", onchange: "updateDotColor(this, 'dot_priority')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
             <span class="color-dot" id="dot_priority" style="background-color: <%= issue.priority&.color || Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
@@ -120,7 +137,6 @@
         <div class="attr-row">
           <span class="attr-label">deadline</span>
           <div style="display: flex; align-items: center;">
-            <%# HTML5 date_field permite seleccionar la fecha e incluye un botón "X" para borrarla (eliminar deadline) %>
             <%= form.date_field :deadline, onclick: "try { this.showPicker() } catch(e) {}", style: "border:none; background:transparent; text-align:right; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; color: #333;" %>
           </div>
         </div>
@@ -129,3 +145,14 @@
 
   </div>
 <% end %>
+
+<%# --- SCRIPT PARA ACTUALIZAR LOS COLORES EN TIEMPO REAL --- %>
+<script>
+  function updateDotColor(selectElement, dotId) {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var newColor = selectedOption.getAttribute('data-color');
+    if (newColor) {
+      document.getElementById(dotId).style.backgroundColor = newColor;
+    }
+  }
+</script>

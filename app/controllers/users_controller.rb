@@ -8,7 +8,32 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
+  #Detectamos la pestaña activa (por defecto 'assigned')
+  @active_tab = params[:tab] || "assigned"
+
+  #Lógica de ordenación que ya teníamos
+  sort_column = params[:sort] || "id"
+  sort_direction = params[:direction] || "asc"
+
+  order_query = case sort_column
+                when "type"     then "issue_types.name"
+                when "severity" then "severities.name"
+                when "status"   then "statuses.name"
+                when "modified" then "issues.updated_at"
+                else "issues.id"
+                end
+
+  #Solo cargamos las issues si estamos en la pestaña de "assigned"
+  if @active_tab == "assigned"
+    @assigned_issues = @user.issues.joins(:status, :issue_type, :severity)
+                                   .where.not(statuses: { name: ['Closed', 'Tancada', 'Finalizada'] })
+                                   .order("#{order_query} #{sort_direction}")
   end
+
+  @open_issues_count = @user.issues.joins(:status)
+                                   .where.not(statuses: { name: ['Closed', 'Tancada', 'Finalizada'] })
+                                   .count
+end
 
   # GET /users/new
   def new
@@ -31,6 +56,23 @@ class UsersController < ApplicationController
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
+    end
+  end
+  
+ # GET /users/1 or /users/1.json
+  def show
+    @user = User.find(params[:id])
+    
+    @current_tab = params[:tab] || 'assigned'
+
+    if @current_tab == 'comments'
+      @comments = @user.comments.includes(:issue).order(created_at: :desc)
+    elsif @current_tab == 'assigned'
+      @assigned_issues = @user.assigned_issues.includes(:status)
+    end
+
+    respond_to do |format|
+      format.html
     end
   end
 

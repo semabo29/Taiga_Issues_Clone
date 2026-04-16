@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_15_235458) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_16_134546) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -76,6 +76,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_235458) do
     t.integer "severity_id"
     t.integer "issue_type_id"
     t.date "deadline"
+    t.integer "assigned_to_id"
+    t.index ["assigned_to_id"], name: "index_issues_on_assigned_to_id"
     t.index ["issue_type_id"], name: "index_issues_on_issue_type_id"
     t.index ["priority_id"], name: "index_issues_on_priority_id"
     t.index ["severity_id"], name: "index_issues_on_severity_id"
@@ -119,6 +121,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_235458) do
     t.text "description"
   end
 
+  create_table "watchings", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "issue_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["issue_id"], name: "index_watchings_on_issue_id"
+    t.index ["user_id"], name: "index_watchings_on_user_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "comments", "issues"
@@ -130,4 +141,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_235458) do
   add_foreign_key "issues", "severities"
   add_foreign_key "issues", "statuses"
   add_foreign_key "issues", "users"
+  add_foreign_key "issues", "users", column: "assigned_to_id"
+  add_foreign_key "watchings", "issues"
+  add_foreign_key "watchings", "users"
 end
