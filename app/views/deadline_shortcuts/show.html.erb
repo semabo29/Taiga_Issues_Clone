@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @deadline_shortcut %>
+
+<div>
+  <%= link_to "Edit this deadline shortcut", edit_deadline_shortcut_path(@deadline_shortcut) %> |
+  <%= link_to "Back to deadline shortcuts", deadline_shortcuts_path %>
+
+  <%= button_to "Destroy this deadline shortcut", @deadline_shortcut, method: :delete %>
+</div>

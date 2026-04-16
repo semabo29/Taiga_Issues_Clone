@@ -1,0 +1,26 @@
+<%= form_with(model: deadline_shortcut) do |form| %>
+  <% if deadline_shortcut.errors.any? %>
+    <div style="color: red; margin-bottom: 20px;">
+      <h2><%= pluralize(deadline_shortcut.errors.count, "error") %> prohibited this shortcut from being saved:</h2>
+      <ul>
+        <% deadline_shortcut.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div style="margin-bottom: 20px;">
+    <%= form.label :name, "Shortcut Name (e.g. Next Week)", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+    <%= form.text_field :name, class: "taiga-subject", style: "width: 100%; max-width: 400px;", required: true %>
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <%= form.label :offset_days, "Days to add from today", style: "display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;" %>
+    <%= form.number_field :offset_days, class: "taiga-subject", style: "width: 100%; max-width: 400px;", required: true %>
+  </div>
+
+  <div>
+    <%= form.submit "SAVE SHORTCUT", class: "btn-create" %>
+  </div>
+<% end %>

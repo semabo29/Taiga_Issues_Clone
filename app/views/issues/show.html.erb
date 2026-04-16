@@ -152,10 +152,15 @@
         
         <div class="attr-row">
           <span class="attr-label">Deadline</span>
-          <% is_overdue = @issue.deadline.present? && @issue.deadline < Date.today %>
-          <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
-            <%= @issue.deadline ? @issue.deadline.strftime("%d %b %Y") : "None" %>
-          </span>
+          <% if @issue.deadline.present? %>
+            <% is_overdue = @issue.deadline < Date.today %>
+            <% expires_soon = @issue.deadline >= Date.today && @issue.deadline <= 7.days.from_now.to_date %>
+            <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : (expires_soon ? '#FF9100' : '#333') %>;">
+              <%= @issue.deadline.strftime("%d %b %Y") %>
+            </span>
+          <% else %>
+            <span style="font-size: 13px; font-weight: bold; color: #333;">None</span>
+          <% end %>
         </div>
 
         <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 15px;">
