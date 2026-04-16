@@ -3,7 +3,12 @@
   <%# SIDEBAR %>
   <div class="profile-sidebar">
     <div class="profile-avatar-large">
-      <%= @user.username[0].upcase %>
+      <% if @user.avatar.attached? %>
+        <%# Pintamos la imagen de S3. Le ponemos ancho y alto 100% y object-fit para que no se deforme %>
+        <%= image_tag @user.avatar, style: "width: 100%; height: 100%; object-fit: cover;" %>
+      <% else %>
+        <%= @user.username[0].upcase %>
+      <% end %>
     </div>
 
     <h1 class="profile-name"><%= @user.username %></h1>
@@ -15,7 +20,7 @@
         <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
-        
+
         <span class="stat-number"><%= @user.watched_issues.count %></span>
         <span class="stat-label">Watched<br>Issues</span>
       </div>
@@ -39,28 +44,28 @@
 
     <%# BARRA DE PESTAÑAS %>
     <div class="profile-tabs">
-      <%= link_to user_path(@user, tab: 'assigned'), 
-          class: "profile-tab #{@current_tab == 'assigned' ? 'active' : ''}", 
+      <%= link_to user_path(@user, tab: 'assigned'),
+          class: "profile-tab #{@current_tab == 'assigned' ? 'active' : ''}",
           style: "text-decoration: none;" do %>
         ≡ Open Assigned Issues
       <% end %>
 
       <%# Pestaña watched funcional %>
-      <%= link_to user_path(@user, tab: 'watched'), 
-          class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}", 
+      <%= link_to user_path(@user, tab: 'watched'),
+          class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}",
           style: "text-decoration: none;" do %>
         👁 Watched Issues
       <% end %>
 
-      <%= link_to user_path(@user, tab: 'comments'), 
-          class: "profile-tab #{@current_tab == 'comments' ? 'active' : ''}", 
+      <%= link_to user_path(@user, tab: 'comments'),
+          class: "profile-tab #{@current_tab == 'comments' ? 'active' : ''}",
           style: "text-decoration: none;" do %>
         💬 Comments
       <% end %>
     </div>
 
     <%# CONTENIDO DINÁMICO SEGÚN LA PESTAÑA %>
-    
+
     <% if @current_tab == 'assigned' %>
       <%# Bloque de Issues Asignadas %>
       <div class="tab-content">
