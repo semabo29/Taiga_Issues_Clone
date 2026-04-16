@@ -213,3 +213,18 @@ body {
 .btn-action-delete:hover {
   background-color: #c93044;
 }
+
+.profile-tab {
+  padding: 15px 20px;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-block; 
+  border-bottom: 2px solid transparent;
+}
+
+.profile-tab.active {
+  color: #6a7c92 !important;
+  border-bottom: 2px solid #6a7c92 !important;
+  font-weight: bold;
+}

@@ -11,25 +11,21 @@
 
     <div class="profile-stats">
       <div class="stat-box">
-        <span class="stat-number"><%= @open_issues_count || 0 %></span>
-        <span class="stat-label">Open<br>Assigned<br>Issues</span>
+        <span class="stat-number"><%= @user.assigned_issues.count %></span>
+        <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
         <span class="stat-number">0</span>
         <span class="stat-label">Watched<br>Issues</span>
       </div>
       <div class="stat-box">
-        <span class="stat-number">0</span>
+        <span class="stat-number"><%= @user.comments.count %></span>
         <span class="stat-label">Comments</span>
       </div>
     </div>
 
     <div class="profile-bio">
-      <% if @user.description.present? %>
-        <p><%= @user.description %></p>
-      <% else %>
-        <p style="color: #bbb; font-style: italic;">No description provided yet.</p>
-      <% end %>
+      <p><%= @user.description.presence || "No description provided yet." %></p>
     </div>
 
     <% if current_user == @user %>
@@ -40,38 +36,69 @@
   <%# --- CONTENIDO PRINCIPAL --- %>
   <div class="profile-main-content">
 
+    <%# --- BARRA DE PESTAÑAS (Ahora son links reales) --- %>
     <div class="profile-tabs">
-      <%= link_to "≡ Open Assigned Issues", user_path(@user, tab: "assigned"),
-          class: "profile-tab #{@active_tab == 'assigned' ? 'active' : ''}" %>
-
-      <% if current_user == @user %>
-        <%= link_to "👁 Watched Issues", user_path(@user, tab: "watched"),
-            class: "profile-tab #{@active_tab == 'watched' ? 'active' : ''}" %>
+      <%= link_to user_path(@user, tab: 'assigned'), 
+          class: "profile-tab #{@current_tab == 'assigned' ? 'active' : ''}", 
+          style: "text-decoration: none;" do %>
+        ≡ Open Assigned Issues
       <% end %>
 
-      <%= link_to "💬 Comments", user_path(@user, tab: "comments"),
-          class: "profile-tab #{@active_tab == 'comments' ? 'active' : ''}" %>
-    </div>
+      <%= link_to "#", class: "profile-tab", style: "text-decoration: none; cursor: not-allowed; opacity: 0.5;" do %>
+        👁 Watched Issues
+      <% end %>
 
-    <%# --- CONTENEDORES DE CONTENIDO --- %>
-    <div class="tab-content-area" style="padding: 20px 0;">
-      <% case @active_tab %>
-      <% when "assigned" %>
-        <%= render "assigned_issues" %>
-
-      <% when "watched" %>
-        <div class="coming-soon-box">
-          <p>👁 <strong>Watched Issues</strong></p>
-          <p>Esta funcionalidad se implementará próximamente.</p>
-        </div>
-
-      <% when "comments" %>
-        <div class="coming-soon-box">
-          <p>💬 <strong>User Comments</strong></p>
-          <p>El historial de comentarios estará disponible en la próxima versión.</p>
-        </div>
+      <%= link_to user_path(@user, tab: 'comments'), 
+          class: "profile-tab #{@current_tab == 'comments' ? 'active' : ''}", 
+          style: "text-decoration: none;" do %>
+        💬 Comments
       <% end %>
     </div>
+
+    <%# --- CONTENIDO DINÁMICO SEGÚN LA PESTAÑA --- %>
+    
+    <% if @current_tab == 'assigned' %>
+      <%# Bloque de Issues Asignadas %>
+      <div class="tab-content">
+        <% if @assigned_issues.any? %>
+          <% @assigned_issues.each do |issue| %>
+            <div class="profile-item-row">
+              <div>
+                <span style="color: #abb8c3; font-weight: bold; font-size: 13px; margin-right: 10px;">#<%= issue.id %></span>
+                <%= link_to issue.subject, issue_path(issue), style: "color: #333; text-decoration: none; font-weight: 600;" %>
+              </div>
+              <span class="status-badge-small" style="background: <%= issue.status&.color %>;">
+                <%= issue.status&.name&.upcase %>
+              </span>
+            </div>
+          <% end %>
+        <% else %>
+          <p style="color: #999; font-style: italic; text-align: center; padding: 40px;">No assigned issues found.</p>
+        <% end %>
+      </div>
+
+    <% elsif @current_tab == 'comments' %>
+      <%# Bloque de Comentarios %>
+      <div class="tab-content">
+        <% if @comments.any? %>
+          <% @comments.each do |comment| %>
+            <div class="profile-comment-card">
+              <div class="profile-comment-header">
+                ON ISSUE: <%= link_to "##{comment.issue.id} #{comment.issue.subject}", issue_path(comment.issue), style: "color: #1fbdb8; text-decoration: none; font-weight: bold;" %>
+              </div>
+              <div class="profile-comment-body">
+                "<%= comment.content %>"
+              </div>
+              <div class="profile-comment-footer">
+                <%= comment.created_at.strftime("%d %b %Y, %H:%M") %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p style="color: #999; font-style: italic; text-align: center; padding: 40px;">No comments posted yet.</p>
+        <% end %>
+      </div>
+    <% end %>
 
   </div>
 </div>

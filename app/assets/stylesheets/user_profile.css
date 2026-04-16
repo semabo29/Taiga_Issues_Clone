@@ -18,7 +18,7 @@
   width: 100%;
   aspect-ratio: 1;
   background-color: #111; /* Color oscuro */
-  color: #d671e8; /* Color de los ojos del Enderman de tu foto ;) */
+  color: #d671e8; /* Color de los ojos del Enderman */
   font-size: 100px;
   display: flex;
   align-items: center;
@@ -75,7 +75,7 @@
   color: #333;
   margin-bottom: 25px;
   padding-left: 15px;
-  border-left: 4px solid #eee; /* Simula la comilla grande del Taiga original */
+  border-left: 4px solid #eee;
 }
 
 /* Botón Editar Bio */
@@ -114,11 +114,65 @@
   cursor: pointer;
 }
 
-.profile-tab i { margin-right: 5px; }
-
 /* Pestaña activa */
 .profile-tab.active {
   color: #6a7c92;
   border-bottom: 2px solid #6a7c92;
   font-weight: 500;
+}
+
+/* --- ESTILOS PARA LAS LISTAS (NUEVO) --- */
+
+.profile-item-row {
+  background: white;
+  border: 1px solid #e2eaf0;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.2s;
+}
+.profile-item-row:hover {
+  border-color: #00b19d;
+}
+
+.profile-comment-card {
+  background: white;
+  border: 1px solid #e2eaf0;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.profile-comment-header {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.profile-comment-body {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 2px solid #f0f0f0;
+}
+
+.profile-comment-footer {
+  font-size: 10px;
+  color: #ccc;
+  margin-top: 10px;
+  text-align: right;
+}
+
+.status-badge-small {
+  color: white;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-weight: bold;
 }

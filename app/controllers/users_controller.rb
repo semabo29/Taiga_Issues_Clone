@@ -58,6 +58,23 @@ end
       end
     end
   end
+  
+ # GET /users/1 or /users/1.json
+  def show
+    @user = User.find(params[:id])
+    
+    @current_tab = params[:tab] || 'assigned'
+
+    if @current_tab == 'comments'
+      @comments = @user.comments.includes(:issue).order(created_at: :desc)
+    elsif @current_tab == 'assigned'
+      @assigned_issues = @user.assigned_issues.includes(:status)
+    end
+
+    respond_to do |format|
+      format.html
+    end
+  end
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
