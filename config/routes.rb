@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   # El núcleo de la aplicación
   resources :issues do
-    
+    resource :watching, only: [:create, :destroy] 
+
     resources :comments, only: [:create, :edit, :update, :destroy]
 
     # Definim rutes a nivell de col·lecció (no requereixen un ID d'issue previ)
