@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   #No tocamos el id, Rails lo gestiona solo.
   #Usamos el email para identificar al usuario de Google.
+  has_many :issues, dependent: :destroy #issues assignadas al usuario
   def self.from_omniauth(auth)
     #Buscamos por la columna email de la tabla
     where(email: auth.info.email).first_or_create do |user|
