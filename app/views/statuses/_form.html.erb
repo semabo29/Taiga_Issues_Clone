@@ -1,27 +1,18 @@
 <%= form_with(model: status) do |form| %>
-  <% if status.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(status.errors.count, "error") %> prohibited this status from being saved:</h2>
-
-      <ul>
-        <% status.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+  <div style="background: #f9fdfd; border: 1px solid #e2eaf0; padding: 30px; border-radius: 4px; max-width: 400px; margin: 0 auto;">
+    
+    <div style="margin-bottom: 20px;">
+      <%= form.label :name, style: "display: block; color: #888; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;" %>
+      <%= form.text_field :name, class: "taiga-subject", required: true %>
     </div>
-  <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
+    <div style="margin-bottom: 30px;">
+      <%= form.label :color, style: "display: block; color: #888; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;" %>
+      <%= form.color_field :color, style: "width: 50px; height: 50px; padding: 0; border: none; cursor: pointer;" %>
+    </div>
 
-  <div>
-    <%= form.label :color, style: "display: block" %>
-    <%= form.text_field :color %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <div style="text-align: center;">
+      <%= form.submit "SAVE STATUS", class: "btn-create", style: "width: auto; padding: 10px 30px;" %>
+    </div>
   </div>
 <% end %>

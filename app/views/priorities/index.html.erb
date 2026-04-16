@@ -1,14 +1,34 @@
-<p style="color: green"><%= notice %></p>
+<div class="taiga-main-container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="font-family: 'Ubuntu-Medium', Arial, sans-serif; font-size: 2rem; color: #02202b; margin: 0;">Settings: Priorities</h1>
+    <%= link_to "+ NEW PRIORITY", new_priority_path, class: "btn-new-issue" %>
+  </div>
 
-<h1>Priorities</h1>
+  <table class="taiga-table">
+    <thead>
+      <tr>
+        <th>Color</th>
+        <th>Name</th>
+        <th style="text-align: right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @priorities.each do |priority| %>
+        <tr>
+          <td style="width: 50px;">
+            <span class="color-dot" style="background-color: <%= priority.color %>;"></span>
+          </td>
+          <td><strong><%= priority.name %></strong></td>
+          <td style="text-align: right;">
+            <%= link_to "Edit", edit_priority_path(priority), style: "color: #1fbdb8; text-decoration: none; margin-right: 15px;" %>
+            <%= button_to "Delete", priority, method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { style: "display: inline-block; margin: 0;" }, style: "color: #E44057; background: none; border: none; cursor: pointer; padding: 0; font-size: 14px;" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-<div id="priorities">
-  <% @priorities.each do |priority| %>
-    <%= render priority %>
-    <p>
-      <%= link_to "Show this priority", priority %>
-    </p>
-  <% end %>
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Settings", settings_path, style: "color: #1fbdb8; text-decoration: none; font-size: 14px;" %>
+  </div>
 </div>
-
-<%= link_to "New priority", new_priority_path %>

@@ -7,21 +7,53 @@
         <%= form.text_field :subject, class: "taiga-subject", placeholder: "Subject", required: true %>
       </div>
 
-      <div style="margin: 10px 0;">
-        <span style="color: #1fbdb8; font-size: 14px; cursor: pointer; font-weight: bold;">Add tag +</span>
+      <div style="margin: 15px 0;">
+        <span style="color: #888; font-size: 12px; text-transform: uppercase;">Tags</span>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+          <%= form.collection_check_boxes :tag_ids, Tag.all, :id, :name do |b| %>
+            <label style="display: inline-flex; align-items: center; background-color: <%= b.object.color || '#ccc' %>; color: white; padding: 4px 10px; border-radius: 3px; font-size: 12px; cursor: pointer;">
+              <%= b.check_box style: "margin-right: 5px; cursor: pointer;" %>
+              <%= b.text %>
+            </label>
+          <% end %>
+        </div>
       </div>
 
       <div>
         <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
       </div>
 
-      <%# Zona de Attachments (Estática por ahora para el diseño) %>
-      <div style="background: #f4f8f9; border: 1px dashed #b0c1d4; padding: 40px; text-align: center; color: #6a7c92; font-size: 14px; margin-bottom: 20px;">
-        <div style="background: #e2eaf0; padding: 10px; margin: -40px -40px 30px -40px; text-align: left; font-weight: bold;">
-          0 Attachments <span style="float: right; cursor: pointer;">+</span>
+      <%# --- ZONA DE ATTACHMENTS DINÁMICA --- %>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #4a5b6d; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2eaf0; padding-bottom: 5px;">Attachments</h3>
+
+        <%# 1. Llistar arxius existents amb opció d'esborrar %>
+        <% if issue.attachments.attached? %>
+          <ul style="list-style: none; padding: 0; margin-bottom: 15px;">
+            <% issue.attachments.each do |attachment| %>
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid #e2eaf0; border-radius: 4px; margin-bottom: 5px; background-color: #f9f9fb;">
+                <span style="font-size: 13px; color: #4a5b6d; word-break: break-all;">
+                  <%= attachment.filename %>
+                </span>
+                
+                <%# Utilitzem turbo_method: :delete en un link_to per no trencar el form_with principal %>
+                <%= link_to "✕", purge_attachment_issue_path(issue, attachment_id: attachment.id), 
+                    data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this file?" }, 
+                    style: "color: #E44057; text-decoration: none; font-weight: bold; font-size: 16px; margin-left: 10px;", title: "Remove file" %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <%# 2. Camp per pujar nous arxius %>
+        <div style="border: 2px dashed #b0c1d4; padding: 20px; text-align: center; border-radius: 4px; background-color: #f9fbfd;">
+          <span style="color: #6a7c92; font-weight: bold; margin-bottom: 10px; display: block; font-size: 13px;">
+            <%= issue.attachments.attached? ? "Upload more files" : "Upload files" %>
+          </span>
+          <%= form.file_field :attachments, multiple: true, style: "width: 100%; color: #6a7c92; font-size: 13px;" %>
         </div>
-        Drop attachments here!
       </div>
+      <%# --- FI ZONA ATTACHMENTS --- %>
 
       <div>
         <%# Esto pondrá 'Create Issue' si es nueva y 'Update Issue' si la estás editando %>
@@ -97,26 +129,3 @@
 
   </div>
 <% end %>
-
-<%# Script para actualizar el color de las bolitas en tiempo real %>
-<script>
-  document.addEventListener("turbo:load", function() {
-    const fields = ['issue_type', 'severity', 'priority'];
-    
-    fields.forEach(function(field) {
-      const selectElement = document.getElementById("select_" + field);
-      const dotElement = document.getElementById("dot_" + field);
-      
-      if (selectElement && dotElement) {
-        selectElement.addEventListener("change", function() {
-          const selectedOption = this.options[this.selectedIndex];
-          const newColor = selectedOption.getAttribute("data-color");
-          
-          if (newColor) {
-            dotElement.style.backgroundColor = newColor;
-          }
-        });
-      }
-    });
-  });
-</script>

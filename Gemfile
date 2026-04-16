@@ -40,3 +40,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Gema per connectar amb AWS S3
+gem "aws-sdk-s3", require: false
+
+# Gema per carregar variables d'entorn des d'un fitxer .env
+gem "dotenv-rails", groups: [:development, :test]
