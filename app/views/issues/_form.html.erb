@@ -104,7 +104,7 @@
             <%= form.select :issue_type_id, 
                   options_for_select(IssueType.all.map { |t| [t.name, t.id, { 'data-color' => t.color }] }, issue.issue_type_id), 
                   {}, 
-                  { id: "select_issue_type", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+                  { id: "select_issue_type", onchange: "updateDotColor(this, 'dot_issue_type')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
             <span class="color-dot" id="dot_issue_type" style="background-color: <%= issue.issue_type&.color || IssueType.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
@@ -116,7 +116,7 @@
             <%= form.select :severity_id, 
                   options_for_select(Severity.all.map { |s| [s.name, s.id, { 'data-color' => s.color }] }, issue.severity_id), 
                   {}, 
-                  { id: "select_severity", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+                  { id: "select_severity", onchange: "updateDotColor(this, 'dot_severity')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
             <span class="color-dot" id="dot_severity" style="background-color: <%= issue.severity&.color || Severity.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
@@ -128,7 +128,7 @@
             <%= form.select :priority_id, 
                   options_for_select(Priority.all.map { |p| [p.name, p.id, { 'data-color' => p.color }] }, issue.priority_id), 
                   {}, 
-                  { id: "select_priority", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+                  { id: "select_priority", onchange: "updateDotColor(this, 'dot_priority')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
             <span class="color-dot" id="dot_priority" style="background-color: <%= issue.priority&.color || Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
           </div>
         </div>
@@ -137,7 +137,6 @@
         <div class="attr-row">
           <span class="attr-label">deadline</span>
           <div style="display: flex; align-items: center;">
-            <%# HTML5 date_field permite seleccionar la fecha e incluye un botón "X" para borrarla (eliminar deadline) %>
             <%= form.date_field :deadline, onclick: "try { this.showPicker() } catch(e) {}", style: "border:none; background:transparent; text-align:right; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; color: #333;" %>
           </div>
         </div>
@@ -146,3 +145,14 @@
 
   </div>
 <% end %>
+
+<%# --- SCRIPT PARA ACTUALIZAR LOS COLORES EN TIEMPO REAL --- %>
+<script>
+  function updateDotColor(selectElement, dotId) {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var newColor = selectedOption.getAttribute('data-color');
+    if (newColor) {
+      document.getElementById(dotId).style.backgroundColor = newColor;
+    }
+  }
+</script>
