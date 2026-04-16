@@ -12,7 +12,7 @@
   display: inline-block;
 }
 
-/* El círculo del avatar */
+/*El círculo del avatar*/
 .user-avatar-circle {
   width: 35px;
   height: 35px;
@@ -32,8 +32,9 @@
   background-color: #7B879C;
 }
 
-/* El menú desplegable */
+/*El menú desplegable*/
 .user-dropdown-menu {
+  display: none;
   position: absolute;
   top: 45px;
   right: 0;
@@ -44,6 +45,29 @@
   z-index: 9999;
   border-radius: 2px;
 }
+
+/*Muestra el menú cuando el checkbox está activado */
+.menu-toggle-checkbox:checked ~ .user-dropdown-menu {
+  display: block;
+}
+
+/*Capa invisible para detectar el clic fuera */
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9998; /*Justo debajo del menú, encima del resto de la página */
+  cursor: default;
+}
+
+/*Muestra la capa invisible cuando el menú está abierto */
+.menu-toggle-checkbox:checked ~ .menu-overlay {
+  display: block;
+}
+/* -------------------------------- */
 
 /* Info del usuario */
 .user-info-section {
