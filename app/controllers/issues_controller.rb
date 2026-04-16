@@ -6,7 +6,7 @@ class IssuesController < ApplicationController
 
   def index
     # 1. Definimos las columnas que permitimos ordenar (Seguridad)
-    sortable_columns = ["issue_type_id", "severity_id", "priority_id", "id", "deadline", "status_id", "assigned_to_id"]
+    sortable_columns = ["issue_type_id", "severity_id", "priority_id", "id", "deadline", "status_id", "assigned_to_id", "user_id"]
     
     # Si el parámetro existe en nuestra lista lo usamos, si no, ordenamos por ID por defecto
     sort_column = sortable_columns.include?(params[:sort]) ? params[:sort] : "id"
@@ -105,6 +105,6 @@ class IssuesController < ApplicationController
     end
 
     def issue_params
-      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, tag_ids: [], attachments: [])
+      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, :assigned_to_id, tag_ids: [], attachments: [])
     end
 end
