@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :issues, dependent: :destroy
   has_many :watchings, dependent: :destroy
   has_many :watched_issues, through: :watchings, source: :issue
-
+  has_one_attached :avatar
 
   def self.from_omniauth(auth)
     #Buscamos por la columna email de la tabla
