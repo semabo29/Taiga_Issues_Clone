@@ -1,5 +1,8 @@
 class IssuesController < ApplicationController
+  before_action :authenticate_user!, except: [:index, :show]
   before_action :set_issue, only: %i[ show edit update destroy ]
+  before_action :authorize_user!, only: [:edit, :update, :destroy]
+
 
   def index
     # Partimos de todas las issues ordenadas de más nuevas a más antiguas
@@ -106,7 +109,11 @@ class IssuesController < ApplicationController
     def set_issue
       @issue = Issue.find(params[:id])
     end
-
+    def authorize_user!
+      unless @issue.user == current_user
+        redirect_to issues_path, alert: "You are not allowed."
+      end
+    end
     def issue_params
       params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, tag_ids: [], attachments: [])
     end
