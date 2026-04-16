@@ -39,13 +39,20 @@
         <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
           <%= issue.status&.name&.upcase || "NEW" %>
         </td>
+
         <td style="text-align: right;">
           <% if issue.user %>
-            <span style="background: #00b19d; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px;">
-              <%= issue.user.username[0].upcase %>
-            </span>
+            <%= link_to user_path(issue.user), style: "text-decoration: none; display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px;" do %>
+              <span style="color: #008aa8; font-size: 13px; font-weight: 500;"><%= issue.user.username %></span>
+              <div class="user-avatar-circle" style="width: 26px; height: 26px; font-size: 11px;">
+                <%= issue.user.username[0].upcase %>
+              </div>
+            <% end %>
+          <% else %>
+            <span style="color: #bbb; font-style: italic; font-size: 13px;">Unassigned</span>
           <% end %>
         </td>
+
       </tr>
     <% end %>
   </tbody>
