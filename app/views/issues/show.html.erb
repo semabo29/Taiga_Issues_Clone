@@ -108,7 +108,7 @@
             <%= form_with(model: [@issue, Comment.new]) do |f| %>
               <div style="margin-bottom: 15px;">
                 <%= f.text_area :content, placeholder: "Write your comment here...", required: true, 
-                    style: "width: 100%; min-height: 80px; padding: 12px; border: 1px solid #e2eaf0; border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" %>
+                  style: "width: 100%; box-sizing: border-box; resize: none; min-height: 80px; padding: 12px; border: 1px solid #e2eaf0; border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" %>
               </div>
               <div style="text-align: right;">
                 <%= f.submit "POST COMMENT", style: "background-color: #00b19d; color: white; border: none; padding: 10px 20px; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px;" %>
