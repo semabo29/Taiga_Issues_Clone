@@ -13,6 +13,13 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 
+
+# --- Gems de l'autentificacio de google ---
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
+# --------------------------------------
+
 # --- CONFIGURACIÓ DE BASES DE DADES ---
 group :production do
   gem "pg"
@@ -21,6 +28,7 @@ end
 group :development, :test do
   gem "sqlite3", "~> 1.4"
   gem "debug", platforms: %i[ mri windows ]
+  gem 'dotenv-rails'
 end
 # --------------------------------------
 

@@ -65,6 +65,7 @@
 </div>
 <%# --- FIN BARRA DE BÚSQUEDA --- %>
 
+
 <table class="taiga-table">
   <thead>
     <tr>
@@ -81,11 +82,11 @@
     <% if @issues.any? %>
       <% @issues.each do |issue| %>
         <tr>
-          <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td> 
+          <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color || '#ccc' %>;" title="<%= issue.issue_type&.name %>"></span></td>
           <td><span class="color-dot" style="background-color: <%= issue.severity&.color || '#ccc' %>;" title="<%= issue.severity&.name %>"></span></td>
           <td><span class="color-dot" style="background-color: <%= issue.priority&.color || '#ccc' %>;" title="<%= issue.priority&.name %>"></span></td>
           <td>
-            <%= link_to "##{issue.id}", issue, class: "issue-ref" %> 
+            <%= link_to "##{issue.id}", issue, class: "issue-ref" %>
             <span style="margin-left:5px;"><%= issue.subject %></span>
           </td>
           <td>
@@ -101,21 +102,29 @@
           <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
             <%= issue.status&.name&.upcase || "NEW" %>
           </td>
+          
           <td style="text-align: right;">
             <% if issue.user %>
-              <span style="background: #00b19d; color: white; border-radius: 50%; padding: 5px 10px; font-size: 12px;">
-                <%= issue.user.username[0].upcase %>
-              </span>
+              <%= link_to user_path(issue.user), style: "text-decoration: none; display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px;" do %>
+                <span style="color: #008aa8; font-size: 13px; font-weight: 500;"><%= issue.user.username %></span>
+                <div class="user-avatar-circle" style="width: 26px; height: 26px; font-size: 11px;">
+                  <%= issue.user.username[0].upcase %>
+                </div>
+              <% end %>
+            <% else %>
+              <span style="color: #bbb; font-style: italic; font-size: 13px;">Unassigned</span>
             <% end %>
           </td>
         </tr>
       <% end %>
     <% else %>
+    
       <tr>
         <td colspan="7" style="text-align: center; padding: 40px; color: #888;">
           No issues found matching your criteria.
         </td>
       </tr>
+      
     <% end %>
   </tbody>
 </table>
