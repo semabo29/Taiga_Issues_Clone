@@ -1,70 +1,99 @@
 class IssuesController < ApplicationController
+  # solo index y show son públicas
+  before_action :authenticate_user!, except: [:index, :show]
   before_action :set_issue, only: %i[ show edit update destroy ]
+  before_action :authorize_user!, only: [:edit, :update, :destroy]
 
-  # GET /issues or /issues.json
   def index
-    @issues = Issue.all
+    @issues = Issue.all.order(created_at: :desc)
+    if params[:query].present?
+      search_term = "%#{params[:query]}%"
+      @issues = @issues.where("subject LIKE ? OR description LIKE ?", search_term, search_term)
+    end
+
+    @issues = @issues.where(issue_type_id: params[:issue_type_id]) if params[:issue_type_id].present?
+    @issues = @issues.where(severity_id: params[:severity_id]) if params[:severity_id].present?
+    @issues = @issues.where(priority_id: params[:priority_id]) if params[:priority_id].present?
+    @issues = @issues.where(status_id: params[:status_id]) if params[:status_id].present?
   end
 
-  # GET /issues/1 or /issues/1.json
   def show
   end
 
-  # GET /issues/new
   def new
     @issue = Issue.new
   end
+  
+  def bulk_new
+  end
 
-  # GET /issues/1/edit
+  def bulk_create
+    subjects = params[:bulk_issues].to_s.split("\n").map(&:strip).reject(&:blank?)
+    
+    default_status = Status.find_by(name: "New") || Status.first
+    default_priority = Priority.find_by(name: "Normal") || Priority.first
+    default_severity = Severity.find_by(name: "Normal") || Severity.first
+    default_type = IssueType.find_by(name: "Bug") || IssueType.first
+
+    subjects.each do |subject|
+      Issue.create(
+        subject: subject,
+        status: default_status,
+        priority: default_priority,
+        severity: default_severity,
+        issue_type: default_type,
+        user: current_user # Corregido: ahora usa el usuario actual
+      )
+    end
+
+    redirect_to issues_path, notice: "#{subjects.count} issues were successfully created."
+  end
+
   def edit
   end
 
-  # POST /issues or /issues.json
   def create
     @issue = Issue.new(issue_params)
+    @issue.user = current_user
 
-    respond_to do |format|
-      if @issue.save
-        format.html { redirect_to @issue, notice: "Issue was successfully created." }
-        format.json { render :show, status: :created, location: @issue }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @issue.errors, status: :unprocessable_entity }
-      end
+    if @issue.save
+      redirect_to issues_path, notice: "Issue was successfully created."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /issues/1 or /issues/1.json
   def update
-    respond_to do |format|
-      if @issue.update(issue_params)
-        format.html { redirect_to @issue, notice: "Issue was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @issue }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @issue.errors, status: :unprocessable_entity }
-      end
+    if @issue.update(issue_params)
+      redirect_to issue_url(@issue), notice: "Issue was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
-  # DELETE /issues/1 or /issues/1.json
   def destroy
     @issue.destroy!
+    redirect_to issues_path, notice: "Issue was successfully destroyed."
+  end
 
-    respond_to do |format|
-      format.html { redirect_to issues_path, notice: "Issue was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+  def purge_attachment
+    @attachment = ActiveStorage::Attachment.find(params[:attachment_id])
+    @attachment.purge
+    redirect_back fallback_location: issues_path, notice: "Attachment was successfully removed."
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_issue
       @issue = Issue.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
+    def authorize_user!
+      unless @issue.user == current_user
+        redirect_to issues_path, alert: "You are not allowed."
+      end
+    end
+
     def issue_params
-      params.require(:issue).permit(:subject, :description, :status, :priority, :severity, :user_id)
+      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, tag_ids: [], attachments: [])
     end
 end

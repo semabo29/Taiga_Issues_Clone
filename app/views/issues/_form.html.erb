@@ -1,47 +1,158 @@
 <%= form_with(model: issue) do |form| %>
-  <% if issue.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(issue.errors.count, "error") %> prohibited this issue from being saved:</h2>
+  <div class="form-layout">
+    
+    <%# --- COLUMNA IZQUIERDA: Contenido --- %>
+    <div class="form-left">
+      <div>
+        <%= form.text_field :subject, class: "taiga-subject", placeholder: "Subject", required: true %>
+      </div>
 
-      <ul>
-        <% issue.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+      <div style="margin: 15px 0;">
+        <span style="color: #888; font-size: 12px; text-transform: uppercase;">Tags</span>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+          <%= form.collection_check_boxes :tag_ids, Tag.all, :id, :name do |b| %>
+            <label style="display: inline-flex; align-items: center; background-color: <%= b.object.color || '#ccc' %>; color: white; padding: 4px 10px; border-radius: 3px; font-size: 12px; cursor: pointer;">
+              <%= b.check_box style: "margin-right: 5px; cursor: pointer;" %>
+              <%= b.text %>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
+      </div>
+
+      <%# --- ZONA DE ATTACHMENTS DINÁMICA --- %>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #4a5b6d; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2eaf0; padding-bottom: 5px;">Attachments</h3>
+
+        <%# 1. Llistar arxius existents amb opció d'esborrar %>
+        <% if issue.persisted? && issue.attachments.attached? %>
+      <ul style="list-style: none; padding: 0; margin-bottom: 15px;">
+        <% issue.attachments.each do |attachment| %>
+          <li style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid #e2eaf0; border-radius: 4px; margin-bottom: 5px; background-color: #f9f9fb;">
+            <span style="font-size: 13px; color: #4a5b6d; word-break: break-all;">
+              <%= attachment.filename %>
+            </span>
+        
+            <%= link_to "✕", purge_attachment_issue_path(issue, attachment_id: attachment.id), 
+                data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this file?" }, 
+                style: "color: #E44057; text-decoration: none; font-weight: bold; font-size: 16px; margin-left: 10px;", title: "Remove file" %>
+          </li>
         <% end %>
       </ul>
+    <% end %>
+
+        <%# 2. Camp per pujar nous arxius %>
+        <div style="border: 2px dashed #b0c1d4; padding: 20px; text-align: center; border-radius: 4px; background-color: #f9fbfd;">
+          <span style="color: #6a7c92; font-weight: bold; margin-bottom: 10px; display: block; font-size: 13px;">
+            <%= issue.attachments.attached? ? "Upload more files" : "Upload files" %>
+          </span>
+          <%= form.file_field :attachments, multiple: true, style: "width: 100%; color: #6a7c92; font-size: 13px;" %>
+        </div>
+      </div>
+      <%# --- FI ZONA ATTACHMENTS --- %>
+
+      <div>
+        <%# Esto pondrá 'Create Issue' si es nueva y 'Update Issue' si la estás editando %>
+        <%= form.submit (issue.new_record? ? "CREATE ISSUE" : "UPDATE ISSUE"), class: "btn-create" %>
+      </div>
     </div>
-  <% end %>
 
-  <div>
-    <%= form.label :subject, style: "display: block" %>
-    <%= form.text_field :subject %>
-  </div>
+    <%# --- COLUMNA DERECHA: Sidebar --- %>
+    <div class="form-right">
+  <%# Selector de Status dinámico %>
+  <%= form.collection_select :status_id, Status.all, :id, :name, {}, { class: "status-select" } %>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.text_area :description %>
-  </div>
+  <div class="sidebar-box">
+    <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+      <%# Avatar dinámico: Muestra la inicial del asignado, o '?' si no hay nadie %>
+      <div id="assignee_avatar" style="background: #00b19d; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+         <span style="color: white; font-size: 16px; font-weight: bold;">
+           <%= issue.assigned_to ? issue.assigned_to.username[0].upcase : "?" %>
+         </span>
+      </div>
+      
+      <div style="font-size: 13px; width: 100%;">
+        <span style="color: #6a7c92; display: block; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; font-size: 10px;">Assigned to</span>
+        <%# Selector de usuario %>
+        <%= form.collection_select :assigned_to_id, User.all, :id, :username, 
+              { include_blank: "Unassigned" }, 
+              { class: "attr-select-style", style: "width: 100%; border: none; background: transparent; color: #1fbdb8; font-weight: bold; padding: 0; cursor: pointer; outline: none;" } %>
+      </div>
+    </div>
+    
+      <a href="#" onclick="assignToMe(<%= current_user&.id %>); return false;" style="color: #1fbdb8; font-size: 11px; text-decoration: none; font-weight: bold;">
+        Assign to me
+      </a>
 
-  <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
-  </div>
+      <script>
+        function assignToMe(userId) {
+          const select = document.querySelector('select[name="issue[assigned_to_id]"]');
+          if (select) {
+            select.value = userId;
+            select.dispatchEvent(new Event('change'));
+          }
+        }
+      </script>
 
-  <div>
-    <%= form.label :priority, style: "display: block" %>
-    <%= form.text_field :priority %>
-  </div>
+        <%# Atributo: TYPE %>
+        <div class="attr-row">
+          <span class="attr-label">type</span>
+          <div style="display: flex; align-items: center;">
+            <%= form.select :issue_type_id, 
+                  options_for_select(IssueType.all.map { |t| [t.name, t.id, { 'data-color' => t.color }] }, issue.issue_type_id), 
+                  {}, 
+                  { id: "select_issue_type", onchange: "updateDotColor(this, 'dot_issue_type')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_issue_type" style="background-color: <%= issue.issue_type&.color || IssueType.first&.color || '#ccc' %>; margin-left: 8px;"></span>
+          </div>
+        </div>
 
-  <div>
-    <%= form.label :severity, style: "display: block" %>
-    <%= form.text_field :severity %>
-  </div>
+        <%# Atributo: SEVERITY %>
+        <div class="attr-row">
+          <span class="attr-label">severity</span>
+          <div style="display: flex; align-items: center;">
+            <%= form.select :severity_id, 
+                  options_for_select(Severity.all.map { |s| [s.name, s.id, { 'data-color' => s.color }] }, issue.severity_id), 
+                  {}, 
+                  { id: "select_severity", onchange: "updateDotColor(this, 'dot_severity')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_severity" style="background-color: <%= issue.severity&.color || Severity.first&.color || '#ccc' %>; margin-left: 8px;"></span>
+          </div>
+        </div>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
-  </div>
+        <%# Atributo: PRIORITY %>
+        <div class="attr-row" style="border-bottom: none;">
+          <span class="attr-label">priority</span>
+          <div style="display: flex; align-items: center;">
+            <%= form.select :priority_id, 
+                  options_for_select(Priority.all.map { |p| [p.name, p.id, { 'data-color' => p.color }] }, issue.priority_id), 
+                  {}, 
+                  { id: "select_priority", onchange: "updateDotColor(this, 'dot_priority')", style: "border:none; background:transparent; text-align:right; -webkit-appearance: none; font-size: 13px; cursor: pointer;" } %>
+            <span class="color-dot" id="dot_priority" style="background-color: <%= issue.priority&.color || Priority.first&.color || '#ccc' %>; margin-left: 8px;"></span>
+          </div>
+        </div>
+        
+        <%# Atributo: DEADLINE %>
+        <div class="attr-row">
+          <span class="attr-label">deadline</span>
+          <div style="display: flex; align-items: center;">
+            <%= form.date_field :deadline, onclick: "try { this.showPicker() } catch(e) {}", style: "border:none; background:transparent; text-align:right; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; color: #333;" %>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div>
-    <%= form.submit %>
   </div>
 <% end %>
+
+<%# --- SCRIPT PARA ACTUALIZAR LOS COLORES EN TIEMPO REAL --- %>
+<script>
+  function updateDotColor(selectElement, dotId) {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var newColor = selectedOption.getAttribute('data-color');
+    if (newColor) {
+      document.getElementById(dotId).style.backgroundColor = newColor;
+    }
+  }
+</script>

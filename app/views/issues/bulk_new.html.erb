@@ -1,0 +1,25 @@
+<div style="position: relative; padding-top: 40px;">
+  <%# La X de tancar a la dreta del tot %>
+  <div style="position: absolute; top: 0; right: 0;">
+    <%= link_to "✕", issues_path, class: "close-btn", title: "Close" %>
+  </div>
+
+  <%# Contenidor centralitzat per al formulari %>
+  <div style="max-width: 600px; margin: 0 auto; width: 100%;">
+    
+    <h1 style="text-align: center; color: #02202b; margin-bottom: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 400; font-size: 24px;">
+      New bulk insert
+    </h1>
+
+    <%= form_with url: bulk_create_issues_path, method: :post do |form| %>
+      <div>
+        <%= form.text_area :bulk_issues, class: "taiga-textarea", placeholder: "One item per line...", required: true, style: "min-height: 300px; resize: vertical; border: 1px solid #b0c1d4; padding: 15px;" %>
+      </div>
+
+      <div style="text-align: right; margin-top: 15px;">
+        <%= form.submit "SAVE", class: "btn-new-issue", style: "padding: 10px 24px; font-size: 14px; border: none; cursor: pointer; text-transform: uppercase;" %>
+      </div>
+    <% end %>
+
+  </div>
+</div>

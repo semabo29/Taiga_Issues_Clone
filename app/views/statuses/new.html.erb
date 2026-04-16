@@ -1,0 +1,9 @@
+<div class="taiga-main-container">
+  <h1 style="text-align: center; font-family: 'Ubuntu-Medium', Arial, sans-serif; color: #02202b; margin-bottom: 30px;">New Status</h1>
+  
+  <%= render "form", status: @status %>
+
+  <div style="margin-top: 20px; text-align: center;">
+    <%= link_to "Cancel", statuses_path, style: "color: #888; text-decoration: none; font-size: 14px;" %>
+  </div>
+</div>

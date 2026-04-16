@@ -1,0 +1,30 @@
+<table class="taiga-table">
+  <thead>
+    <tr>
+      <th><%= link_to "TYPE ↑↓", user_path(@user, tab: "assigned", sort: "type", direction: params[:direction] == "asc" ? "desc" : "asc"), style: "text-decoration:none; color:inherit;" %></th>
+      <th><%= link_to "SEVERITY ↑↓", user_path(@user, tab: "assigned", sort: "severity", direction: params[:direction] == "asc" ? "desc" : "asc"), style: "text-decoration:none; color:inherit;" %></th>
+      <th><%= link_to "ISSUE # ↑↓", user_path(@user, tab: "assigned", sort: "id", direction: params[:direction] == "asc" ? "desc" : "asc"), style: "text-decoration:none; color:inherit;" %></th>
+      <th>SUBJECT</th>
+      <th><%= link_to "STATUS ↑↓", user_path(@user, tab: "assigned", sort: "status", direction: params[:direction] == "asc" ? "desc" : "asc"), style: "text-decoration:none; color:inherit;" %></th>
+      <th><%= link_to "MODIFIED ↑↓", user_path(@user, tab: "assigned", sort: "modified", direction: params[:direction] == "asc" ? "desc" : "asc"), style: "text-decoration:none; color:inherit;" %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @assigned_issues && @assigned_issues.any? %>
+      <% @assigned_issues.each do |issue| %>
+        <tr>
+          <td><span class="color-dot" style="background-color: <%= issue.issue_type&.color %>"></span> <%= issue.issue_type&.name %></td>
+          <td><span class="color-dot" style="background-color: <%= issue.severity&.color %>"></span> <%= issue.severity&.name %></td>
+          <td><%= link_to "##{issue.id}", issue, class: "issue-ref" %></td>
+          <td><%= issue.subject %></td>
+          <td style="font-weight: bold; color: <%= issue.status&.color %>"><%= issue.status&.name&.upcase %></td>
+          <td style="font-size: 12px; color: #888;"><%= issue.updated_at.strftime("%d/%m/%Y %H:%M") %></td>
+        </tr>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 20px; color: #bbb;">No hi ha issues obertes assignades.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

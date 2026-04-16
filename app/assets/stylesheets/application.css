@@ -1,15 +1,230 @@
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
- *= require_tree .
- *= require_self
- */
+/* app/assets/stylesheets/application.css */
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  margin: 0;
+  padding: 20px 40px;
+}
+
+/* Bolitas de colores de Taiga */
+.color-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.dot-red { background-color: #E44057; }
+.dot-green { background-color: #A8E43D; }
+.dot-yellow { background-color: #E4A33D; }
+.dot-teal { background-color: #00b19d; }
+
+/* Botones */
+.btn-new-issue {
+  background-color: #83EEDE; 
+  color: #02202b; 
+  padding: 8px 16px;
+  border: none;
+  border-radius: 3px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.btn-create {
+  background-color: #83EEDE; 
+  color: #02202b;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* Formularios */
+.taiga-subject {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border: 1px solid #1fbdb8;
+  border-radius: 3px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.taiga-textarea {
+  width: 100%;
+  padding: 12px;
+  min-height: 150px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-sizing: border-box;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  resize: vertical;
+}
+
+/*Contenedor centrado*/
+.taiga-main-container {
+  max-width: 750px;
+  margin: 0 auto;   
+  width: 100%;
+}
+
+/* Layout Formulario */
+.form-layout {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+.form-left { flex: 2; }
+.form-right { flex: 1; }
+
+.sidebar-box {
+  background-color: #f9fdfd;
+  border: 1px solid #e2eaf0;
+  padding: 20px;
+  border-radius: 4px;
+}
+.status-select {
+  background-color: #70728F; 
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 3px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.attr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.attr-label {
+  color: #888;
+  font-size: 12px;
+  text-transform: lowercase;
+}
+
+/* Tabla de Issues */
+.taiga-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;     
+  margin-top: 20px;
+}
+
+.taiga-table th {
+  text-align: left;
+  padding: 0 15px 10px 15px;
+  color: #b0c1d4;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.taiga-table td {
+  padding: 15px;
+  background-color: #F9F9FB; 
+  font-size: 14px;
+}
+
+/*Se redondean las esquinas de la primera y última celda de cada fila */
+.taiga-table td:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.taiga-table td:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/*hover*/
+.taiga-table tbody tr:hover td {
+  background-color: #ECEFF4;
+  transition: background-color 0.15s ease-in-out; /*cambio de color suave*/
+}
+
+/*transición también al estado normal*/
+.taiga-table td {
+  padding: 15px;
+  background-color: #F9F9FB;
+  font-size: 14px;
+  transition: background-color 0.15s ease-in-out;
+}
+.issue-ref { color: #1fbdb8; text-decoration: none; }
+
+/*Estilo para la "X"*/
+.close-btn {
+  font-size: 28px;
+  color: #02202b;
+  text-decoration: none;
+  font-weight: normal;
+  line-height: 1;
+}
+.close-btn:hover { color: #888; }
+
+/* Contenedor de acciones */
+.issue-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+/* Evitar que el form de button_to rompa el flexbox */
+.issue-actions .button_to {
+  margin: 0;
+  display: flex; 
+}
+
+/* Estilo base unificado para los botones de acción */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  height: 40px; /* Mismo alto garantizado para ambos */
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.btn-action-edit {
+  background-color: #00b19d;
+}
+.btn-action-edit:hover {
+  background-color: #009688;
+}
+
+.btn-action-delete {
+  background-color: #E44057;
+}
+.btn-action-delete:hover {
+  background-color: #c93044;
+}
+
+.profile-tab {
+  padding: 15px 20px;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-block; 
+  border-bottom: 2px solid transparent;
+}
+
+.profile-tab.active {
+  color: #6a7c92 !important;
+  border-bottom: 2px solid #6a7c92 !important;
+  font-weight: bold;
+}

@@ -1,0 +1,19 @@
+<%= form_with(model: tag) do |form| %>
+  <div style="background: #f9fdfd; border: 1px solid #e2eaf0; padding: 30px; border-radius: 4px; max-width: 400px; margin: 0 auto;">
+    
+    <div style="margin-bottom: 20px;">
+      <%= form.label :name, style: "display: block; color: #888; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;" %>
+      <%= form.text_field :name, class: "taiga-subject", required: true %>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <%= form.label :color, style: "display: block; color: #888; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;" %>
+      <%# HTML nativo para seleccionar color sin usar JS %>
+      <%= form.color_field :color, style: "width: 50px; height: 50px; padding: 0; border: none; cursor: pointer;" %>
+    </div>
+
+    <div style="text-align: center;">
+      <%= form.submit "SAVE TAG", class: "btn-create", style: "width: auto; padding: 10px 30px;" %>
+    </div>
+  </div>
+<% end %>

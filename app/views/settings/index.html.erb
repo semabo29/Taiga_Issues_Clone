@@ -1,0 +1,15 @@
+<div class="taiga-main-container" style="text-align: center;">
+  <h1 style="font-family: 'Ubuntu-Medium', Arial, sans-serif; font-size: 2rem; color: #02202b; margin-bottom: 40px;">Project Settings</h1>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+    <%= link_to "STATUSES", statuses_path, class: "sidebar-box", style: "text-decoration: none; color: #1fbdb8; font-weight: bold; padding: 40px 20px;" %>
+    <%= link_to "PRIORITIES", priorities_path, class: "sidebar-box", style: "text-decoration: none; color: #1fbdb8; font-weight: bold; padding: 40px 20px;" %>
+    <%= link_to "SEVERITIES", severities_path, class: "sidebar-box", style: "text-decoration: none; color: #1fbdb8; font-weight: bold; padding: 40px 20px;" %>
+    <%= link_to "TYPES", issue_types_path, class: "sidebar-box", style: "text-decoration: none; color: #1fbdb8; font-weight: bold; padding: 40px 20px;" %>
+    <%= link_to "TAGS", tags_path, class: "sidebar-box", style: "text-decoration: none; color: #1fbdb8; font-weight: bold; padding: 40px 20px;" %>
+  </div>
+
+  <div style="margin-top: 50px;">
+    <%= link_to "← Back to Issues", issues_path, style: "color: #888; text-decoration: none; font-size: 14px;" %>
+  </div>
+</div>

@@ -1,10 +1,194 @@
-<p style="color: green"><%= notice %></p>
+<div class="taiga-main-container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+    <div>
+      <span style="color: #1fbdb8; font-weight: bold; font-size: 1.5rem;">#<%= @issue.id %></span>
+      <h1 style="display: inline; margin-left: 10px; font-size: 1.8rem; color: #333;"><%= @issue.subject %></h1>
+    </div>
+    <%= link_to "×", issues_path, class: "close-btn", title: "Volver a la lista" %>
+  </div>
 
-<%= render @issue %>
+  <div class="form-layout">
+    <div class="form-left">
+      
+      <%# Descripción %>
+      <div style="background: #f9f9fb; padding: 20px; border-radius: 8px; border: 1px solid #e2eaf0; min-height: 150px;">
+        <h3 style="color: #888; font-size: 12px; text-transform: uppercase; margin-top: 0;">Description</h3>
+        <p style="color: #444; line-height: 1.6;"><%= @issue.description.presence || "No description provided." %></p>
+      </div>
+      
+      <%# Tags %>
+      <% if @issue.tags.any? %>
+        <div style="margin-top: 20px;">
+          <h3 style="color: #888; font-size: 12px; text-transform: uppercase;">Tags</h3>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <% @issue.tags.each do |tag| %>
+              <span style="background-color: <%= tag.color %>; color: white; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: bold;">
+                <%= tag.name %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
-<div>
-  <%= link_to "Edit this issue", edit_issue_path(@issue) %> |
-  <%= link_to "Back to issues", issues_path %>
+      <%# Attachments %>
+      <div style="margin-top: 40px;">
+        <h3 style="color: #4a5b6d; border-bottom: 1px solid #e2eaf0; padding-bottom: 10px; font-size: 16px;">Attachments</h3>
+        
+        <% if @issue.attachments.attached? %>
+          <ul style="list-style: none; padding: 0;">
+            <% @issue.attachments.each do |attachment| %>
+              <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0;">
+                <%= link_to attachment.filename, rails_blob_path(attachment, disposition: "attachment"), style: "color: #00b19d; text-decoration: none; font-weight: bold; font-size: 13px;" %>
+                
+                <% if current_user == @issue.user %>
+                  <%= button_to "Delete", purge_attachment_issue_path(@issue, attachment_id: attachment.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, style: "background-color: #E44057; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;" %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p style="color: #888; font-style: italic; font-size: 13px;">No files attached yet.</p>
+        <% end %>
+      </div>
 
-  <%= button_to "Destroy this issue", @issue, method: :delete %>
+      <%# Botones de Acción de la Issue %>
+      <% if current_user == @issue.user %>
+        <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid #eee;">
+          <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
+          
+          <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { style: "margin: 0; display: flex;" }, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #E44057; cursor: pointer; border: none;" %>
+        </div>
+      <% end %>
+
+      <%# COMENTARIOS %>
+      <div class="comments-section" style="margin-top: 40px;">
+        <h3 style="color: #4a5b6d; font-size: 18px; margin-bottom: 20px;">
+          <span style="border-bottom: 2px solid #00b19d; padding-bottom: 5px;">Comments & Activity</span>
+        </h3>
+
+        <%# Listado de comentarios %>
+        <div id="comments-list" style="margin-bottom: 30px;">
+          <% if @issue.comments.any? %>
+            <% @issue.comments.each do |comment| %>
+              <div style="background: white; border: 1px solid #e2eaf0; border-radius: 4px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 24px; height: 24px; background: #ccd5e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white;">
+                      <%= comment.user.username[0].upcase %>
+                    </div>
+                    <strong style="color: #1fbdb8; font-size: 13px;"><%= comment.user.username %></strong>
+                  </div>
+                  <span style="font-size: 11px; color: #999;">
+                    <%= comment.created_at.strftime("%d %b %Y, %H:%M") %>
+                  </span>
+                </div>
+                
+                <div style="color: #555; font-size: 14px; line-height: 1.5; padding-left: 32px;">
+                  <%= comment.content %>
+                </div>
+
+                <%# Acciones del comentario %>
+                <% if current_user && comment.user == current_user %>
+                  <div style="text-align: right; margin-top: 10px;">
+                    <%= link_to "Edit", edit_issue_comment_path(@issue, comment), style: "font-size: 11px; color: #6a7c92; text-decoration: none; margin-right: 10px;" %>
+                    <%= link_to "Delete", issue_comment_path(@issue, comment), data: { turbo_method: :delete, turbo_confirm: "Delete this comment?" }, style: "font-size: 11px; color: #E44057; text-decoration: none;" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <p style="color: #999; font-style: italic; font-size: 13px;">No comments yet.</p>
+          <% end %>
+        </div>
+
+        <%# Formulario nuevo comentario %>
+        <% if current_user %>
+          <div style="background: #f9fbfd; padding: 20px; border-radius: 4px; border: 1px dashed #b0c1d4;">
+            <h4 style="font-size: 12px; color: #6a7c92; text-transform: uppercase; margin-bottom: 15px;">Add a comment</h4>
+            <%= form_with(model: [@issue, Comment.new]) do |f| %>
+              <div style="margin-bottom: 15px;">
+                <%= f.text_area :content, placeholder: "Write your comment here...", required: true, 
+                    style: "width: 100%; min-height: 80px; padding: 12px; border: 1px solid #e2eaf0; border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" %>
+              </div>
+              <div style="text-align: right;">
+                <%= f.submit "POST COMMENT", style: "background-color: #00b19d; color: white; border: none; padding: 10px 20px; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px;" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# COLUMNA DERECHA %>
+    <div class="form-right">
+      <div class="sidebar-box">
+        <div class="status-select" style="text-align: center; color: white; font-weight: bold; padding: 10px; border-radius: 4px; margin-bottom: 15px; background-color: <%= @issue.status&.color || '#ccc' %>;">
+          <%= @issue.status&.name&.upcase || "NO STATUS" %>
+        </div>
+
+        <div class="attr-row">
+          <span class="attr-label">Type</span>
+          <span style="font-size: 13px; font-weight: bold; display: flex; align-items: center;">
+            <%= @issue.issue_type&.name %>
+            <span class="color-dot" style="background-color: <%= @issue.issue_type&.color %>; margin-left: 8px;"></span>
+          </span>
+        </div>
+
+        <div class="attr-row">
+          <span class="attr-label">Severity</span>
+          <span style="font-size: 13px; font-weight: bold; display: flex; align-items: center;">
+            <%= @issue.severity&.name %>
+            <span class="color-dot" style="background-color: <%= @issue.severity&.color %>; margin-left: 8px;"></span>
+          </span>
+        </div>
+
+        <div class="attr-row">
+          <span class="attr-label">Priority</span>
+          <span style="font-size: 13px; font-weight: bold; display: flex; align-items: center;">
+            <%= @issue.priority&.name %>
+            <span class="color-dot" style="background-color: <%= @issue.priority&.color %>; margin-left: 8px;"></span>
+          </span>
+        </div>
+        
+        <div class="attr-row">
+          <span class="attr-label">Deadline</span>
+          <% is_overdue = @issue.deadline.present? && @issue.deadline < Date.today %>
+          <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
+            <%= @issue.deadline ? @issue.deadline.strftime("%d %b %Y") : "None" %>
+          </span>
+        </div>
+
+        <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 15px;">
+          <span class="attr-label">Creator</span>
+          <span style="font-size: 13px; font-weight: bold;"><%= @issue.user.username %></span>
+        </div>
+
+        <div class="attr-row">
+          <span class="attr-label">Assigned</span>
+          <span style="font-size: 13px; font-weight: bold; color: #1fbdb8;">
+            <%= @issue.assigned_to ? @issue.assigned_to.username : "Unassigned" %>
+          </span>
+        </div>
+
+        <%# WATCH / UNWATCH %>
+        <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; border-bottom: none; text-align: center;">
+          <% if current_user %>
+            <% if @issue.watchers.include?(current_user) %>
+              <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, 
+                  style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
+            <% else %>
+              <%= button_to "WATCH", issue_watching_path(@issue), method: :post, 
+                  style: "background: #00b19d; color: white; border: none; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
+            <% end %>
+          <% end %>
+          <p style="font-size: 10px; color: #888; margin-top: 5px;"><%= @issue.watchers.count %> Watchers</p>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 20px; text-align: center;">
+        <%= link_to "← Back to list", issues_path, style: "color: #1fbdb8; text-decoration: none; font-size: 14px; font-weight: bold;" %>
+      </div>
+    </div>
+  </div>
 </div>

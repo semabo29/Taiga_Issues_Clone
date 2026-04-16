@@ -1,9 +1,11 @@
-<h1>New issue</h1>
+<div class="taiga-main-container">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="width: 30px;"></div> 
+    <h1 style="text-align: center; color: #02202b; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 300;">New issue</h1>
+    <%= link_to "✕", issues_path, class: "close-btn", title: "Close" %>
+  </div>
 
-<%= render "form", issue: @issue %>
+  <%= render "form", issue: @issue %>
 
-<br>
-
-<div>
-  <%= link_to "Back to issues", issues_path %>
 </div>

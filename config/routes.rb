@@ -1,12 +1,42 @@
 Rails.application.routes.draw do
-  resources :issues
-  resources :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # El núcleo de la aplicación
+  resources :issues do
+    resource :watching, only: [:create, :destroy] 
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+    resources :comments, only: [:create, :edit, :update, :destroy]
+
+    # Definim rutes a nivell de col·lecció (no requereixen un ID d'issue previ)
+    collection do
+      get 'bulk_new'
+      post 'bulk_create'
+    end
+    
+    # Definim rutes a nivell de membre (per a una issue específica)
+    member do
+      delete :purge_attachment
+    end
+  end
+  
+  resources :users # Más adelante gestionaremos el perfil aquí
+
+  # Apartado de Settings (Agrupado para el Lliurament)
+  # Esto hará que las URLs sean /settings/statuses, /settings/priorities...
+  # Apartado de Settings
+  scope :settings do
+    get "/" => "settings#index", as: :settings # Ruta base de settings
+    resources :statuses
+    resources :priorities
+    resources :severities
+    resources :issue_types
+    resources :tags
+  end
+
+  #Rutas de login del usuario
+  get '/auth/:provider/callback', to: 'sessions#create'
+  get '/auth/failure', to: redirect('/')
+  delete '/logout', to: 'sessions#destroy', as: :logout
+
+  # Health check y Root
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
+  root "issues#index"
 end
