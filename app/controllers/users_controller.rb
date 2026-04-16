@@ -58,11 +58,11 @@ end
       end
     end
   end
-  
+
  # GET /users/1 or /users/1.json
   def show
     @user = User.find(params[:id])
-    
+
     @current_tab = params[:tab] || 'assigned'
 
     if @current_tab == 'comments'
@@ -107,6 +107,6 @@ end
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:username, :email, :description)
+      params.require(:user).permit(:username, :email, :description, :avatar)
     end
 end

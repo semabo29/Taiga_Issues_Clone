@@ -20,6 +20,27 @@
     <%= form.text_field :email, class: "taiga-subject", disabled: true, style: "background-color: #f4f8f9; color: #888;" %>
   </div>
 
+  <div style="margin-bottom: 20px;">
+  <%= form.label :avatar, "Foto de perfil (Avatar)", class: "attr-label", style: "display: block; margin-bottom: 5px;" %>
+
+  <%# Mostramos una miniatura si ya tiene foto%>
+  <% if user.avatar.attached? %>
+    <div style="margin-bottom: 10px;">
+      <%= image_tag user.avatar, style: "width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;" %>
+    </div>
+  <% end %>
+
+  <%#El campo para elegir el archivo %>
+  <%= form.file_field :avatar,
+      accept: 'image/png,image/gif,image/jpeg',
+      class: "taiga-subject",
+      style: "padding: 5px 0;" %>
+
+  <p style="font-size: 11px; color: #888; margin-top: 5px;">
+    Formatos admitidos: PNG, JPG o GIF. Se guardará en AWS S3.
+  </p>
+</div>
+
   <div style="margin-bottom: 15px;">
     <%= form.label :description, "Descripción / Bio", class: "attr-label", style: "display: block; margin-bottom: 5px;" %>
     <%= form.text_area :description, rows: 4, class: "taiga-subject", style: "height: auto; font-family: inherit; padding: 10px;" %>

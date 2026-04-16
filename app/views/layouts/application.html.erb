@@ -9,14 +9,21 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "user_menu_taiga", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "user_profile", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom_navigation", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
     <div class="top-navbar">
-    <%= render "shared/user_menu" %>
+      <%# --- BOTÓN DE INICIO  --- %>
+      <%= link_to issues_path, class: "home-icon-btn", title: "Ir al inicio" do %>
+        🏠
+      <% end %>
+
+      <%# --- MENÚ DE USUARIO EXISTENTE --- %>
+      <%= render "shared/user_menu" %>
     </div>
-    <body>
+
     <%# --- MENSAJES --- %>
     <% if notice %>
       <div style="background-color: #d4edda; color: #155724; padding: 10px 20px; text-align: center; border-bottom: 1px solid #c3e6cb; font-size: 14px;">

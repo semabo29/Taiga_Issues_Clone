@@ -1,0 +1,34 @@
+/* Hacemos que la barra superior se quede fija al hacer scroll */
+.top-navbar {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  /* El flexbox y el fondo ya los hereda de tu user_menu_taiga.css */
+}
+
+/* Añadimos un margen superior al body para que la barra fija no tape el contenido */
+body {
+  padding-top: 70px !important;
+}
+
+/* Estilo del botón de Inicio (Casa) */
+.home-icon-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 18px;
+  margin-right: 15px; /* Esto empuja el menú de usuario hacia la derecha */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.home-icon-btn:hover {
+  background-color: #e2eaf0; /* Un gris-azulado sutil */
+}
