@@ -30,7 +30,7 @@
         </div>
       <% end %>
 
-      <%# --- SECCIÓ: Attachments --- %>
+      <%# Atachments %>
       <div style="margin-top: 40px;">
         <h3 style="color: #4a5b6d; border-bottom: 1px solid #e2eaf0; padding-bottom: 10px; font-size: 16px;">Attachments</h3>
         
@@ -40,7 +40,10 @@
               <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0;">
                 <%= link_to attachment.filename, rails_blob_path(attachment, disposition: "attachment"), style: "color: #00b19d; text-decoration: none; font-weight: bold; font-size: 13px;" %>
                 
-                <%= button_to "Delete", purge_attachment_issue_path(@issue, attachment_id: attachment.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, style: "background-color: #E44057; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;" %>
+                <%# SEGURIDAD: Solo el creador de la issue puede borrar archivos %>
+                <% if current_user == @issue.user %>
+                  <%= button_to "Delete", purge_attachment_issue_path(@issue, attachment_id: attachment.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, style: "background-color: #E44057; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;" %>
+                <% end %>
               </li>
             <% end %>
           </ul>
@@ -50,11 +53,13 @@
       </div>
 
       <%# Botones de Acción de la Issue %>
-      <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid #eee;">
-        <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
-        
-        <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { style: "margin: 0; display: flex;" }, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #E44057; cursor: pointer; border: none;" %>
-      </div>
+      <% if current_user == @issue.user %>
+        <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid #eee;">
+          <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
+          
+          <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { style: "margin: 0; display: flex;" }, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #E44057; cursor: pointer; border: none;" %>
+        </div>
+      <% end %>
 
       <%# COMENTARIOS %>
       <div class="comments-section" style="margin-top: 40px;">
@@ -83,7 +88,7 @@
                   <%= comment.content %>
                 </div>
 
-                <%# Acciones del comentario (autor) %>
+                <%# Acciones del comentario %>
                 <% if current_user && comment.user == current_user %>
                   <div style="text-align: right; margin-top: 10px;">
                     <%= link_to "Edit", edit_issue_comment_path(@issue, comment), style: "font-size: 11px; color: #6a7c92; text-decoration: none; margin-right: 10px;" %>
@@ -113,14 +118,11 @@
           </div>
         <% end %>
       </div>
-      <%# FIN SECCIÓN COMENTARIOS %>
-
     </div>
 
     <%# COLUMNA DERECHA %>
     <div class="form-right">
       <div class="sidebar-box">
-        <%# Badge de Estado %>
         <div class="status-select" style="text-align: center; color: white; font-weight: bold; padding: 10px; border-radius: 4px; margin-bottom: 15px; background-color: <%= @issue.status&.color || '#ccc' %>;">
           <%= @issue.status&.name&.upcase || "NO STATUS" %>
         </div>
@@ -149,7 +151,7 @@
           </span>
         </div>
         
-        <div class="attr-row" style="border-bottom: none;">
+        <div class="attr-row">
           <span class="attr-label">Deadline</span>
           <% is_overdue = @issue.deadline.present? && @issue.deadline < Date.today %>
           <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
@@ -157,8 +159,12 @@
           </span>
         </div>
 
-        <%# Nuevo Atributo: Assigned To %>
         <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 15px;">
+          <span class="attr-label">Creator</span>
+          <span style="font-size: 13px; font-weight: bold;"><%= @issue.user.username %></span>
+        </div>
+
+        <div class="attr-row" style="border-bottom: none;">
           <span class="attr-label">Assigned</span>
           <span style="font-size: 13px; font-weight: bold; color: #1fbdb8;">
             <%= @issue.assigned_to ? @issue.assigned_to.username : "Unassigned" %>
