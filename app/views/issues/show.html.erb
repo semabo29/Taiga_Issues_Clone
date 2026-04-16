@@ -122,8 +122,12 @@
     <%# COLUMNA DERECHA %>
     <div class="form-right">
       <div class="sidebar-box">
-        <div class="status-select" style="text-align: center; color: white; font-weight: bold; padding: 10px; border-radius: 4px; margin-bottom: 15px; background-color: <%= @issue.status&.color || '#ccc' %>;">
-          <%= @issue.status&.name&.upcase || "NO STATUS" %>
+        
+        <%# STATUS (SOLO LECTURA Y CENTRADO) %>
+        <div style="margin-bottom: 15px; text-align: center;">
+          <div class="status-select" style="background-color: <%= @issue.status&.color || '#ccc' %>; color: white; border: none; padding: 10px; font-weight: bold; width: 100%; border-radius: 4px; box-sizing: border-box; text-align: center; text-transform: uppercase; margin-bottom: 0;">
+            <%= @issue.status&.name || "NO STATUS" %>
+          </div>
         </div>
 
         <div class="attr-row">
@@ -170,18 +174,57 @@
           </span>
         </div>
 
-        <%# WATCH / UNWATCH %>
-        <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; border-bottom: none; text-align: center;">
-          <% if current_user %>
-            <% if @issue.watchers.include?(current_user) %>
-              <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, 
-                  style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
-            <% else %>
-              <%= button_to "WATCH", issue_watching_path(@issue), method: :post, 
-                  style: "background: #00b19d; color: white; border: none; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
+        <%# WATCHERS%>
+        <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; border-bottom: none; display: block;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span class="attr-label" style="font-weight: bold;">Watchers (<%= @issue.watchers.count %>)</span>
+            
+            <%# Botón rápido para el usuario actual %>
+            <% if current_user %>
+              <% if @issue.watchers.include?(current_user) %>
+                <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, 
+                    style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
+              <% else %>
+                <%= button_to "WATCH", issue_watching_path(@issue), method: :post, 
+                    style: "background: #00b19d; color: white; border: none; padding: 4px 9px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
+              <% end %>
             <% end %>
+          </div>
+
+          <%# Lista de watchers actuales %>
+          <% if @issue.watchers.any? %>
+            <ul style="list-style: none; padding: 0; margin: 0 0 15px 0;">
+              <% @issue.watchers.each do |watcher| %>
+                <li style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #f0f0f0;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 20px; height: 20px; background: #cbd5e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white;">
+                      <%= watcher.username[0].upcase %>
+                    </div>
+                    <span style="font-size: 12px; color: #4a5b6d; font-weight: bold;"><%= watcher.username %></span>
+                  </div>
+                  
+                  <%# Botón "X" para eliminar a este watcher en concreto %>
+                  <%= button_to "×", issue_watching_path(@issue, user_id: watcher.id), method: :delete, 
+                      data: { turbo_confirm: "Remove #{watcher.username} from watchers?" },
+                      style: "background: none; border: none; color: #E44057; font-size: 18px; cursor: pointer; padding: 0; line-height: 1;", title: "Remove watcher" %>
+                </li>
+              <% end %>
+            </ul>
           <% end %>
-          <p style="font-size: 10px; color: #888; margin-top: 5px;"><%= @issue.watchers.count %> Watchers</p>
+
+          <%# Desplegable para añadir un usuario nuevo como watcher %>
+          <%# Excluimos a los que ya están siendo watchers %>
+          <% available_users = User.where.not(id: @issue.watcher_ids) %>
+          <% if available_users.any? %>
+            <%= form_with url: issue_watching_path(@issue), method: :post, style: "display: flex; gap: 5px; margin-top: 10px;" do |f| %>
+              <%= f.collection_select :user_id, available_users, :id, :username, { prompt: "Add new watcher..." }, { style: "flex: 1; padding: 6px; font-size: 11px; border: 1px solid #e2eaf0; border-radius: 3px; background-color: #f9fbfd; color: #4a5b6d; outline: none; cursor: pointer;" } %>
+              <%= f.submit "+", style: "background: #00b19d; color: white; border: none; padding: 0 12px; font-size: 16px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
+            <% end %>
+          <% else %>
+            <p style="font-size: 11px; color: #999; text-align: center; margin-top: 10px;">All users are watching.</p>
+          <% end %>
+
         </div>
 
       </div>
