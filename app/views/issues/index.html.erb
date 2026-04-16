@@ -69,13 +69,14 @@
 <table class="taiga-table">
   <thead>
     <tr>
-      <th style="width: 50px;">Type</th>
-      <th style="width: 80px;">Severity</th>
-      <th style="width: 80px;">Priority</th>
-      <th>Issue</th>
-      <th style="width: 120px;">Deadline</th>
-      <th style="text-align: right;">Status</th>
-      <th style="text-align: right;">Assign to</th>
+      <th style="width: 50px;"><%= sortable "issue_type_id", "Type" %></th>
+      <th style="width: 80px;"><%= sortable "severity_id", "Severity" %></th>
+      <th style="width: 80px;"><%= sortable "priority_id", "Priority" %></th>
+      <th><%= sortable "id", "Issue" %></th>
+      <th style="width: 120px;"><%= sortable "deadline", "Deadline" %></th>
+      <th style="text-align: right;"><%= sortable "status_id", "Status" %></th>
+      <th style="text-align: right;"><%= sortable "user_id", "Creator" %></th> 
+      <th style="text-align: right;"><%= sortable "assigned_to_id", "Assign to" %></th>
     </tr>
   </thead>
   <tbody>
@@ -102,13 +103,22 @@
           <td style="text-align: right; font-weight: bold; color: <%= issue.status&.color || '#888' %>;">
             <%= issue.status&.name&.upcase || "NEW" %>
           </td>
-          
+
           <td style="text-align: right;">
-            <% if issue.user %>
-              <%= link_to user_path(issue.user), style: "text-decoration: none; display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px;" do %>
-                <span style="color: #008aa8; font-size: 13px; font-weight: 500;"><%= issue.user.username %></span>
-                <div class="user-avatar-circle" style="width: 26px; height: 26px; font-size: 11px;">
-                  <%= issue.user.username[0].upcase %>
+            <%= link_to user_path(issue.user), style: "text-decoration: none; display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px;" do %>
+              <span style="color: #6a7c92; font-size: 13px;"><%= issue.user.username %></span>
+              <div class="user-avatar-circle" style="background: #ccd5e0; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">
+                <%= issue.user.username[0].upcase %>
+              </div>
+            <% end %>
+          </td>
+
+          <td style="text-align: right;">
+            <% if issue.assigned_to %>
+              <%= link_to user_path(issue.assigned_to), style: "text-decoration: none; display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px;" do %>
+                <span style="color: #008aa8; font-size: 13px; font-weight: 500;"><%= issue.assigned_to.username %></span>
+                <div class="user-avatar-circle" style="background: #00b19d; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">
+                  <%= issue.assigned_to.username[0].upcase %>
                 </div>
               <% end %>
             <% else %>
