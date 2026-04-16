@@ -1,5 +1,6 @@
 <div class="profile-page-container">
 
+  <%# --- SIDEBAR --- %>
   <div class="profile-sidebar">
     <div class="profile-avatar-large">
       <%= @user.username[0].upcase %>
@@ -32,6 +33,7 @@
     <% end %>
   </div>
 
+  <%# --- CONTENIDO PRINCIPAL --- %>
   <div class="profile-main-content">
 
     <%# --- BARRA DE PESTAÑAS (Ahora son links reales) --- %>
@@ -100,3 +102,31 @@
 
   </div>
 </div>
+
+<%# --- ESTILOS EXTRA PARA EL AVISO Y PESTAÑAS --- %>
+<style>
+  .profile-tab {
+    text-decoration: none;
+    color: #666;
+    display: inline-block;
+    padding: 15px 20px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .profile-tab:hover { background: #f0f0f0; }
+  .profile-tab.active {
+    color: #008aa8;
+    border-bottom: 3px solid #008aa8;
+    font-weight: 500;
+  }
+
+  .coming-soon-box {
+    margin-top: 20px;
+    padding: 60px;
+    text-align: center;
+    color: #666;
+    background: #fdfdfd;
+    border: 2px dashed #eee;
+    border-radius: 8px;
+  }
+</style>

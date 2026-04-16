@@ -13,12 +13,14 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 
-
 # --- Gems de l'autentificacio de google ---
-gem 'omniauth'
-gem 'omniauth-google-oauth2'
-gem 'omniauth-rails_csrf_protection'
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 # --------------------------------------
+
+# Gema per connectar amb AWS S3
+gem "aws-sdk-s3", require: false
 
 # --- CONFIGURACIÓ DE BASES DE DADES ---
 group :production do
@@ -28,7 +30,8 @@ end
 group :development, :test do
   gem "sqlite3", "~> 1.4"
   gem "debug", platforms: %i[ mri windows ]
-  gem 'dotenv-rails'
+  # Gema per carregar variables d'entorn des d'un fitxer .env
+  gem "dotenv-rails"
 end
 # --------------------------------------
 
@@ -40,9 +43,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-# Gema per connectar amb AWS S3
-gem "aws-sdk-s3", require: false
-
-# Gema per carregar variables d'entorn des d'un fitxer .env
-gem "dotenv-rails", groups: [:development, :test]
