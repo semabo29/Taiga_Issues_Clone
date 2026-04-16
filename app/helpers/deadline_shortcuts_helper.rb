@@ -1,0 +1,2 @@
+module DeadlineShortcutsHelper
+end

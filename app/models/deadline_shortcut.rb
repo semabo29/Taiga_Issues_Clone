@@ -1,0 +1,2 @@
+class DeadlineShortcut < ApplicationRecord
+end

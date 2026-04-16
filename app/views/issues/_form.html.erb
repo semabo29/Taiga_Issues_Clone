@@ -135,11 +135,19 @@
           </div>
         </div>
         
-        <%# Atributo: DEADLINE %>
+        <%# Atributo: DEADLINE con atajos %>
         <div class="attr-row">
-          <span class="attr-label">deadline</span>
-          <div style="display: flex; align-items: center;">
-            <%= form.date_field :deadline, onclick: "try { this.showPicker() } catch(e) {}", style: "border:none; background:transparent; text-align:right; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; color: #333;" %>
+          <span class="attr-label" style="margin-top: 5px;">deadline</span>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+            <%= form.date_field :deadline, id: "issue_deadline", onclick: "try { this.showPicker() } catch(e) {}", style: "border:none; background:transparent; text-align:right; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; color: #333;" %>
+            
+            <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end;">
+              <% DeadlineShortcut.all.each do |shortcut| %>
+                <button type="button" onclick="applyDeadlineShortcut(<%= shortcut.offset_days %>)" style="background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer; text-transform: uppercase;">
+                  <%= shortcut.name %>
+                </button>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>
@@ -156,5 +164,17 @@
     if (newColor) {
       document.getElementById(dotId).style.backgroundColor = newColor;
     }
+  }
+  // Aplicar atajos de fecha al calendario
+  function applyDeadlineShortcut(offsetDays) {
+    const date = new Date();
+    date.setDate(date.getDate() + offsetDays);
+    
+    // Formatear a YYYY-MM-DD para que el input de HTML5 lo entienda
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    document.getElementById('issue_deadline').value = `${year}-${month}-${day}`;
   }
 </script>
