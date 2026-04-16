@@ -1,6 +1,6 @@
 <div class="profile-page-container">
 
-  <%# --- SIDEBAR --- %>
+  <%# SIDEBAR %>
   <div class="profile-sidebar">
     <div class="profile-avatar-large">
       <%= @user.username[0].upcase %>
@@ -15,7 +15,8 @@
         <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
-        <span class="stat-number">0</span>
+        
+        <span class="stat-number"><%= @user.watched_issues.count %></span>
         <span class="stat-label">Watched<br>Issues</span>
       </div>
       <div class="stat-box">
@@ -33,10 +34,10 @@
     <% end %>
   </div>
 
-  <%# --- CONTENIDO PRINCIPAL --- %>
+  <%# CONTENIDO PRINCIPAL %>
   <div class="profile-main-content">
 
-    <%# --- BARRA DE PESTAÑAS (Ahora son links reales) --- %>
+    <%# BARRA DE PESTAÑAS %>
     <div class="profile-tabs">
       <%= link_to user_path(@user, tab: 'assigned'), 
           class: "profile-tab #{@current_tab == 'assigned' ? 'active' : ''}", 
@@ -44,7 +45,10 @@
         ≡ Open Assigned Issues
       <% end %>
 
-      <%= link_to "#", class: "profile-tab", style: "text-decoration: none; cursor: not-allowed; opacity: 0.5;" do %>
+      <%# Pestaña watched funcional %>
+      <%= link_to user_path(@user, tab: 'watched'), 
+          class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}", 
+          style: "text-decoration: none;" do %>
         👁 Watched Issues
       <% end %>
 
@@ -55,7 +59,7 @@
       <% end %>
     </div>
 
-    <%# --- CONTENIDO DINÁMICO SEGÚN LA PESTAÑA --- %>
+    <%# CONTENIDO DINÁMICO SEGÚN LA PESTAÑA %>
     
     <% if @current_tab == 'assigned' %>
       <%# Bloque de Issues Asignadas %>
@@ -77,8 +81,27 @@
         <% end %>
       </div>
 
+    <% elsif @current_tab == 'watched' %>
+      <div class="tab-content">
+        <% if @user.watched_issues.any? %>
+          <% @user.watched_issues.each do |issue| %>
+            <div class="profile-item-row">
+              <div>
+                <span style="color: #abb8c3; font-weight: bold; font-size: 13px; margin-right: 10px;">#<%= issue.id %></span>
+                <%= link_to issue.subject, issue_path(issue), style: "color: #333; text-decoration: none; font-weight: 600;" %>
+              </div>
+              <span class="status-badge-small" style="background: <%= issue.status&.color %>;">
+                <%= issue.status&.name&.upcase %>
+              </span>
+            </div>
+          <% end %>
+        <% else %>
+          <p style="color: #999; font-style: italic; text-align: center; padding: 40px;">Not watching any issues yet.</p>
+        <% end %>
+      </div>
+
     <% elsif @current_tab == 'comments' %>
-      <%# Bloque de Comentarios %>
+      <%# Comentarios %>
       <div class="tab-content">
         <% if @comments.any? %>
           <% @comments.each do |comment| %>
@@ -103,7 +126,7 @@
   </div>
 </div>
 
-<%# --- ESTILOS EXTRA PARA EL AVISO Y PESTAÑAS --- %>
+
 <style>
   .profile-tab {
     text-decoration: none;
@@ -120,13 +143,11 @@
     font-weight: 500;
   }
 
-  .coming-soon-box {
-    margin-top: 20px;
-    padding: 60px;
-    text-align: center;
-    color: #666;
-    background: #fdfdfd;
-    border: 2px dashed #eee;
-    border-radius: 8px;
+  .status-badge-small {
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: bold;
   }
 </style>

@@ -11,6 +11,8 @@ class Issue < ApplicationRecord
   has_many :issue_tags, dependent: :destroy
   has_many :tags, through: :issue_tags
   has_many :comments, dependent: :destroy
+  has_many :watchings, dependent: :destroy
+  has_many :watchers, through: :watchings, source: :user
 
   validates :subject, presence: true
 end

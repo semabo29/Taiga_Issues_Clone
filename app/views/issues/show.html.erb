@@ -30,7 +30,7 @@
         </div>
       <% end %>
 
-      <%# Atachments %>
+      <%# Attachments %>
       <div style="margin-top: 40px;">
         <h3 style="color: #4a5b6d; border-bottom: 1px solid #e2eaf0; padding-bottom: 10px; font-size: 16px;">Attachments</h3>
         
@@ -40,7 +40,6 @@
               <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0;">
                 <%= link_to attachment.filename, rails_blob_path(attachment, disposition: "attachment"), style: "color: #00b19d; text-decoration: none; font-weight: bold; font-size: 13px;" %>
                 
-                <%# SEGURIDAD: Solo el creador de la issue puede borrar archivos %>
                 <% if current_user == @issue.user %>
                   <%= button_to "Delete", purge_attachment_issue_path(@issue, attachment_id: attachment.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, style: "background-color: #E44057; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;" %>
                 <% end %>
@@ -164,12 +163,27 @@
           <span style="font-size: 13px; font-weight: bold;"><%= @issue.user.username %></span>
         </div>
 
-        <div class="attr-row" style="border-bottom: none;">
+        <div class="attr-row">
           <span class="attr-label">Assigned</span>
           <span style="font-size: 13px; font-weight: bold; color: #1fbdb8;">
             <%= @issue.assigned_to ? @issue.assigned_to.username : "Unassigned" %>
           </span>
         </div>
+
+        <%# WATCH / UNWATCH %>
+        <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; border-bottom: none; text-align: center;">
+          <% if current_user %>
+            <% if @issue.watchers.include?(current_user) %>
+              <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, 
+                  style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
+            <% else %>
+              <%= button_to "WATCH", issue_watching_path(@issue), method: :post, 
+                  style: "background: #00b19d; color: white; border: none; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
+            <% end %>
+          <% end %>
+          <p style="font-size: 10px; color: #888; margin-top: 5px;"><%= @issue.watchers.count %> Watchers</p>
+        </div>
+
       </div>
 
       <div style="margin-top: 20px; text-align: center;">

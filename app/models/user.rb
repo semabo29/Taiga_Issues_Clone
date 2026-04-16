@@ -5,6 +5,8 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :assigned_issues, class_name: "Issue", foreign_key: "assigned_to_id"
   has_many :issues, dependent: :destroy
+  has_many :watchings, dependent: :destroy
+  has_many :watched_issues, through: :watchings, source: :issue
 
 
   def self.from_omniauth(auth)
