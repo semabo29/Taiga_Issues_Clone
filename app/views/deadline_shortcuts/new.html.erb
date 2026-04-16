@@ -1,0 +1,13 @@
+<div class="taiga-main-container">
+  <h1 style="font-family: 'Ubuntu-Medium', Arial, sans-serif; font-size: 2rem; color: #02202b; margin-bottom: 30px;">
+    <%= @deadline_shortcut.new_record? ? "New" : "Edit" %> Due Date Shortcut
+  </h1>
+
+  <div style="background: #f9f9fb; padding: 30px; border-radius: 8px; border: 1px solid #e2eaf0; max-width: 600px;">
+    <%= render "form", deadline_shortcut: @deadline_shortcut %>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Shortcuts", deadline_shortcuts_path, style: "color: #1fbdb8; text-decoration: none; font-size: 14px; font-weight: bold;" %>
+  </div>
+</div>
