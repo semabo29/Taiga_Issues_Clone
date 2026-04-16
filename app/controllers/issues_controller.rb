@@ -5,12 +5,23 @@ class IssuesController < ApplicationController
   before_action :authorize_user!, only: [:edit, :update, :destroy]
 
   def index
-    @issues = Issue.all.order(created_at: :desc)
+    # 1. Definimos las columnas que permitimos ordenar (Seguridad)
+    sortable_columns = ["issue_type_id", "severity_id", "priority_id", "id", "deadline", "status_id", "assigned_to_id", "user_id"]
+    
+    # Si el parámetro existe en nuestra lista lo usamos, si no, ordenamos por ID por defecto
+    sort_column = sortable_columns.include?(params[:sort]) ? params[:sort] : "id"
+    sort_direction = %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
+    
+    # 2. Aplicamos el orden
+    @issues = Issue.all.order("#{sort_column} #{sort_direction}")
+
+    # 3. Aplicamos los filtros de texto
     if params[:query].present?
       search_term = "%#{params[:query]}%"
       @issues = @issues.where("subject LIKE ? OR description LIKE ?", search_term, search_term)
     end
 
+    # 4. Aplicamos los filtros de los desplegables
     @issues = @issues.where(issue_type_id: params[:issue_type_id]) if params[:issue_type_id].present?
     @issues = @issues.where(severity_id: params[:severity_id]) if params[:severity_id].present?
     @issues = @issues.where(priority_id: params[:priority_id]) if params[:priority_id].present?
@@ -94,6 +105,6 @@ class IssuesController < ApplicationController
     end
 
     def issue_params
-      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, tag_ids: [], attachments: [])
+      params.require(:issue).permit(:subject, :description, :status_id, :priority_id, :severity_id, :issue_type_id, :deadline, :assigned_to_id, tag_ids: [], attachments: [])
     end
 end

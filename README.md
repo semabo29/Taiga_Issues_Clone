@@ -4,6 +4,8 @@ Aplicació web per a la gestió i seguiment d'incidències (Issue Tracker) inspi
 
 🌍 **Entorn de Producció (Render):** [https://taiga-app.onrender.com](https://taiga-app.onrender.com)
 
+🌲 **Taiga Oficial:** [Projecte a tree.taiga.io](https://tree.taiga.io/project/victorsalinasmontanuy-asw2526q2-it212)
+
 **Stack:** Ruby on Rails · PostgreSQL · Google OAuth2 · Docker · S3 Active Storage
 
 ---
