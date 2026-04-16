@@ -9,13 +9,13 @@
 
   <div class="form-layout">
     <div class="form-left">
-      
+
       <%# Descripción %>
       <div style="background: #f9f9fb; padding: 20px; border-radius: 8px; border: 1px solid #e2eaf0; min-height: 150px;">
         <h3 style="color: #888; font-size: 12px; text-transform: uppercase; margin-top: 0;">Description</h3>
         <p style="color: #444; line-height: 1.6;"><%= @issue.description.presence || "No description provided." %></p>
       </div>
-      
+
       <%# Tags %>
       <% if @issue.tags.any? %>
         <div style="margin-top: 20px;">
@@ -33,13 +33,13 @@
       <%# Attachments %>
       <div style="margin-top: 40px;">
         <h3 style="color: #4a5b6d; border-bottom: 1px solid #e2eaf0; padding-bottom: 10px; font-size: 16px;">Attachments</h3>
-        
+
         <% if @issue.attachments.attached? %>
           <ul style="list-style: none; padding: 0;">
             <% @issue.attachments.each do |attachment| %>
               <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0;">
                 <%= link_to attachment.filename, rails_blob_path(attachment, disposition: "attachment"), style: "color: #00b19d; text-decoration: none; font-weight: bold; font-size: 13px;" %>
-                
+
                 <% if current_user == @issue.user %>
                   <%= button_to "Delete", purge_attachment_issue_path(@issue, attachment_id: attachment.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, style: "background-color: #E44057; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;" %>
                 <% end %>
@@ -55,7 +55,7 @@
       <% if current_user == @issue.user %>
         <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid #eee;">
           <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
-          
+
           <%= button_to "DELETE ISSUE", @issue, method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { style: "margin: 0; display: flex;" }, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #E44057; cursor: pointer; border: none;" %>
         </div>
       <% end %>
@@ -74,7 +74,11 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 24px; height: 24px; background: #ccd5e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white;">
-                      <%= comment.user.username[0].upcase %>
+                      <% if comment.user.avatar.attached? %>
+                        <%= image_tag comment.user.avatar, style: "width: 100%; height: 100%; object-fit: cover;" %>
+                      <% else %>
+                        <%= comment.user.username[0].upcase %>
+                      <% end %>
                     </div>
                     <strong style="color: #1fbdb8; font-size: 13px;"><%= comment.user.username %></strong>
                   </div>
@@ -82,7 +86,7 @@
                     <%= comment.created_at.strftime("%d %b %Y, %H:%M") %>
                   </span>
                 </div>
-                
+
                 <div style="color: #555; font-size: 14px; line-height: 1.5; padding-left: 32px;">
                   <%= comment.content %>
                 </div>
@@ -107,7 +111,7 @@
             <h4 style="font-size: 12px; color: #6a7c92; text-transform: uppercase; margin-bottom: 15px;">Add a comment</h4>
             <%= form_with(model: [@issue, Comment.new]) do |f| %>
               <div style="margin-bottom: 15px;">
-                <%= f.text_area :content, placeholder: "Write your comment here...", required: true, 
+                <%= f.text_area :content, placeholder: "Write your comment here...", required: true,
                   style: "width: 100%; box-sizing: border-box; resize: none; min-height: 80px; padding: 12px; border: 1px solid #e2eaf0; border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" %>
               </div>
               <div style="text-align: right;">
@@ -149,7 +153,7 @@
             <span class="color-dot" style="background-color: <%= @issue.priority&.color %>; margin-left: 8px;"></span>
           </span>
         </div>
-        
+
         <div class="attr-row">
           <span class="attr-label">Deadline</span>
           <% is_overdue = @issue.deadline.present? && @issue.deadline < Date.today %>
@@ -174,10 +178,10 @@
         <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; border-bottom: none; text-align: center;">
           <% if current_user %>
             <% if @issue.watchers.include?(current_user) %>
-              <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, 
+              <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete,
                   style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
             <% else %>
-              <%= button_to "WATCH", issue_watching_path(@issue), method: :post, 
+              <%= button_to "WATCH", issue_watching_path(@issue), method: :post,
                   style: "background: #00b19d; color: white; border: none; padding: 5px 15px; font-size: 11px; font-weight: bold; border-radius: 3px; cursor: pointer; width: 100%;" %>
             <% end %>
           <% end %>
