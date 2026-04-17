@@ -51,7 +51,6 @@
         <% end %>
       </div>
 
-      <%# Botones de Acción de la Issue (Solo creador) %>
       <% if current_user == @issue.user %>
         <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid #eee;">
           <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
@@ -60,7 +59,7 @@
         </div>
       <% end %>
 
-      <%# --- SECCIÓN DE PESTAÑAS (Comments / Activity) --- %>
+      <%# COMMENTS Y ACTIVITIES %>
       <div class="comments-section" style="margin-top: 40px;">
         
         <div class="profile-tabs" style="margin-bottom: 25px; border-bottom: 1px solid #e2eaf0; display: flex;">
@@ -78,7 +77,7 @@
         </div>
 
         <% if @current_tab == 'comments' %>
-          <%# --- LISTADO DE COMENTARIOS --- %>
+          <%# LISTADO DE COMENTARIOS %>
           <div id="comments-list" style="margin-bottom: 30px;">
             <% if @issue.comments.any? %>
               <% @issue.comments.each do |comment| %>
@@ -173,7 +172,7 @@
       </div>
     </div>
 
-    <%# --- COLUMNA DERECHA (Sidebar) --- %>
+    <%# COLUMNA DERECHA %>
     <div class="form-right">
       <div class="sidebar-box">
         
