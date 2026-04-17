@@ -20,10 +20,16 @@
         <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
-
-        <span class="stat-number"><%= @user.watched_issues.count %></span>
+        <span class="stat-number">
+          <% if current_user == @user %>
+            <%= @user.watched_issues.count %>
+          <% else %>
+            -
+          <% end %>
+        </span>
         <span class="stat-label">Watched<br>Issues</span>
       </div>
+      
       <div class="stat-box">
         <span class="stat-number"><%= @user.comments.count %></span>
         <span class="stat-label">Comments</span>
@@ -51,10 +57,12 @@
       <% end %>
 
       <%# Pestaña watched funcional %>
-      <%= link_to user_path(@user, tab: 'watched'),
-          class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}",
-          style: "text-decoration: none;" do %>
-        👁 Watched Issues
+      <% if current_user == @user %>
+        <%= link_to user_path(@user, tab: 'watched'),
+            class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}",
+            style: "text-decoration: none;" do %>
+          👁 Watched Issues
+        <% end %>
       <% end %>
 
       <%= link_to user_path(@user, tab: 'comments'),
