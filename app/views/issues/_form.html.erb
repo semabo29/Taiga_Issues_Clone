@@ -1,7 +1,7 @@
 <%= form_with(model: issue) do |form| %>
   <div class="form-layout">
     
-    <%# --- COLUMNA IZQUIERDA: Contenido --- %>
+    <%# COLUMNA IZQUIERDA %>
     <div class="form-left">
       <div>
         <%= form.text_field :subject, class: "taiga-subject", placeholder: "Subject", required: true %>
@@ -23,7 +23,7 @@
         <%= form.text_area :description, class: "taiga-textarea", placeholder: "Please add descriptive text to help others better understand this issue" %>
       </div>
 
-      <%# --- ZONA DE ATTACHMENTS DINÁMICA --- %>
+      <%# ZONA DE ATTACHMENTS DINÁMICA %>
       <div style="margin-bottom: 30px;">
         <h3 style="color: #4a5b6d; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #e2eaf0; padding-bottom: 5px;">Attachments</h3>
 
@@ -54,7 +54,7 @@
           <%= form.file_field :attachments, multiple: true, style: "width: 100%; color: #6a7c92; font-size: 13px;" %>
         </div>
       </div>
-      <%# --- FI ZONA ATTACHMENTS --- %>
+      <%# FI ZONA ATTACHMENTS %>
 
       <div>
         <%# Esto pondrá 'Create Issue' si es nueva y 'Update Issue' si la estás editando %>
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <%# --- COLUMNA DERECHA: Sidebar --- %>
+    <%# COLUMNA DERECHA %>
     <div class="form-right">
   <%# Selector de Status dinámico %>
   <%= form.collection_select :status_id, Status.all, :id, :name, {}, { class: "status-select" } %>
@@ -99,7 +99,7 @@
         }
       </script>
 
-        <%# Atributo: TYPE %>
+        <%# TYPE %>
         <div class="attr-row">
           <span class="attr-label">type</span>
           <div style="display: flex; align-items: center;">
@@ -111,7 +111,7 @@
           </div>
         </div>
 
-        <%# Atributo: SEVERITY %>
+        <%# SEVERITY %>
         <div class="attr-row">
           <span class="attr-label">severity</span>
           <div style="display: flex; align-items: center;">
@@ -123,7 +123,7 @@
           </div>
         </div>
 
-        <%# Atributo: PRIORITY %>
+        <%# PRIORITY %>
         <div class="attr-row" style="border-bottom: none;">
           <span class="attr-label">priority</span>
           <div style="display: flex; align-items: center;">
@@ -135,7 +135,7 @@
           </div>
         </div>
         
-        <%# Atributo: DEADLINE con atajos %>
+        <%# DEADLINE %>
         <div class="attr-row">
           <span class="attr-label" style="margin-top: 5px;">deadline</span>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
@@ -156,7 +156,7 @@
   </div>
 <% end %>
 
-<%# --- SCRIPT PARA ACTUALIZAR LOS COLORES EN TIEMPO REAL --- %>
+<%# SCRIPT PARA ACTUALIZAR LOS COLORES EN TIEMPO REAL %>
 <script>
   function updateDotColor(selectElement, dotId) {
     var selectedOption = selectElement.options[selectElement.selectedIndex];

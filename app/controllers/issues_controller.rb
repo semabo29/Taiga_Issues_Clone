@@ -27,6 +27,8 @@ class IssuesController < ApplicationController
     @issues = @issues.where(priority_id: params[:priority_id]) if params[:priority_id].present?
     @issues = @issues.where(status_id: params[:status_id]) if params[:status_id].present?
   end
+  
+  
 
   def show
     @issue = Issue.find(params[:id])
