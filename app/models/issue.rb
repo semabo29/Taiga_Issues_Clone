@@ -54,13 +54,13 @@ class Issue < ApplicationRecord
       new_text = Priority.find_by(id: new_val)&.name || "not set"
       details << "<span class='activity-label-badge'>#{label}</span> #{old_text} <span class='activity-arrow'>›</span> #{new_text}"
 
-    when 'severity_id' # IMPORTANTE: Asegúrate que se llame así en tu BD
+    when 'severity_id' 
       label = "severity"
       old_text = Severity.find_by(id: old_val)&.name || "not set"
       new_text = Severity.find_by(id: new_val)&.name || "not set"
       details << "<span class='activity-label-badge'>#{label}</span> #{old_text} <span class='activity-arrow'>›</span> #{new_text}"
 
-    when 'issue_type_id' # IMPORTANTE: Asegúrate que se llame así en tu BD
+    when 'issue_type_id' 
       label = "type"
       old_text = IssueType.find_by(id: old_val)&.name || "not set"
       new_text = IssueType.find_by(id: new_val)&.name || "not set"
@@ -86,7 +86,7 @@ class Issue < ApplicationRecord
 
   if details.any?
     Activity.create!(
-      user_id: self.user_id, # El autor del cambio
+      user_id: self.user_id,
       issue: self,
       action: "updated",
       change_details: details.join("<br>") 

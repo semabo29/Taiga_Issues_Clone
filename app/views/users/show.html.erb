@@ -4,7 +4,6 @@
   <div class="profile-sidebar">
     <div class="profile-avatar-large">
       <% if @user.avatar.attached? %>
-        <%# Pintamos la imagen de S3. Le ponemos ancho y alto 100% y object-fit para que no se deforme %>
         <%= image_tag @user.avatar, style: "width: 100%; height: 100%; object-fit: cover;" %>
       <% else %>
         <%= @user.username[0].upcase %>

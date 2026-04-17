@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     collection do
       get 'bulk_new'
       post 'bulk_create'
+
     end
     
     # Definim rutes a nivell de membre (per a una issue específica)
@@ -28,7 +29,7 @@ Rails.application.routes.draw do
     resources :severities
     resources :issue_types
     resources :tags
-    resources :deadline_shortcuts # <-- ¡AQUÍ ESTÁ NUESTRO NUEVO AMIGO!
+    resources :deadline_shortcuts 
   end
 
   # Rutas de login del usuario
