@@ -249,3 +249,62 @@ div[id^="comment_"]:target {
   position: relative;
   box-shadow: 0 0 15px rgba(0, 177, 157, 0.2);
 }
+
+.activity-entry {
+  display: flex;
+  gap: 15px;
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+  font-family: sans-serif;
+}
+
+.activity-avatar-box {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.activity-content {
+  flex-grow: 1;
+}
+
+.activity-meta {
+  margin-bottom: 8px;
+}
+
+.activity-user-name {
+  color: #00b19d; 
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.activity-timestamp {
+  color: #6a7c92;
+  font-size: 13px;
+}
+
+.activity-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.activity-label-badge {
+  background-color: #d1d9e1; 
+  color: #111;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: lowercase;
+}
+
+.activity-arrow {
+  color: #6a7c92;
+  margin: 0 5px;
+}
