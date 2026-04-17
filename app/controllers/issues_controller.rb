@@ -29,6 +29,14 @@ class IssuesController < ApplicationController
   end
 
   def show
+    @issue = Issue.find(params[:id])
+    @current_tab = params[:tab] || 'comments'
+
+    if @current_tab == 'comments'
+      @comments = @issue.comments.includes(:user)
+    else
+      @activities = @issue.activities.includes(:user).order(created_at: :desc)
+    end
   end
 
   def new

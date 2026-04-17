@@ -23,6 +23,11 @@ class UsersController < ApplicationController
                   when "modified" then "issues.updated_at"
                   else "issues.id"
                   end
+    
+    if @current_tab == 'watched' && current_user != @user
+      redirect_to user_path(@user, tab: 'assigned'), alert: "No tienes permiso para ver las issues seguidas de este usuario."
+      return # Detenemos la ejecución aquí
+    end
 
     # Cargamos el contenido dependiendo de la pestaña
     if @current_tab == "assigned"
@@ -35,8 +40,13 @@ class UsersController < ApplicationController
 
     elsif @current_tab == "comments"
       @comments = @user.comments.includes(:issue).order(created_at: :desc)
+  
+    
+    elsif @current_tab == "watched"
+    @watched_issues = @user.watched_issues
+                           .joins(:status, :issue_type, :severity)
+                           .order("#{order_query} #{sort_direction}")
     end
-
     # Contador de issues abiertas (para el sidebar del perfil)
     @open_issues_count = @user.assigned_issues
                               .joins(:status)

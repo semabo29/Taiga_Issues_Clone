@@ -20,10 +20,16 @@
         <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
-
-        <span class="stat-number"><%= @user.watched_issues.count %></span>
+        <span class="stat-number">
+          <% if current_user == @user %>
+            <%= @user.watched_issues.count %>
+          <% else %>
+            -
+          <% end %>
+        </span>
         <span class="stat-label">Watched<br>Issues</span>
       </div>
+      
       <div class="stat-box">
         <span class="stat-number"><%= @user.comments.count %></span>
         <span class="stat-label">Comments</span>
@@ -51,10 +57,12 @@
       <% end %>
 
       <%# Pestaña watched funcional %>
-      <%= link_to user_path(@user, tab: 'watched'),
-          class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}",
-          style: "text-decoration: none;" do %>
-        👁 Watched Issues
+      <% if current_user == @user %>
+        <%= link_to user_path(@user, tab: 'watched'),
+            class: "profile-tab #{@current_tab == 'watched' ? 'active' : ''}",
+            style: "text-decoration: none;" do %>
+          👁 Watched Issues
+        <% end %>
       <% end %>
 
       <%= link_to user_path(@user, tab: 'comments'),
@@ -106,27 +114,42 @@
       </div>
 
     <% elsif @current_tab == 'comments' %>
-      <%# Comentarios %>
-      <div class="tab-content">
-        <% if @comments.any? %>
-          <% @comments.each do |comment| %>
-            <div class="profile-comment-card">
-              <div class="profile-comment-header">
-                ON ISSUE: <%= link_to "##{comment.issue.id} #{comment.issue.subject}", issue_path(comment.issue), style: "color: #1fbdb8; text-decoration: none; font-weight: bold;" %>
+  <div class="tab-content">
+    <% if @comments.any? %>
+      <% @comments.each do |comment| %>
+        <div class="profile-comment-card">
+          <div class="profile-comment-header">
+            ON ISSUE: <%= link_to "##{comment.issue.id} #{comment.issue.subject}", 
+                          issue_path(comment.issue, anchor: "comment_#{comment.id}"), 
+                          style: "color: #1fbdb8; text-decoration: none; font-weight: bold;" %>
+          </div>
+          
+          <div class="profile-comment-body">
+            "<%= comment.content %>"
+          </div>
+
+          <div class="profile-comment-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #ccc;"><%= comment.created_at.strftime("%d %b %Y, %H:%M") %></span>
+            
+            <% if current_user && comment.user == current_user %>
+              <div style="display: flex; gap: 10px;">
+                <%= link_to "Edit", edit_issue_comment_path(comment.issue, comment), 
+                    style: "font-size: 11px; color: #6a7c92; text-decoration: none;" %>
+                
+                <%= button_to "Delete", issue_comment_path(comment.issue, comment), 
+                    method: :delete, 
+                    data: { turbo_confirm: "Delete this comment?" }, 
+                    style: "background: none; border: none; padding: 0; font-size: 11px; color: #E44057; cursor: pointer; font-family: inherit;" %>
               </div>
-              <div class="profile-comment-body">
-                "<%= comment.content %>"
-              </div>
-              <div class="profile-comment-footer">
-                <%= comment.created_at.strftime("%d %b %Y, %H:%M") %>
-              </div>
-            </div>
-          <% end %>
-        <% else %>
-          <p style="color: #999; font-style: italic; text-align: center; padding: 40px;">No comments posted yet.</p>
-        <% end %>
-      </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p style="color: #999; font-style: italic; text-align: center; padding: 40px;">No comments posted yet.</p>
     <% end %>
+  </div>
+<% end %>
 
   </div>
 </div>

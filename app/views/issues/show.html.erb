@@ -51,7 +51,7 @@
         <% end %>
       </div>
 
-      <%# Botones de Acción de la Issue %>
+      <%# Botones de Acción de la Issue (Solo creador) %>
       <% if current_user == @issue.user %>
         <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid #eee;">
           <%= link_to "EDIT ISSUE", edit_issue_path(@issue), style: "display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; height: 40px; border-radius: 3px; font-weight: 600; font-size: 13px; text-decoration: none; color: #fff; background-color: #00b19d; cursor: pointer; border: none;" %>
@@ -60,76 +60,126 @@
         </div>
       <% end %>
 
-      <%# COMENTARIOS %>
+      <%# --- SECCIÓN DE PESTAÑAS (Comments / Activity) --- %>
       <div class="comments-section" style="margin-top: 40px;">
-        <h3 style="color: #4a5b6d; font-size: 18px; margin-bottom: 20px;">
-          <span style="border-bottom: 2px solid #00b19d; padding-bottom: 5px;">Comments & Activity</span>
-        </h3>
+        
+        <div class="profile-tabs" style="margin-bottom: 25px; border-bottom: 1px solid #e2eaf0; display: flex;">
+          <%= link_to issue_path(@issue, tab: 'comments'), 
+              class: "profile-tab #{@current_tab == 'comments' ? 'active' : ''}", 
+              style: "text-decoration: none; padding: 10px 20px; color: #666; font-size: 14px;" do %>
+            <%= @issue.comments.count %>  Comments 
+          <% end %>
 
-        <%# Listado de comentarios %>
-        <div id="comments-list" style="margin-bottom: 30px;">
-          <% if @issue.comments.any? %>
-            <% @issue.comments.each do |comment| %>
-              <div style="background: white; border: 1px solid #e2eaf0; border-radius: 4px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 24px; height: 24px; background: #ccd5e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; overflow: hidden;">
-                      <% if comment.user.avatar.attached? %>
-                        <%= image_tag comment.user.avatar, style: "width: 100%; height: 100%; object-fit: cover;" %>
-                      <% else %>
-                        <%= comment.user.username[0].upcase %>
-                      <% end %>
-                    </div>
-                    <strong style="color: #1fbdb8; font-size: 13px;"><%= comment.user.username %></strong>
-                  </div>
-                  <span style="font-size: 11px; color: #999;">
-                    <%= comment.created_at.strftime("%d %b %Y, %H:%M") %>
-                  </span>
-                </div>
-
-                <div style="color: #555; font-size: 14px; line-height: 1.5; padding-left: 32px;">
-                  <%= comment.content %>
-                </div>
-
-                <%# Acciones del comentario %>
-                <% if current_user && comment.user == current_user %>
-                  <div style="text-align: right; margin-top: 10px;">
-                    <%= link_to "Edit", edit_issue_comment_path(@issue, comment), style: "font-size: 11px; color: #6a7c92; text-decoration: none; margin-right: 10px;" %>
-                    <%= link_to "Delete", issue_comment_path(@issue, comment), data: { turbo_method: :delete, turbo_confirm: "Delete this comment?" }, style: "font-size: 11px; color: #E44057; text-decoration: none;" %>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-          <% else %>
-            <p style="color: #999; font-style: italic; font-size: 13px;">No comments yet.</p>
+          <%= link_to issue_path(@issue, tab: 'activity'), 
+              class: "profile-tab #{@current_tab == 'activity' ? 'active' : ''}", 
+              style: "text-decoration: none; padding: 10px 20px; color: #666; font-size: 14px;" do %>
+           <%= @issue.activities.count %> Activities
           <% end %>
         </div>
 
-        <%# Formulario nuevo comentario %>
-        <% if current_user %>
-          <div style="background: #f9fbfd; padding: 20px; border-radius: 4px; border: 1px dashed #b0c1d4;">
-            <h4 style="font-size: 12px; color: #6a7c92; text-transform: uppercase; margin-bottom: 15px;">Add a comment</h4>
-            <%= form_with(model: [@issue, Comment.new]) do |f| %>
-              <div style="margin-bottom: 15px;">
-                <%= f.text_area :content, placeholder: "Write your comment here...", required: true,
-                  style: "width: 100%; box-sizing: border-box; resize: none; min-height: 80px; padding: 12px; border: 1px solid #e2eaf0; border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" %>
-              </div>
-              <div style="text-align: right;">
-                <%= f.submit "POST COMMENT", style: "background-color: #00b19d; color: white; border: none; padding: 10px 20px; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px;" %>
+        <% if @current_tab == 'comments' %>
+          <%# --- LISTADO DE COMENTARIOS --- %>
+          <div id="comments-list" style="margin-bottom: 30px;">
+            <% if @issue.comments.any? %>
+              <% @issue.comments.each do |comment| %>
+                <div id="comment_<%= comment.id %>" class="comment-box-style" style="background: white; border: 1px solid #e2eaf0; border-radius: 4px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div style="width: 24px; height: 24px; background: #ccd5e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; overflow: hidden;">
+                        <% if comment.user.avatar.attached? %>
+                          <%= image_tag comment.user.avatar, style: "width: 100%; height: 100%; object-fit: cover;" %>
+                        <% else %>
+                          <%= comment.user.username[0].upcase %>
+                        <% end %>
+                      </div>
+                      <%= link_to user_path(comment.user), style: "text-decoration: none;" do %>
+                        <strong style="color: #1fbdb8; font-size: 13px;"><%= comment.user.username %></strong>
+                      <% end %>
+                    </div>
+                    <span style="font-size: 11px; color: #999;">
+                      <%= comment.created_at.strftime("%d %b %Y, %H:%M") %>
+                    </span>
+                  </div>
+
+                  <div style="color: #555; font-size: 14px; line-height: 1.5; padding-left: 32px;">
+                    <%= comment.content %>
+                  </div>
+
+                  <% if current_user && comment.user == current_user %>
+                    <div style="text-align: right; margin-top: 10px;">
+                      <%= link_to "Edit", edit_issue_comment_path(@issue, comment), style: "font-size: 11px; color: #6a7c92; text-decoration: none; margin-right: 10px;" %>
+                      <%= link_to "Delete", issue_comment_path(@issue, comment), data: { turbo_method: :delete, turbo_confirm: "Delete this comment?" }, style: "font-size: 11px; color: #E44057; text-decoration: none;" %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <p style="color: #999; font-style: italic; font-size: 13px; text-align: center;">No comments yet.</p>
+            <% end %>
+          </div>
+
+          <%# Formulario nuevo comentario %>
+          <% if current_user %>
+            <div style="background: #f9fbfd; padding: 20px; border-radius: 4px; border: 1px dashed #b0c1d4;">
+              <h4 style="font-size: 12px; color: #6a7c92; text-transform: uppercase; margin-bottom: 15px;">Add a comment</h4>
+              <%= form_with(model: [@issue, Comment.new]) do |f| %>
+                <div style="margin-bottom: 15px;">
+                  <%= f.text_area :content, placeholder: "Write your comment here...", required: true,
+                    style: "width: 100%; box-sizing: border-box; resize: none; min-height: 80px; padding: 12px; border: 1px solid #e2eaf0; border-radius: 4px; font-family: inherit; font-size: 14px; outline: none;" %>
+                </div>
+                <div style="text-align: right;">
+                  <%= f.submit "POST COMMENT", style: "background-color: #00b19d; color: white; border: none; padding: 10px 20px; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px;" %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+<% else %>
+  <div class="activity-log-list" style="background: white; padding: 0 20px;">
+    <% if @activities.any? %>
+      <% @activities.each do |activity| %>
+        <div class="activity-entry">
+          
+          <div class="activity-avatar-box">
+            <% if activity.user.avatar.attached? %>
+              <%= image_tag activity.user.avatar, style: "width: 100%; height: 100%; object-fit: cover;" %>
+            <% else %>
+              <div style="width: 100%; height: 100%; background: #ccd5e0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                <%= activity.user.username[0].upcase %>
               </div>
             <% end %>
           </div>
-        <% end %>
+
+          <div class="activity-content">
+            <div class="activity-meta">
+              <%= link_to activity.user.username, user_path(activity.user), class: "activity-user-name" %>
+              <span class="activity-timestamp">
+                <%= activity.created_at.strftime("%d %b %Y %H:%M") %>
+              </span>
+            </div>
+
+            <div class="activity-detail-row">
+              <%= activity.change_details.html_safe %>
+            </div>
+          </div>
+
+        </div>
+      <% end %>
+    <% else %>
+      <p style="text-align: center; color: #999; padding: 40px;">No activities recorded yet.</p>
+    <% end %>
+  </div>
+<% end %>
       </div>
     </div>
 
-    <%# COLUMNA DERECHA %>
+    <%# --- COLUMNA DERECHA (Sidebar) --- %>
     <div class="form-right">
       <div class="sidebar-box">
         
-        <%# STATUS (SOLO LECTURA Y CENTRADO) %>
+        <%# STATUS %>
         <div style="margin-bottom: 15px; text-align: center;">
-          <div class="status-select" style="background-color: <%= @issue.status&.color || '#ccc' %>; color: white; border: none; padding: 10px; font-weight: bold; width: 100%; border-radius: 4px; box-sizing: border-box; text-align: center; text-transform: uppercase; margin-bottom: 0;">
+          <div class="status-select" style="background-color: <%= @issue.status&.color || '#ccc' %>; color: white; border: none; padding: 10px; font-weight: bold; width: 100%; border-radius: 4px; box-sizing: border-box; text-align: center; text-transform: uppercase;">
             <%= @issue.status&.name || "NO STATUS" %>
           </div>
         </div>
@@ -162,12 +212,11 @@
           <span class="attr-label">Deadline</span>
           <% if @issue.deadline.present? %>
             <% is_overdue = @issue.deadline < Date.today %>
-            <% expires_soon = @issue.deadline >= Date.today && @issue.deadline <= 7.days.from_now.to_date %>
-            <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : (expires_soon ? '#FF9100' : '#333') %>;">
+            <span style="font-size: 13px; font-weight: bold; color: <%= is_overdue ? '#E44057' : '#333' %>;">
               <%= @issue.deadline.strftime("%d %b %Y") %>
             </span>
           <% else %>
-            <span style="font-size: 13px; font-weight: bold; color: #333;">None</span>
+            <span style="font-size: 13px; font-weight: bold;">None</span>
           <% end %>
         </div>
 
@@ -183,27 +232,21 @@
           </span>
         </div>
 
-        <%# WATCHERS (VERSION AVANZADA DE LA RAMA DEV CON FOTOS S3 AÑADIDAS) %>
+        <%# WATCHERS %>
         <div class="attr-row" style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; border-bottom: none; display: block;">
-          
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <span class="attr-label" style="font-weight: bold;">Watchers (<%= @issue.watchers.count %>)</span>
-            
-            <%# Botón rápido para el usuario actual %>
             <% if current_user %>
               <% if @issue.watchers.include?(current_user) %>
-                <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, 
-                    style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
+                <%= button_to "UNWATCH", issue_watching_path(@issue), method: :delete, style: "background: #f0f4f8; color: #4a5b6d; border: 1px solid #cbd5e0; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
               <% else %>
-                <%= button_to "WATCH", issue_watching_path(@issue), method: :post, 
-                    style: "background: #00b19d; color: white; border: none; padding: 4px 9px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
+                <%= button_to "WATCH", issue_watching_path(@issue), method: :post, style: "background: #00b19d; color: white; border: none; padding: 4px 9px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
               <% end %>
             <% end %>
           </div>
 
-          <%# Lista de watchers actuales %>
           <% if @issue.watchers.any? %>
-            <ul style="list-style: none; padding: 0; margin: 0 0 15px 0;">
+            <ul style="list-style: none; padding: 0;">
               <% @issue.watchers.each do |watcher| %>
                 <li style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #f0f0f0;">
                   <div style="display: flex; align-items: center; gap: 8px;">
@@ -216,30 +259,20 @@
                     </div>
                     <span style="font-size: 12px; color: #4a5b6d; font-weight: bold;"><%= watcher.username %></span>
                   </div>
-                  
-                  <%# Botón "X" para eliminar a este watcher en concreto %>
-                  <%= button_to "×", issue_watching_path(@issue, user_id: watcher.id), method: :delete, 
-                      data: { turbo_confirm: "Remove #{watcher.username} from watchers?" },
-                      style: "background: none; border: none; color: #E44057; font-size: 18px; cursor: pointer; padding: 0; line-height: 1;", title: "Remove watcher" %>
+                  <%= button_to "×", issue_watching_path(@issue, user_id: watcher.id), method: :delete, data: { turbo_confirm: "Remove watcher?" }, style: "background: none; border: none; color: #E44057; font-size: 18px; cursor: pointer; padding: 0;" %>
                 </li>
               <% end %>
             </ul>
           <% end %>
 
-          <%# Desplegable para añadir un usuario nuevo como watcher %>
-          <%# Excluimos a los que ya están siendo watchers %>
           <% available_users = User.where.not(id: @issue.watcher_ids) %>
           <% if available_users.any? %>
             <%= form_with url: issue_watching_path(@issue), method: :post, style: "display: flex; gap: 5px; margin-top: 10px;" do |f| %>
-              <%= f.collection_select :user_id, available_users, :id, :username, { prompt: "Add new watcher..." }, { style: "flex: 1; padding: 6px; font-size: 11px; border: 1px solid #e2eaf0; border-radius: 3px; background-color: #f9fbfd; color: #4a5b6d; outline: none; cursor: pointer;" } %>
-              <%= f.submit "+", style: "background: #00b19d; color: white; border: none; padding: 0 12px; font-size: 16px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
+              <%= f.collection_select :user_id, available_users, :id, :username, { prompt: "Add watcher..." }, { style: "flex: 1; padding: 6px; font-size: 11px; border: 1px solid #e2eaf0; border-radius: 3px;" } %>
+              <%= f.submit "+", style: "background: #00b19d; color: white; border: none; padding: 0 12px; font-weight: bold; border-radius: 3px; cursor: pointer;" %>
             <% end %>
-          <% else %>
-            <p style="font-size: 11px; color: #999; text-align: center; margin-top: 10px;">All users are watching.</p>
           <% end %>
-
         </div>
-
       </div>
 
       <div style="margin-top: 20px; text-align: center;">
@@ -248,3 +281,16 @@
     </div>
   </div>
 </div>
+
+<style>
+  .profile-tab {
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+  }
+  .profile-tab:hover { background: #f9fbfd; color: #1fbdb8 !important; }
+  .profile-tab.active {
+    color: #1fbdb8 !important;
+    border-bottom: 3px solid #1fbdb8;
+    font-weight: bold;
+  }
+</style>
