@@ -228,3 +228,24 @@ body {
   border-bottom: 2px solid #6a7c92 !important;
   font-weight: bold;
 }
+
+@keyframes highlight-fade {
+  0% { 
+    background-color: #fff9c4; 
+    border-color: #00b19d;  
+    transform: scale(1.02);    
+  }
+  100% { 
+    background-color: white; 
+    border-color: #e2eaf0;
+    transform: scale(1);
+  }
+}
+
+div[id^="comment_"]:target {
+  animation: highlight-fade 2s ease-out; 
+  scroll-margin-top: 100px; 
+  z-index: 10;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0, 177, 157, 0.2);
+}

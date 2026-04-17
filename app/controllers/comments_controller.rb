@@ -20,18 +20,18 @@ class CommentsController < ApplicationController
   end
 
   def update
-    if @comment.update(comment_params)
-      redirect_to @comment.issue, notice: "Comment updated."
-    else
-      render :edit, status: :unprocessable_entity
-    end
+  if @comment.update(comment_params)
+    redirect_back_or_to @comment.issue, notice: "Comment updated."
+  else
+    render :edit, status: :unprocessable_entity
   end
+end
 
-  def destroy
-    issue = @comment.issue
-    @comment.destroy
-    redirect_to issue, notice: "Comment deleted."
-  end
+def destroy
+  issue = @comment.issue
+  @comment.destroy
+  redirect_back_or_to issue, notice: "Comment deleted."
+end
 
   private
 
