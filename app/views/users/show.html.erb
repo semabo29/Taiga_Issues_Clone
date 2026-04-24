@@ -15,7 +15,7 @@
 
     <div class="profile-stats">
       <div class="stat-box">
-        <span class="stat-number"><%= @user.assigned_issues.count %></span>
+        <span class="stat-number"><%= @assigned_issues.count %></span>
         <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
@@ -28,7 +28,7 @@
         </span>
         <span class="stat-label">Watched<br>Issues</span>
       </div>
-      
+
       <div class="stat-box">
         <span class="stat-number"><%= @user.comments.count %></span>
         <span class="stat-label">Comments</span>
@@ -118,26 +118,26 @@
       <% @comments.each do |comment| %>
         <div class="profile-comment-card">
           <div class="profile-comment-header">
-            ON ISSUE: <%= link_to "##{comment.issue.id} #{comment.issue.subject}", 
-                          issue_path(comment.issue, anchor: "comment_#{comment.id}"), 
+            ON ISSUE: <%= link_to "##{comment.issue.id} #{comment.issue.subject}",
+                          issue_path(comment.issue, anchor: "comment_#{comment.id}"),
                           style: "color: #1fbdb8; text-decoration: none; font-weight: bold;" %>
           </div>
-          
+
           <div class="profile-comment-body">
             "<%= comment.content %>"
           </div>
 
           <div class="profile-comment-footer" style="display: flex; justify-content: space-between; align-items: center;">
             <span style="color: #ccc;"><%= comment.created_at.strftime("%d %b %Y, %H:%M") %></span>
-            
+
             <% if current_user && comment.user == current_user %>
               <div style="display: flex; gap: 10px;">
-                <%= link_to "Edit", edit_issue_comment_path(comment.issue, comment), 
+                <%= link_to "Edit", edit_issue_comment_path(comment.issue, comment),
                     style: "font-size: 11px; color: #6a7c92; text-decoration: none;" %>
-                
-                <%= button_to "Delete", issue_comment_path(comment.issue, comment), 
-                    method: :delete, 
-                    data: { turbo_confirm: "Delete this comment?" }, 
+
+                <%= button_to "Delete", issue_comment_path(comment.issue, comment),
+                    method: :delete,
+                    data: { turbo_confirm: "Delete this comment?" },
                     style: "background: none; border: none; padding: 0; font-size: 11px; color: #E44057; cursor: pointer; font-family: inherit;" %>
               </div>
             <% end %>
