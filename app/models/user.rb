@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :watchings, dependent: :destroy
   has_many :watched_issues, through: :watchings, source: :issue
   has_one_attached :avatar
+  before_create :generate_api_key
 
   def self.from_omniauth(auth)
     #Buscamos por la columna email de la tabla
@@ -15,5 +16,10 @@ class User < ApplicationRecord
       #Si no existe, creamos el usuario con los datos de Google
       user.username = auth.info.name || auth.info.email.split('@').first
     end
+  end
+  
+  def generate_api_key
+    # Genera una cadena aleatòria única de 32 caràcters
+    self.api_key = SecureRandom.hex(16) if self.api_key.blank?
   end
 end
