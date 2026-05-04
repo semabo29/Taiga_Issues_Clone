@@ -373,6 +373,141 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Recurs no trobat.
+  /issues/{issue_id}/comments:
+    get:
+      tags:
+        - Comments
+      summary: Llista tots els comentaris d'una incidència.
+      operationId: getIssueComments
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '404':
+          description: Incidència no trobada.
+
+    post:
+      tags:
+        - Comments
+      summary: Crea un comentari en una incidència.
+      operationId: createComment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: 'Estic d’acord amb la prioritat d’aquest bug.'
+      responses:
+        '201':
+          description: Comentari creat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència no trobada.
+        '422':
+          description: Errors de validació.
+
+  /comments/{id}:
+    put:
+      tags:
+        - Comments
+      summary: Actualitza un comentari (només pel creador).
+      operationId: updateComment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Comentari actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador del comentari.
+        '404':
+          description: Comentari no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Comments
+      summary: Elimina un comentari (només pel creador).
+      operationId: deleteComment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament.
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador del comentari.
+        '404':
+          description: Comentari no trobat.
   /statuses:
     get:
       tags:
