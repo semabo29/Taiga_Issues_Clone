@@ -193,6 +193,41 @@ paths:
                   $ref: '#/components/schemas/Issue'
         '401':
           description: No autoritzat.
+  /issues/{id}:
+    get:
+      tags:
+        - Issues
+      summary: Obté els detalls d'una incidència (Issue) pel seu ID.
+      operationId: getIssueById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error404'
   /statuses:
     get:
       tags:
