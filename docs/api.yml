@@ -287,6 +287,68 @@ paths:
               examples:
                 errorExample:
                   $ref: '#/components/examples/error404'
+    put:
+      tags:
+        - Issues
+      summary: Actualitza una incidència (només pel creador).
+      operationId: updateIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                description:
+                  type: string
+                status_id:
+                  type: integer
+                priority_id:
+                  type: integer
+                severity_id:
+                  type: integer
+                issue_type_id:
+                  type: integer
+                assigned_to_id:
+                  type: integer
+                deadline:
+                  type: string
+                  format: date
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Incidència actualitzada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
   
   /statuses:
     get:
