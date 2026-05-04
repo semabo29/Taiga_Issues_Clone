@@ -477,3 +477,302 @@ paths:
           description: No autoritzat.
         '404':
           description: Recurs no trobat.
+  /issue_types:
+    get:
+      tags:
+        - Issue Types
+      summary: Llista tots els tipus d'incidència (Issue Types).
+      operationId: getAllIssueTypes
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+
+    post:
+      tags:
+        - Issue Types
+      summary: Crea un nou tipus d'incidència (Issue Type).
+      operationId: createIssueType
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades del nou tipus.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Question'
+                color:
+                  type: string
+                  example: '#00B19D'
+      responses:
+        '201':
+          description: Tipus creat correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+
+  /issue_types/{id}:
+    get:
+      tags:
+        - Issue Types
+      summary: Obté un tipus d'incidència (Issue Type) pel seu ID.
+      operationId: getIssueTypeById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Issue Types
+      summary: Actualitza un tipus d'incidència (Issue Type) existent.
+      operationId: updateIssueType
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Tipus actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Issue Types
+      summary: Elimina un tipus d'incidència (Issue Type).
+      operationId: deleteIssueType
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+
+  /severities:
+    get:
+      tags:
+        - Severities
+      summary: Llista totes les severitats (Severities).
+      operationId: getAllSeverities
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+
+    post:
+      tags:
+        - Severities
+      summary: Crea una nova severitat (Severity).
+      operationId: createSeverity
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova severitat.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Critical'
+                color:
+                  type: string
+                  example: '#FF0000'
+      responses:
+        '201':
+          description: Severitat creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+
+  /severities/{id}:
+    get:
+      tags:
+        - Severities
+      summary: Obté una severitat (Severity) pel seu ID.
+      operationId: getSeverityById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Severities
+      summary: Actualitza una severitat (Severity) existent.
+      operationId: updateSeverity
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Severitat actualitzada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Severities
+      summary: Elimina una severitat (Severity).
+      operationId: deleteSeverity
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
