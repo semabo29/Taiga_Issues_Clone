@@ -192,7 +192,66 @@ paths:
                 items:
                   $ref: '#/components/schemas/Issue'
         '401':
+          description: No autoritzat
+    post:
+      tags:
+        - Issues
+      summary: Crea una nova incidència (Issue).
+      operationId: createIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova incidència.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+              properties:
+                subject:
+                  type: string
+                  example: 'Fix broken API endpoint'
+                description:
+                  type: string
+                  example: 'The endpoint /api/v1/users is returning a 500 error.'
+                status_id:
+                  type: integer
+                  example: 1
+                priority_id:
+                  type: integer
+                  example: 2
+                severity_id:
+                  type: integer
+                  example: 3
+                issue_type_id:
+                  type: integer
+                  example: 1
+                assigned_to_id:
+                  type: integer
+                  example: 2
+                deadline:
+                  type: string
+                  format: date
+                  example: '2026-05-20'
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+      responses:
+        '201':
+          description: Incidència creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
           description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
   /issues/{id}:
     get:
       tags:
@@ -228,6 +287,7 @@ paths:
               examples:
                 errorExample:
                   $ref: '#/components/examples/error404'
+  
   /statuses:
     get:
       tags:
