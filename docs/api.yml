@@ -141,6 +141,58 @@ components:
         error: "La validació ha fallat: Subject no pot estar en blanc"
         
 paths:
+  /issues:
+    get:
+      tags:
+        - Issues
+      summary: Llista totes les incidències (Issues) amb filtres i ordenació.
+      operationId: getAllIssues
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: query
+          in: query
+          description: Cerca de text al 'subject' o 'description'.
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Columna per ordenar (id, issue_type_id, severity_id, priority_id, deadline, status_id, assigned_to_id, user_id).
+          required: false
+          schema:
+            type: string
+        - name: direction
+          in: query
+          description: Direcció de l'ordenació (asc o desc).
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: issue_type_id
+          in: query
+          description: Filtrar per tipus d'incidència.
+          required: false
+          schema:
+            type: integer
+        - name: status_id
+          in: query
+          description: Filtrar per estat.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la llista d'incidències filtrada.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
   /statuses:
     get:
       tags:
