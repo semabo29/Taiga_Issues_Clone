@@ -131,7 +131,7 @@ components:
       value:
         error: "La validació ha fallat: Subject no pot estar en blanc"
         
-  paths:
+paths:
   /statuses:
     get:
       tags:
