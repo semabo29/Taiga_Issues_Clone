@@ -27,6 +27,9 @@ group :production do
   gem "pg"
 end
 
+# --- API REST ---
+gem "rack-cors"
+
 group :development, :test do
   gem "sqlite3", "~> 1.4"
   gem "debug", platforms: %i[ mri windows ]
