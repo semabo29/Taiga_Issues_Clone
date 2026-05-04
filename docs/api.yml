@@ -141,6 +141,238 @@ components:
         error: "La validació ha fallat: Subject no pot estar en blanc"
         
 paths:
+  /issues:
+    get:
+      tags:
+        - Issues
+      summary: Llista totes les incidències (Issues) amb filtres i ordenació.
+      operationId: getAllIssues
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: query
+          in: query
+          description: Cerca de text al 'subject' o 'description'.
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Columna per ordenar (id, issue_type_id, severity_id, priority_id, deadline, status_id, assigned_to_id, user_id).
+          required: false
+          schema:
+            type: string
+        - name: direction
+          in: query
+          description: Direcció de l'ordenació (asc o desc).
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: issue_type_id
+          in: query
+          description: Filtrar per tipus d'incidència.
+          required: false
+          schema:
+            type: integer
+        - name: status_id
+          in: query
+          description: Filtrar per estat.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la llista d'incidències filtrada.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat
+    post:
+      tags:
+        - Issues
+      summary: Crea una nova incidència (Issue).
+      operationId: createIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova incidència.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+              properties:
+                subject:
+                  type: string
+                  example: 'Fix broken API endpoint'
+                description:
+                  type: string
+                  example: 'The endpoint /api/v1/users is returning a 500 error.'
+                status_id:
+                  type: integer
+                  example: 1
+                priority_id:
+                  type: integer
+                  example: 2
+                severity_id:
+                  type: integer
+                  example: 3
+                issue_type_id:
+                  type: integer
+                  example: 1
+                assigned_to_id:
+                  type: integer
+                  example: 2
+                deadline:
+                  type: string
+                  format: date
+                  example: '2026-05-20'
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+      responses:
+        '201':
+          description: Incidència creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+  /issues/{id}:
+    get:
+      tags:
+        - Issues
+      summary: Obté els detalls d'una incidència (Issue) pel seu ID.
+      operationId: getIssueById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error404'
+    put:
+      tags:
+        - Issues
+      summary: Actualitza una incidència (només pel creador).
+      operationId: updateIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                description:
+                  type: string
+                status_id:
+                  type: integer
+                priority_id:
+                  type: integer
+                severity_id:
+                  type: integer
+                issue_type_id:
+                  type: integer
+                assigned_to_id:
+                  type: integer
+                deadline:
+                  type: string
+                  format: date
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Incidència actualitzada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+    delete:
+      tags:
+        - Issues
+      summary: Elimina una incidència (només pel creador).
+      operationId: deleteIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+        '404':
+          description: Recurs no trobat.
   /statuses:
     get:
       tags:
