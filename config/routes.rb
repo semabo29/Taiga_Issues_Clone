@@ -44,11 +44,11 @@ Rails.application.routes.draw do
         resources :comments, only: [:create, :update, :destroy]
       end
       resources :users, only: [:index, :show] 
-      resources :statuses
-      resources :priorities
-      resources :severities
-      resources :issue_types
-      resources :tags
+      resources :statuses, except: [:new, :edit]
+      resources :priorities, except: [:new, :edit]
+      resources :severities, except: [:new, :edit]
+      resources :issue_types, except: [:new, :edit]
+      resources :tags, except: [:new, :edit]
     end
   end
 end
