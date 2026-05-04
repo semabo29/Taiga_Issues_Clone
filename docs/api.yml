@@ -71,7 +71,16 @@ components:
         color: { type: string, example: '#00b19d' }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
-
+    
+    DeadlineShortcut:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'Next Week' }
+        offset_days: { type: integer, example: 7 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        
     # models principals
     User:
       type: object
@@ -774,5 +783,285 @@ paths:
           description: Eliminat correctament (Sense contingut).
         '401':
           description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+      
+  /tags:
+    get:
+      tags:
+        - Tags
+      summary: Llista tots els tags (Tags).
+      operationId: getAllTags
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '401':
+          description: No autoritzat.
+
+    post:
+      tags:
+        - Tags
+      summary: Crea un nou tag (Tag).
+      operationId: createTag
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades del nou tag.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Backend'
+                color:
+                  type: string
+                  example: '#00b19d'
+      responses:
+        '201':
+          description: Tag creat correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable.
+
+  /tags/{id}:
+    get:
+      tags:
+        - Tags
+      summary: Obté un tag pel seu ID.
+      operationId: getTagById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Tags
+      summary: Actualitza un tag existent.
+      operationId: updateTag
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Tag actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Tags
+      summary: Elimina un tag.
+      operationId: deleteTag
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament.
+        '404':
+          description: Recurs no trobat.
+
+  /deadline_shortcuts:
+    get:
+      tags:
+        - Deadline Shortcuts
+      summary: Llista tots els dreceres de dates (Due Dates).
+      operationId: getAllDeadlineShortcuts
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeadlineShortcut'
+
+    post:
+      tags:
+        - Deadline Shortcuts
+      summary: Crea una nova drecera de data.
+      operationId: createDeadlineShortcut
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - offset_days
+              properties:
+                name:
+                  type: string
+                  example: 'Tomorrow'
+                offset_days:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Drecera creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineShortcut'
+        '422':
+          description: Entitat no processable.
+
+  /deadline_shortcuts/{id}:
+    get:
+      tags:
+        - Deadline Shortcuts
+      summary: Obté una drecera pel seu ID.
+      operationId: getDeadlineShortcutById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineShortcut'
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Deadline Shortcuts
+      summary: Actualitza una drecera existent.
+      operationId: updateDeadlineShortcut
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                offset_days:
+                  type: integer
+      responses:
+        '200':
+          description: Drecera actualitzada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineShortcut'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Deadline Shortcuts
+      summary: Elimina una drecera.
+      operationId: deleteDeadlineShortcut
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament.
         '404':
           description: Recurs no trobat.
