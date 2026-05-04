@@ -8,7 +8,6 @@ module Api
       # Busquem la clau a la capçalera 'X-Api-Key' o per paràmetre ?api_key=...
       api_key = request.headers['X-Api-Key'] || params[:api_key]
 
-      # MEJORA: Si no envían token en absoluto, abortamos antes de hacer la consulta SQL
       if api_key.blank?
         render json: { error: "No s'ha proporcionat cap API Key" }, status: :unauthorized
         return
