@@ -349,7 +349,30 @@ paths:
           description: Recurs no trobat.
         '422':
           description: Errors de validació.
-  
+    delete:
+      tags:
+        - Issues
+      summary: Elimina una incidència (només pel creador).
+      operationId: deleteIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+        '404':
+          description: Recurs no trobat.
   /statuses:
     get:
       tags:

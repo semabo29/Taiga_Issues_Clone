@@ -1,11 +1,9 @@
 module Api
   module V1
     class IssuesController < Api::BaseController
-      # Mantenemos el set_issue para show y añadimos update
-      before_action :set_issue, only: %i[show update]
+      before_action :set_issue, only: %i[show update destroy]
       
-      # Filtro de autorización exclusivo para la edición
-      before_action :authorize_creator!, only: %i[update]
+      before_action :authorize_creator!, only: %i[update destroy]
 
       # GET /api/v1/issues
       def index
@@ -57,6 +55,12 @@ module Api
         else
           render json: { errors: @issue.errors.full_messages }, status: :unprocessable_entity
         end
+      end
+
+      # DELETE /api/v1/issues/:id
+      def destroy
+        @issue.destroy!
+        head :no_content
       end
 
       private
