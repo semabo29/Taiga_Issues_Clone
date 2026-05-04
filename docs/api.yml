@@ -308,3 +308,172 @@ paths:
           description: No autoritzat.
         '404':
           description: Recurs no trobat.
+  /priorities:
+    get:
+      tags:
+        - Priorities
+      summary: Llista totes les prioritats (Priorities).
+      operationId: getAllPriorities
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error401'
+
+    post:
+      tags:
+        - Priorities
+      summary: Crea una nova prioritat (Priority).
+      operationId: createPriority
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova prioritat.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Urgent'
+                color:
+                  type: string
+                  example: '#FF0000'
+      responses:
+        '201':
+          description: Prioritat creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error422'
+
+  /priorities/{id}:
+    get:
+      tags:
+        - Priorities
+      summary: Obté una prioritat (Priority) pel seu ID.
+      operationId: getPriorityById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la prioritat.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error404'
+
+    put:
+      tags:
+        - Priorities
+      summary: Actualitza una prioritat (Priority) existent.
+      operationId: updatePriority
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Prioritat actualitzada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Priorities
+      summary: Elimina una prioritat (Priority).
+      operationId: deletePriority
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
