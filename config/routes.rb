@@ -41,14 +41,18 @@ Rails.application.routes.draw do
     # v1
     namespace :v1 do
       resources :issues do
-        resources :comments, only: [:create, :update, :destroy]
+        resources :comments, only: [:index, :create]
+        resources :attachments, only: [:index, :create] 
       end
+      resources :comments, only: [:update, :destroy]
+      resources :attachments, only: [:destroy]
       resources :users, only: [:index, :show] 
       resources :statuses, except: [:new, :edit]
       resources :priorities, except: [:new, :edit]
       resources :severities, except: [:new, :edit]
       resources :issue_types, except: [:new, :edit]
       resources :tags, except: [:new, :edit]
+      resources :deadline_shortcuts, except: [:new, :edit]
     end
   end
 end
