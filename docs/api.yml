@@ -1669,8 +1669,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  issue_id:
-                    type: integer
                   due_date:
                     type: string
                     format: date-time
@@ -1721,5 +1719,52 @@ paths:
           description: Data límit eliminada correctament (No Content).
         '401':
           description: No autoritzat.
+        '404':
+          description: Incidència no trobada.
+  
+  /issues/{issue_id}/activities:
+    get:
+      tags:
+        - Activities
+      summary: Llista l'historial d'activitats d'una incidència.
+      operationId: getIssueActivities
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida. Retorna el llistat d'activitats.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    change_details:
+                      type: string
+                      description: Descripció del canvi realitzat.
+                    created_at:
+                      type: string
+                      format: date-time
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+        '401':
+          description: API Key no vàlida.
         '404':
           description: Incidència no trobada.
