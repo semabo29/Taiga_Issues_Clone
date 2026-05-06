@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
   title: Taiga Clone API
-  description: API RESTful para la gestió d'Issues del projecte ASW (Segon Lliurament).
+  description: API RESTful para la gestió d'Issues del projecte ASW .
   version: 1.0.0
 servers:
-  - url: /api/v1
-    description: Servidor principal
+  - url: https://taiga-app.onrender.com
+    description: 
     
 # Seguretat a nivel global
 security:
@@ -169,10 +169,11 @@ paths:
             type: string
         - name: sort
           in: query
-          description: Columna per ordenar (id, issue_type_id, severity_id, priority_id, deadline, status_id, assigned_to_id, user_id).
+          description: Columna per ordenar.
           required: false
           schema:
             type: string
+            enum: [id, type, severity, priority, deadline, status, creator, assignee]
         - name: direction
           in: query
           description: Direcció de l'ordenació (asc o desc).
@@ -180,18 +181,30 @@ paths:
           schema:
             type: string
             enum: [asc, desc]
-        - name: issue_type_id
+        - name: type
           in: query
-          description: Filtrar per tipus d'incidència.
+          description: Filtrar pel nom exacte del tipus (ex. Bug, Question).
           required: false
           schema:
-            type: integer
-        - name: status_id
+            type: string
+        - name: status
           in: query
-          description: Filtrar per estat.
+          description: Filtrar pel nom exacte de l'estat (ex. New, In Progress).
           required: false
           schema:
-            type: integer
+            type: string
+        - name: severity
+          in: query
+          description: Filtrar pel nom exacte de la severitat (ex. Critical, Normal).
+          required: false
+          schema:
+            type: string
+        - name: priority
+          in: query
+          description: Filtrar pel nom exacte de la prioritat (ex. High, Low).
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Operació reeixida. Retorna la llista d'incidències filtrada.
