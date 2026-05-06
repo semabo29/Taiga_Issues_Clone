@@ -5,7 +5,7 @@ class Issue < ApplicationRecord
   belongs_to :severity
   belongs_to :issue_type
   belongs_to :assigned_to, class_name: 'User', optional: true
-
+  alias_attribute :deadline, :due_date
   has_many_attached :attachments
 
   has_many :issue_tags, dependent: :destroy

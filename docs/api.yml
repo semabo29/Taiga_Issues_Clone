@@ -1642,3 +1642,84 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Fitxer no trobat.
+  
+  /issues/{issue_id}/deadline:
+    parameters:
+      - name: issue_id
+        in: path
+        description: ID de la incidència per gestionar el deadline.
+        required: true
+        schema:
+          type: integer
+          format: int64
+
+    get:
+      tags:
+        - Deadlines
+      summary: Visualitza la data límit d'una incidència.
+      operationId: getIssueDeadline
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la data límit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  issue_id:
+                    type: integer
+                  due_date:
+                    type: string
+                    format: date-time
+                    example: "2024-12-31T23:59:59Z"
+        '404':
+          description: Incidència no trobada.
+
+    post:
+      tags:
+        - Deadlines
+      summary: Afegeix o modifica la data límit d'una incidència.
+      operationId: updateIssueDeadline
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                due_date:
+                  type: string
+                  format: date-time
+                  description: La nova data límit (ISO 8601).
+                  example: "2024-12-31"
+      responses:
+        '200':
+          description: Data límit actualitzada correctament.
+        '401':
+          description: API Key no vàlida o no proporcionada.
+        '404':
+          description: Incidència no trobada.
+        '422':
+          description: Error de validació (format de data incorrecte).
+
+    delete:
+      tags:
+        - Deadlines
+      summary: Elimina la data límit d'una incidència.
+      operationId: deleteIssueDeadline
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '204':
+          description: Data límit eliminada correctament (No Content).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència no trobada.
