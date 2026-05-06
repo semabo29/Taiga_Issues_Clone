@@ -15,7 +15,7 @@
 
     <div class="profile-stats">
       <div class="stat-box">
-        <span class="stat-number"><%= @assigned_issues.count %></span>
+        <span class="stat-number"><%= @open_issues_count || @user.assigned_issues.count %></span>
         <span class="stat-label">Open<br>Assigned</span>
       </div>
       <div class="stat-box">
