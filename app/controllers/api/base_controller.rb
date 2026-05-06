@@ -17,7 +17,9 @@ module Api
 
       @current_user = User.find_by(api_key: api_key)
 
-      unless @current_user
+      if @current_user
+        Current.user = @current_user 
+      else
         render json: { error: "API Key invàlida o inexistent" }, status: :unauthorized
       end
     end
