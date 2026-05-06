@@ -5,12 +5,10 @@ module Api
       
       before_action :authorize_creator!, only: %i[update destroy]
 
-      # GET /api/v1/issues
-      # get /api/v1/issues
      # # GET /api/v1/issues
+      # GET /api/v1/issues
       def index
-        # # Mapa per traduir els alias de Swagger a columnes reals de la base de dades
-        # # Nota: creator apunta a la taula users, assignee apunta a l'associació assigned_to
+        # Mapatge de l'API cap a les columnes i taules de la base de dades
         sort_mapping = {
           "id"       => "issues.id",
           "type"     => "issue_types.name",
@@ -19,49 +17,33 @@ module Api
           "status"   => "statuses.name",
           "deadline" => "issues.deadline",
           "creator"  => "users.username",
-          "assignee" => "assigned_tos_issues.username"
+          "assignee" => "assignees.username"
         }
-
-        # # Determinar la columna d'ordenació real o defecte per ID
+        
         sort_column = sort_mapping[params[:sort]] || "issues.id"
         sort_direction = %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
-
-        # # Fem left_outer_joins per poder filtrar/ordenar per noms sense perdre issues que tinguin camps nuls
-        @issues = Issue.left_outer_joins(:issue_type, :severity, :priority, :status, :user, :assigned_to)
-
-        # # Aplicar l'ordre final
+        
+        # Realitzem JOINs amb les taules del diccionari per habilitar el filtratge per text (String)
+        # S'empra un JOIN manual per 'assignees' per prevenir col·lisions amb la taula 'users' del creador
+        @issues = Issue.left_outer_joins(:issue_type, :severity, :priority, :status, :user)
+                       .joins("LEFT OUTER JOIN users AS assignees ON assignees.id = issues.assigned_to_id")
+        
+        # Aplicació de l'ordenació resolta
         @issues = @issues.order("#{sort_column} #{sort_direction}")
 
-        # # Cerca per text lliure (subject o description)
+        # Cerca de coincidències parcials als camps de text de la incidència
         if params[:query].present?
           search_term = "%#{params[:query]}%"
           @issues = @issues.where("issues.subject LIKE ? OR issues.description LIKE ?", search_term, search_term)
         end
 
-        # # Filtres per nom de categoria (Strings) en lloc d'IDs, segons el nou contracte
+        # Filtres d'igualtat estricta sobre les taules unides segons el contracte de l'API
         @issues = @issues.where(issue_types: { name: params[:type] }) if params[:type].present?
-        @issues = @issues.where(statuses: { name: params[:status] }) if params[:status].present?
         @issues = @issues.where(severities: { name: params[:severity] }) if params[:severity].present?
         @issues = @issues.where(priorities: { name: params[:priority] }) if params[:priority].present?
+        @issues = @issues.where(statuses: { name: params[:status] }) if params[:status].present?
 
         render json: @issues
-      end
-
-      # GET /api/v1/issues/:id
-      def show
-        render json: @issue
-      end
-
-      # POST /api/v1/issues
-      def create
-        @issue = Issue.new(issue_params)
-        @issue.user = @current_user
-
-        if @issue.save
-          render json: @issue, status: :created
-        else
-          render json: { errors: @issue.errors.full_messages }, status: :unprocessable_entity
-        end
       end
 
       # PUT/PATCH /api/v1/issues/:id
