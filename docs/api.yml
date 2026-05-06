@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Taiga Clone API
-  description: API RESTful para la gestió d'Issues del projecte ASW (Segon Lliurament).
+  description: API RESTful para la gestió d'Issues del projecte ASW .
   version: 1.0.0
 servers:
 
@@ -265,10 +265,11 @@ paths:
             type: string
         - name: sort
           in: query
-          description: Columna per ordenar (id, issue_type_id, severity_id, priority_id, deadline, status_id, assigned_to_id, user_id).
+          description: Columna per ordenar.
           required: false
           schema:
             type: string
+            enum: [id, type, severity, priority, deadline, status, creator, assignee]
         - name: direction
           in: query
           description: Direcció de l'ordenació (asc o desc).
@@ -276,18 +277,30 @@ paths:
           schema:
             type: string
             enum: [asc, desc]
-        - name: issue_type_id
+        - name: type
           in: query
-          description: Filtrar per tipus d'incidència.
+          description: Filtrar pel nom exacte del tipus (ex. Bug, Question).
           required: false
           schema:
-            type: integer
-        - name: status_id
+            type: string
+        - name: status
           in: query
-          description: Filtrar per estat.
+          description: Filtrar pel nom exacte de l'estat (ex. New, In Progress).
           required: false
           schema:
-            type: integer
+            type: string
+        - name: severity
+          in: query
+          description: Filtrar pel nom exacte de la severitat (ex. Critical, Normal).
+          required: false
+          schema:
+            type: string
+        - name: priority
+          in: query
+          description: Filtrar pel nom exacte de la prioritat (ex. High, Low).
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Operació reeixida. Retorna la llista d'incidències filtrada.
@@ -522,6 +535,72 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Recurs no trobat.
+  /issues/{issue_id}/watching:
+    post:
+      tags:
+        - Watchers
+      summary: Afegeix un watcher a una incidència.
+      operationId: addWatcher
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: "ID de l'usuari a afegir. Si no s'envia, s'afegeix l'usuari de l'API Key actual."
+      responses:
+        '201':
+          description: Watcher afegit correctament.
+        '200':
+          description: L'usuari ja era un watcher.
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència o usuari no trobat.
+          
+    delete:
+      tags:
+        - Watchers
+      summary: Elimina un watcher d'una incidència.
+      operationId: removeWatcher
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: query
+          description: "ID de l'usuari a eliminar. Si no s'envia, s'elimina l'usuari de l'API Key actual."
+          required: false
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Watcher eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència o usuari no trobat.
   /issues/{issue_id}/comments:
     get:
       tags:
@@ -1672,3 +1751,129 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Fitxer no trobat.
+  
+  /issues/{issue_id}/deadline:
+    parameters:
+      - name: issue_id
+        in: path
+        description: ID de la incidència per gestionar el deadline.
+        required: true
+        schema:
+          type: integer
+          format: int64
+
+    get:
+      tags:
+        - Deadlines
+      summary: Visualitza la data límit d'una incidència.
+      operationId: getIssueDeadline
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la data límit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  due_date:
+                    type: string
+                    format: date-time
+                    example: "2024-12-31T23:59:59Z"
+        '404':
+          description: Incidència no trobada.
+
+    post:
+      tags:
+        - Deadlines
+      summary: Afegeix o modifica la data límit d'una incidència.
+      operationId: updateIssueDeadline
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                due_date:
+                  type: string
+                  format: date-time
+                  description: La nova data límit (ISO 8601).
+                  example: "2024-12-31"
+      responses:
+        '200':
+          description: Data límit actualitzada correctament.
+        '401':
+          description: API Key no vàlida o no proporcionada.
+        '404':
+          description: Incidència no trobada.
+        '422':
+          description: Error de validació (format de data incorrecte).
+
+    delete:
+      tags:
+        - Deadlines
+      summary: Elimina la data límit d'una incidència.
+      operationId: deleteIssueDeadline
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '204':
+          description: Data límit eliminada correctament (No Content).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència no trobada.
+  
+  /issues/{issue_id}/activities:
+    get:
+      tags:
+        - Activities
+      summary: Llista l'historial d'activitats d'una incidència.
+      operationId: getIssueActivities
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida. Retorna el llistat d'activitats.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    change_details:
+                      type: string
+                      description: Descripció del canvi realitzat.
+                    created_at:
+                      type: string
+                      format: date-time
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+        '401':
+          description: API Key no vàlida.
+        '404':
+          description: Incidència no trobada.
