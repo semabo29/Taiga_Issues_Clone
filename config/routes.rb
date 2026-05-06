@@ -41,6 +41,10 @@ Rails.application.routes.draw do
     # v1
     namespace :v1 do
       resources :issues do
+        collection do
+          post :bulk
+        end
+        
         resources :comments, only: [:index, :create]
         resources :attachments, only: [:index, :create] 
       end
