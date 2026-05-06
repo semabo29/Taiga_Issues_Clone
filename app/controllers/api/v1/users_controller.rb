@@ -19,7 +19,10 @@ module Api
         safe_columns = %w[created_at updated_at status_id priority_id subject]
         sort_column = 'created_at' unless safe_columns.include?(sort_column)
 
-        issues = @user.assigned_issues.order("#{sort_column} #{sort_direction}")
+        issues = @user.assigned_issues
+          .joins(:status)
+          .where.not(statuses: { name: ['Closed', 'Tancada', 'Finalizada'] })
+          .order("#{sort_column} #{sort_direction}")
         render json: issues
       end
 
