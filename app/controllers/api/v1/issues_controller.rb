@@ -7,52 +7,42 @@ module Api
 
       # GET /api/v1/issues
       # get /api/v1/issues
+     # # GET /api/v1/issues
       def index
-        @issues = Issue.all
+        # # Mapa per traduir els alias de Swagger a columnes reals de la base de dades
+        # # Nota: creator apunta a la taula users, assignee apunta a l'associació assigned_to
+        sort_mapping = {
+          "id"       => "issues.id",
+          "type"     => "issue_types.name",
+          "severity" => "severities.name",
+          "priority" => "priorities.name",
+          "status"   => "statuses.name",
+          "deadline" => "issues.deadline",
+          "creator"  => "users.username",
+          "assignee" => "assigned_tos_issues.username"
+        }
 
-        # filtre per query de text (subject o description)
+        # # Determinar la columna d'ordenació real o defecte per ID
+        sort_column = sort_mapping[params[:sort]] || "issues.id"
+        sort_direction = %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
+
+        # # Fem left_outer_joins per poder filtrar/ordenar per noms sense perdre issues que tinguin camps nuls
+        @issues = Issue.left_outer_joins(:issue_type, :severity, :priority, :status, :user, :assigned_to)
+
+        # # Aplicar l'ordre final
+        @issues = @issues.order("#{sort_column} #{sort_direction}")
+
+        # # Cerca per text lliure (subject o description)
         if params[:query].present?
           search_term = "%#{params[:query]}%"
-          @issues = @issues.where("subject ilike ? or description ilike ?", search_term, search_term)
+          @issues = @issues.where("issues.subject LIKE ? OR issues.description LIKE ?", search_term, search_term)
         end
 
-        # filtres exactes per nom usant joins per relacionar les taules
-        @issues = @issues.joins(:issue_type).where(issue_types: { name: params[:type] }) if params[:type].present?
-        @issues = @issues.joins(:status).where(statuses: { name: params[:status] }) if params[:status].present?
-        @issues = @issues.joins(:severity).where(severities: { name: params[:severity] }) if params[:severity].present?
-        @issues = @issues.joins(:priority).where(priorities: { name: params[:priority] }) if params[:priority].present?
-
-        # ordenació
-        if params[:sort].present?
-          # assegurem que la direcció sigui vàlida, asc per defecte
-          direction = %w[asc desc].include?(params[:direction]&.downcase) ? params[:direction].downcase : 'asc'
-
-          case params[:sort].downcase
-          when 'id'
-            @issues = @issues.order(id: direction)
-          when 'deadline'
-            # utilitzem la columna real de la base de dades (due_date)
-            @issues = @issues.order(due_date: direction)
-          when 'type'
-            @issues = @issues.left_joins(:issue_type).order("issue_types.name #{direction}")
-          when 'status'
-            @issues = @issues.left_joins(:status).order("statuses.name #{direction}")
-          when 'severity'
-            @issues = @issues.left_joins(:severity).order("severities.name #{direction}")
-          when 'priority'
-            @issues = @issues.left_joins(:priority).order("priorities.name #{direction}")
-          when 'creator'
-            @issues = @issues.left_joins(:user).order("users.username #{direction}")
-          when 'assignee'
-            @issues = @issues.left_joins(:assigned_to).order("users.username #{direction}")
-          else
-            # ordre per defecte si el camp no coincideix amb cap dels anteriors
-            @issues = @issues.order(created_at: :desc)
-          end
-        else
-          # ordre per defecte si no s'envia paràmetre sort
-          @issues = @issues.order(created_at: :desc)
-        end
+        # # Filtres per nom de categoria (Strings) en lloc d'IDs, segons el nou contracte
+        @issues = @issues.where(issue_types: { name: params[:type] }) if params[:type].present?
+        @issues = @issues.where(statuses: { name: params[:status] }) if params[:status].present?
+        @issues = @issues.where(severities: { name: params[:severity] }) if params[:severity].present?
+        @issues = @issues.where(priorities: { name: params[:priority] }) if params[:priority].present?
 
         render json: @issues
       end
