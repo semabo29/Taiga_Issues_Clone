@@ -6,27 +6,53 @@ module Api
       before_action :authorize_creator!, only: %i[update destroy]
 
       # GET /api/v1/issues
+      # get /api/v1/issues
       def index
-        # Ordenar
-        sortable_columns = ["issue_type_id", "severity_id", "priority_id", "id", "deadline", "status_id", "assigned_to_id", "user_id"]
-        
-        sort_column = sortable_columns.include?(params[:sort]) ? params[:sort] : "id"
-        sort_direction = %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
-        
-        # Aplicar ordre
-        @issues = Issue.all.order("#{sort_column} #{sort_direction}")
+        @issues = Issue.all
 
-        # Cerca per text
+        # filtre per query de text (subject o description)
         if params[:query].present?
           search_term = "%#{params[:query]}%"
-          @issues = @issues.where("subject LIKE ? OR description LIKE ?", search_term, search_term)
+          @issues = @issues.where("subject ilike ? or description ilike ?", search_term, search_term)
         end
 
-        # Altres filtres
-        @issues = @issues.where(issue_type_id: params[:issue_type_id]) if params[:issue_type_id].present?
-        @issues = @issues.where(severity_id: params[:severity_id]) if params[:severity_id].present?
-        @issues = @issues.where(priority_id: params[:priority_id]) if params[:priority_id].present?
-        @issues = @issues.where(status_id: params[:status_id]) if params[:status_id].present?
+        # filtres exactes per nom usant joins per relacionar les taules
+        @issues = @issues.joins(:issue_type).where(issue_types: { name: params[:type] }) if params[:type].present?
+        @issues = @issues.joins(:status).where(statuses: { name: params[:status] }) if params[:status].present?
+        @issues = @issues.joins(:severity).where(severities: { name: params[:severity] }) if params[:severity].present?
+        @issues = @issues.joins(:priority).where(priorities: { name: params[:priority] }) if params[:priority].present?
+
+        # ordenació
+        if params[:sort].present?
+          # assegurem que la direcció sigui vàlida, asc per defecte
+          direction = %w[asc desc].include?(params[:direction]&.downcase) ? params[:direction].downcase : 'asc'
+
+          case params[:sort].downcase
+          when 'id'
+            @issues = @issues.order(id: direction)
+          when 'deadline'
+            # utilitzem la columna real de la base de dades (due_date)
+            @issues = @issues.order(due_date: direction)
+          when 'type'
+            @issues = @issues.left_joins(:issue_type).order("issue_types.name #{direction}")
+          when 'status'
+            @issues = @issues.left_joins(:status).order("statuses.name #{direction}")
+          when 'severity'
+            @issues = @issues.left_joins(:severity).order("severities.name #{direction}")
+          when 'priority'
+            @issues = @issues.left_joins(:priority).order("priorities.name #{direction}")
+          when 'creator'
+            @issues = @issues.left_joins(:user).order("users.username #{direction}")
+          when 'assignee'
+            @issues = @issues.left_joins(:assigned_to).order("users.username #{direction}")
+          else
+            # ordre per defecte si el camp no coincideix amb cap dels anteriors
+            @issues = @issues.order(created_at: :desc)
+          end
+        else
+          # ordre per defecte si no s'envia paràmetre sort
+          @issues = @issues.order(created_at: :desc)
+        end
 
         render json: @issues
       end
