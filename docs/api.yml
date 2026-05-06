@@ -1,11 +1,13 @@
 openapi: 3.0.3
 info:
   title: Taiga Clone API
-  description: API RESTful para la gestió d'Issues del projecte ASW .
+  description: API RESTful para la gestió d'Issues del projecte ASW (Segon Lliurament).
   version: 1.0.0
 servers:
-  - url: https://taiga-app.onrender.com
-    description: 
+  - url: https://taiga-app.onrender.com/api/v1
+    description: Servidor de Producció (Render)
+  - url: http://localhost:3000/api/v1
+    description: Servidor Local
     
 # Seguretat a nivel global
 security:
@@ -164,38 +166,45 @@ paths:
         - name: query
           in: query
           description: Cerca de text al 'subject' o 'description'.
+          required: false
           schema:
             type: string
         - name: sort
           in: query
           description: Columna per ordenar.
+          required: false
           schema:
             type: string
             enum: [id, type, severity, priority, deadline, status, creator, assignee]
         - name: direction
           in: query
           description: Direcció de l'ordenació (asc o desc).
+          required: false
           schema:
             type: string
             enum: [asc, desc]
         - name: type
           in: query
-          description: Filtrar pel nom exacte del tipus (ex. Bug).
+          description: Filtrar pel nom exacte del tipus.
+          required: false
           schema:
             type: string
         - name: status
           in: query
-          description: Filtrar pel nom exacte de l'estat (ex. New).
+          description: Filtrar pel nom exacte de l'estat.
+          required: false
           schema:
             type: string
         - name: severity
           in: query
-          description: Filtrar pel nom exacte de la severitat (ex. Normal).
+          description: Filtrar pel nom exacte de la severitat.
+          required: false
           schema:
             type: string
         - name: priority
           in: query
-          description: Filtrar pel nom exacte de la prioritat (ex. High).
+          description: Filtrar pel nom exacte de la prioritat.
+          required: false
           schema:
             type: string
       responses:
@@ -237,6 +246,67 @@ paths:
                 $ref: '#/components/schemas/ErrorResult'
               example:
                 error: "S'ha produït un error inesperat a la base de dades"
+    
+    post:
+      tags:
+        - Issues
+      summary: Crea una nova incidència (Issue).
+      operationId: createIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova incidència.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+              properties:
+                subject:
+                  type: string
+                  example: 'Fix broken API endpoint'
+                description:
+                  type: string
+                  example: 'The endpoint /api/v1/users is returning a 500 error.'
+                status_id:
+                  type: integer
+                  example: 1
+                priority_id:
+                  type: integer
+                  example: 2
+                severity_id:
+                  type: integer
+                  example: 3
+                issue_type_id:
+                  type: integer
+                  example: 1
+                assigned_to_id:
+                  type: integer
+                  example: 2
+                deadline:
+                  type: string
+                  format: date
+                  example: '2026-05-20'
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+      responses:
+        '201':
+          description: Incidència creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+
   /issues/bulk:
     post:
       tags:
@@ -280,6 +350,7 @@ paths:
           description: No autoritzat.
         '422':
           description: Text buit o error de validació.
+
   /issues/{id}:
     get:
       tags:
@@ -401,6 +472,7 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Recurs no trobat.
+
   /issues/{issue_id}/watching:
     post:
       tags:
@@ -467,6 +539,7 @@ paths:
           description: No autoritzat.
         '404':
           description: Incidència o usuari no trobat.
+
   /issues/{issue_id}/comments:
     get:
       tags:
@@ -602,6 +675,7 @@ paths:
           description: Prohibit. No ets el creador del comentari.
         '404':
           description: Comentari no trobat.
+
   /statuses:
     get:
       tags:
@@ -778,6 +852,7 @@ paths:
           description: No autoritzat.
         '404':
           description: Recurs no trobat.
+
   /priorities:
     get:
       tags:
@@ -947,6 +1022,7 @@ paths:
           description: No autoritzat.
         '404':
           description: Recurs no trobat.
+
   /issue_types:
     get:
       tags:
