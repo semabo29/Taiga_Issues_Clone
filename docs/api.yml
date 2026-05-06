@@ -164,117 +164,40 @@ paths:
         - name: query
           in: query
           description: Cerca de text al 'subject' o 'description'.
-          required: false
           schema:
             type: string
         - name: sort
           in: query
           description: Columna per ordenar.
-          required: false
           schema:
             type: string
             enum: [id, type, severity, priority, deadline, status, creator, assignee]
         - name: direction
           in: query
           description: Direcció de l'ordenació (asc o desc).
-          required: false
           schema:
             type: string
             enum: [asc, desc]
         - name: type
           in: query
-          description: Filtrar pel nom exacte del tipus (ex. Bug, Question).
-          required: false
+          description: Filtrar pel nom exacte del tipus (ex. Bug).
           schema:
             type: string
         - name: status
           in: query
-          description: Filtrar pel nom exacte de l'estat (ex. New, In Progress).
-          required: false
+          description: Filtrar pel nom exacte de l'estat (ex. New).
           schema:
             type: string
         - name: severity
           in: query
-          description: Filtrar pel nom exacte de la severitat (ex. Critical, Normal).
-          required: false
+          description: Filtrar pel nom exacte de la severitat (ex. Normal).
           schema:
             type: string
         - name: priority
           in: query
-          description: Filtrar pel nom exacte de la prioritat (ex. High, Low).
-          required: false
+          description: Filtrar pel nom exacte de la prioritat (ex. High).
           schema:
             type: string
-      responses:
-        '200':
-          description: Operació reeixida. Retorna la llista d'incidències filtrada.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Issue'
-        '401':
-          description: No autoritzat
-    post:
-      tags:
-        - Issues
-      summary: Crea una nova incidència (Issue).
-      operationId: createIssue
-      security:
-        - ApiKeyHeader: []
-        - ApiKeyParam: []
-      requestBody:
-        description: Dades de la nova incidència.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - subject
-              properties:
-                subject:
-                  type: string
-                  example: 'Fix broken API endpoint'
-                description:
-                  type: string
-                  example: 'The endpoint /api/v1/users is returning a 500 error.'
-                status_id:
-                  type: integer
-                  example: 1
-                priority_id:
-                  type: integer
-                  example: 2
-                severity_id:
-                  type: integer
-                  example: 3
-                issue_type_id:
-                  type: integer
-                  example: 1
-                assigned_to_id:
-                  type: integer
-                  example: 2
-                deadline:
-                  type: string
-                  format: date
-                  example: '2026-05-20'
-                tag_ids:
-                  type: array
-                  items:
-                    type: integer
-                  example: [1, 2]
-      responses:
-        '201':
-          description: Incidència creada correctament.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Issue'
-        '401':
-          description: No autoritzat.
-        '422':
-          description: Entitat no processable (Errors de validació).
   /issues/bulk:
     post:
       tags:
