@@ -117,6 +117,16 @@ components:
         user_id: { type: integer, format: int64, example: 2 }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
+    
+    Attachment:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        filename: { type: string, example: 'document.pdf' }
+        content_type: { type: string, example: 'application/pdf' }
+        byte_size: { type: integer, example: 10245 }
+        url: { type: string, example: 'http://localhost:3000/rails/active_storage/...' }
+        created_at: { type: string, format: date-time }
 
     # errors
     ErrorResult:
@@ -1432,3 +1442,94 @@ paths:
           description: Eliminat correctament.
         '404':
           description: Recurs no trobat.
+  
+  /issues/{issue_id}/attachments:
+    get:
+      tags:
+        - Attachments
+      summary: Llista els fitxers adjunts d'una incidència.
+      operationId: getIssueAttachments
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attachment'
+        '404':
+          description: Incidència no trobada.
+
+    post:
+      tags:
+        - Attachments
+      summary: Puja un fitxer adjunt a una incidència.
+      operationId: createIssueAttachment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: El fitxer a pujar.
+      responses:
+        '201':
+          description: Fitxer pujat correctament.
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Error de validació o fitxer no proporcionat.
+
+  /attachments/{id}:
+    delete:
+      tags:
+        - Attachments
+      summary: Elimina un fitxer adjunt (només pel creador de la incidència).
+      operationId: deleteAttachment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID del fitxer adjunt.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+        '404':
+          description: Fitxer no trobat.
