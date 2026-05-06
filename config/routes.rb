@@ -47,6 +47,7 @@ Rails.application.routes.draw do
         resource :watching, only: [:create, :destroy]
         resources :comments, only: [:index, :create]
         resources :attachments, only: [:index, :create] 
+        resource :deadline, only: [:show, :create, :destroy]
       end
       resources :comments, only: [:update, :destroy]
       resources :attachments, only: [:destroy]
