@@ -426,6 +426,72 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Recurs no trobat.
+  /issues/{issue_id}/watching:
+    post:
+      tags:
+        - Watchers
+      summary: Afegeix un watcher a una incidència.
+      operationId: addWatcher
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: "ID de l'usuari a afegir. Si no s'envia, s'afegeix l'usuari de l'API Key actual."
+      responses:
+        '201':
+          description: Watcher afegit correctament.
+        '200':
+          description: L'usuari ja era un watcher.
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència o usuari no trobat.
+          
+    delete:
+      tags:
+        - Watchers
+      summary: Elimina un watcher d'una incidència.
+      operationId: removeWatcher
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: query
+          description: "ID de l'usuari a eliminar. Si no s'envia, s'elimina l'usuari de l'API Key actual."
+          required: false
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Watcher eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència o usuari no trobat.
   /issues/{issue_id}/comments:
     get:
       tags:
