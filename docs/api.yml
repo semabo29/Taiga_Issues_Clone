@@ -294,6 +294,45 @@ paths:
           description: Filtrar pel nom exacte de la prioritat (ex. High).
           schema:
             type: string
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la llista d'incidències filtrada.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+              example:
+                - id: 101
+                  subject: "Fix broken urls in main page"
+                  description: "It is trivial to implement."
+                  user_id: 1
+                  status_id: 1
+                  priority_id: 2
+                  severity_id: 3
+                  issue_type_id: 1
+                  assigned_to_id: 2
+                  deadline: "2026-05-10"
+                  created_at: "2026-05-06T21:52:19.022Z"
+                  updated_at: "2026-05-06T21:52:19.022Z"
+        '401':
+          description: No autoritzat. L'API Key és incorrecta o no s'ha enviat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error401'
+        '500':
+          description: Error intern del servidor en processar la cerca o l'ordenació.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                error: "S'ha produït un error inesperat a la base de dades"
   /issues/bulk:
     post:
       tags:
