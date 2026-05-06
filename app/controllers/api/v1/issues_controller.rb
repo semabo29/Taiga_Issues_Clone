@@ -62,6 +62,59 @@ module Api
         @issue.destroy!
         head :no_content
       end
+      
+      # POST /api/v1/issues/bulk
+      def bulk
+        text_block = params[:text]
+
+        if text_block.blank?
+          return render json: { error: "El text no pot estar buit" }, status: :unprocessable_entity
+        end
+
+        subjects = text_block.split("\n").map(&:strip).reject(&:empty?)
+
+        if subjects.empty?
+          return render json: { error: "No s'han trobat incidències vàlides al text" }, status: :unprocessable_entity
+        end
+
+        default_status = Status.find_by(name: "New") || Status.first
+        default_priority = Priority.find_by(name: "Normal") || Priority.first
+        default_severity = Severity.find_by(name: "Normal") || Severity.first
+        default_issue_type = IssueType.find_by(name: "Bug") || IssueType.first
+
+        unless default_status && default_priority && default_severity && default_issue_type
+          return render json: { error: "Falten configurar els estats o prioritats a la base de dades." }, status: :internal_server_error
+        end
+
+        creades = []
+
+        begin
+          Issue.transaction do
+            subjects.each do |subject_line|
+              # Creem la issue amb els valors per defecte de l'aplicació
+              nova_issue = Issue.create!(
+                subject: subject_line,
+                user: @current_user,
+                status: default_status,
+                priority: default_priority,
+                severity: default_severity,
+                issue_type: default_issue_type
+              )
+              creades << nova_issue
+            end
+          end
+
+          render json: { 
+            message: "S'han creat #{creades.count} incidències correctament", 
+            issues: creades 
+          }, status: :created
+
+        rescue ActiveRecord::RecordInvalid => e
+          render json: { error: "Error de validació: #{e.message}" }, status: :unprocessable_entity
+        rescue => e
+          render json: { error: "S'ha produït un error: #{e.message}" }, status: :internal_server_error
+        end
+      end
 
       private
 

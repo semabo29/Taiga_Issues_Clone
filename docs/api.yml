@@ -262,6 +262,49 @@ paths:
           description: No autoritzat.
         '422':
           description: Entitat no processable (Errors de validació).
+  /issues/bulk:
+    post:
+      tags:
+        - Issues
+      summary: Inserció massiva d'incidències.
+      description: Permet crear múltiples incidències enviant un text on cada línia serà el títol (subject) d'una incidència nova.
+      operationId: createBulkIssues
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Text amb els títols de les noves incidències.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: "Text amb els títols de les incidències separats per salts de línia."
+                  example: "Falta el botó de login\nLa imatge no carrega\nCal actualitzar la base de dades"
+      responses:
+        '201':
+          description: Incidències creades correctament.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "S'han creat 3 incidències correctament"
+                  issues:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Text buit o error de validació.
   /issues/{id}:
     get:
       tags:
