@@ -1,0 +1,1644 @@
+openapi: 3.0.3
+info:
+  title: Taiga Clone API
+  description: API RESTful para la gestió d'Issues del projecte ASW (Segon Lliurament).
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Servidor principal
+    
+# Seguretat a nivel global
+security:
+  - ApiKeyHeader: []
+  - ApiKeyParam: []
+
+components:
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: Clau d'API enviada a la capçalera (Recomanat).
+    ApiKeyParam:
+      type: apiKey
+      in: query
+      name: api_key
+      description: Clau d'API enviada com a paràmetre a la URL.
+
+  schemas:
+    # configuracio
+    Status:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'New' }
+        color: { type: string, example: '#83EEDE' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Priority:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'High' }
+        color: { type: string, example: '#E44057' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Severity:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'Important' }
+        color: { type: string, example: '#E4A33D' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    IssueType:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'Bug' }
+        color: { type: string, example: '#E44057' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Tag:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'Frontend' }
+        color: { type: string, example: '#00b19d' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    
+    DeadlineShortcut:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: 'Next Week' }
+        offset_days: { type: integer, example: 7 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        
+    # models principals
+    User:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        username: { type: string, example: 'carlesf' }
+        email: { type: string, example: 'carlesf@example.com' }
+        description: { type: string, example: 'Faculty member at UPC', nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Issue:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 101 }
+        subject: { type: string, example: 'Fix broken urls in main page' }
+        description: { type: string, example: 'It is trivial to implement.', nullable: true }
+        user_id: { type: integer, format: int64, example: 1 }
+        status_id: { type: integer, format: int64, example: 1, nullable: true }
+        priority_id: { type: integer, format: int64, example: 2, nullable: true }
+        severity_id: { type: integer, format: int64, example: 3, nullable: true }
+        issue_type_id: { type: integer, format: int64, example: 1, nullable: true }
+        assigned_to_id: { type: integer, format: int64, example: 2, nullable: true }
+        deadline: { type: string, format: date, example: '2026-05-10', nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Comment:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        content: { type: string, example: 'No way, man!' }
+        issue_id: { type: integer, format: int64, example: 101 }
+        user_id: { type: integer, format: int64, example: 2 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    
+    Attachment:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        filename: { type: string, example: 'document.pdf' }
+        content_type: { type: string, example: 'application/pdf' }
+        byte_size: { type: integer, example: 10245 }
+        url: { type: string, example: 'http://localhost:3000/rails/active_storage/...' }
+        created_at: { type: string, format: date-time }
+
+    # errors
+    ErrorResult:
+      type: object
+      properties:
+        error: 
+          type: string
+          example: 'API Key invàlida o inexistent'
+      required:
+        - error
+
+  # Exemples de respostes d'error
+  examples:
+    error401:
+      value:
+        error: "API Key invàlida o inexistent"
+    error404:
+      value:
+        error: "Recurs no trobat"
+    error422:
+      value:
+        error: "La validació ha fallat: Subject no pot estar en blanc"
+        
+paths:
+  /issues:
+    get:
+      tags:
+        - Issues
+      summary: Llista totes les incidències (Issues) amb filtres i ordenació.
+      operationId: getAllIssues
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: query
+          in: query
+          description: Cerca de text al 'subject' o 'description'.
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Columna per ordenar (id, issue_type_id, severity_id, priority_id, deadline, status_id, assigned_to_id, user_id).
+          required: false
+          schema:
+            type: string
+        - name: direction
+          in: query
+          description: Direcció de l'ordenació (asc o desc).
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: issue_type_id
+          in: query
+          description: Filtrar per tipus d'incidència.
+          required: false
+          schema:
+            type: integer
+        - name: status_id
+          in: query
+          description: Filtrar per estat.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la llista d'incidències filtrada.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat
+    post:
+      tags:
+        - Issues
+      summary: Crea una nova incidència (Issue).
+      operationId: createIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova incidència.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+              properties:
+                subject:
+                  type: string
+                  example: 'Fix broken API endpoint'
+                description:
+                  type: string
+                  example: 'The endpoint /api/v1/users is returning a 500 error.'
+                status_id:
+                  type: integer
+                  example: 1
+                priority_id:
+                  type: integer
+                  example: 2
+                severity_id:
+                  type: integer
+                  example: 3
+                issue_type_id:
+                  type: integer
+                  example: 1
+                assigned_to_id:
+                  type: integer
+                  example: 2
+                deadline:
+                  type: string
+                  format: date
+                  example: '2026-05-20'
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+      responses:
+        '201':
+          description: Incidència creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+  /issues/bulk:
+    post:
+      tags:
+        - Issues
+      summary: Inserció massiva d'incidències.
+      description: Permet crear múltiples incidències enviant un text on cada línia serà el títol (subject) d'una incidència nova.
+      operationId: createBulkIssues
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Text amb els títols de les noves incidències.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: "Text amb els títols de les incidències separats per salts de línia."
+                  example: "Falta el botó de login\nLa imatge no carrega\nCal actualitzar la base de dades"
+      responses:
+        '201':
+          description: Incidències creades correctament.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "S'han creat 3 incidències correctament"
+                  issues:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Text buit o error de validació.
+  /issues/{id}:
+    get:
+      tags:
+        - Issues
+      summary: Obté els detalls d'una incidència (Issue) pel seu ID.
+      operationId: getIssueById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error404'
+    put:
+      tags:
+        - Issues
+      summary: Actualitza una incidència (només pel creador).
+      operationId: updateIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                description:
+                  type: string
+                status_id:
+                  type: integer
+                priority_id:
+                  type: integer
+                severity_id:
+                  type: integer
+                issue_type_id:
+                  type: integer
+                assigned_to_id:
+                  type: integer
+                deadline:
+                  type: string
+                  format: date
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Incidència actualitzada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+    delete:
+      tags:
+        - Issues
+      summary: Elimina una incidència (només pel creador).
+      operationId: deleteIssue
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+        '404':
+          description: Recurs no trobat.
+  /issues/{issue_id}/watching:
+    post:
+      tags:
+        - Watchers
+      summary: Afegeix un watcher a una incidència.
+      operationId: addWatcher
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: "ID de l'usuari a afegir. Si no s'envia, s'afegeix l'usuari de l'API Key actual."
+      responses:
+        '201':
+          description: Watcher afegit correctament.
+        '200':
+          description: L'usuari ja era un watcher.
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència o usuari no trobat.
+          
+    delete:
+      tags:
+        - Watchers
+      summary: Elimina un watcher d'una incidència.
+      operationId: removeWatcher
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: query
+          description: "ID de l'usuari a eliminar. Si no s'envia, s'elimina l'usuari de l'API Key actual."
+          required: false
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Watcher eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència o usuari no trobat.
+  /issues/{issue_id}/comments:
+    get:
+      tags:
+        - Comments
+      summary: Llista tots els comentaris d'una incidència.
+      operationId: getIssueComments
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '404':
+          description: Incidència no trobada.
+
+    post:
+      tags:
+        - Comments
+      summary: Crea un comentari en una incidència.
+      operationId: createComment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: 'Estic d’acord amb la prioritat d’aquest bug.'
+      responses:
+        '201':
+          description: Comentari creat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència no trobada.
+        '422':
+          description: Errors de validació.
+
+  /comments/{id}:
+    put:
+      tags:
+        - Comments
+      summary: Actualitza un comentari (només pel creador).
+      operationId: updateComment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Comentari actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador del comentari.
+        '404':
+          description: Comentari no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Comments
+      summary: Elimina un comentari (només pel creador).
+      operationId: deleteComment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament.
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador del comentari.
+        '404':
+          description: Comentari no trobat.
+  /statuses:
+    get:
+      tags:
+        - Statuses
+      summary: Llista tots els estats (Statuses).
+      operationId: getAllStatuses
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Status'
+        '401':
+          description: No autoritzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error401'
+
+    post:
+      tags:
+        - Statuses
+      summary: Crea un nou estat (Status).
+      operationId: createStatus
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades del nou estat.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Blocked'
+                color:
+                  type: string
+                  example: '#000000'
+      responses:
+        '201':
+          description: Estat creat correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '401':
+          description: No autoritzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error401'
+        '422':
+          description: Entitat no processable (Errors de validació).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error422'
+
+  /statuses/{id}:
+    get:
+      tags:
+        - Statuses
+      summary: Obté un estat (Status) pel seu ID.
+      operationId: getStatusById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'estat.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error404'
+
+    put:
+      tags:
+        - Statuses
+      summary: Actualitza un estat (Status) existent.
+      operationId: updateStatus
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Estat actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Statuses
+      summary: Elimina un estat (Status).
+      operationId: deleteStatus
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+  /priorities:
+    get:
+      tags:
+        - Priorities
+      summary: Llista totes les prioritats (Priorities).
+      operationId: getAllPriorities
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error401'
+
+    post:
+      tags:
+        - Priorities
+      summary: Crea una nova prioritat (Priority).
+      operationId: createPriority
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova prioritat.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Urgent'
+                color:
+                  type: string
+                  example: '#FF0000'
+      responses:
+        '201':
+          description: Prioritat creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error422'
+
+  /priorities/{id}:
+    get:
+      tags:
+        - Priorities
+      summary: Obté una prioritat (Priority) pel seu ID.
+      operationId: getPriorityById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la prioritat.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              examples:
+                errorExample:
+                  $ref: '#/components/examples/error404'
+
+    put:
+      tags:
+        - Priorities
+      summary: Actualitza una prioritat (Priority) existent.
+      operationId: updatePriority
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Prioritat actualitzada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Priorities
+      summary: Elimina una prioritat (Priority).
+      operationId: deletePriority
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+  /issue_types:
+    get:
+      tags:
+        - Issue Types
+      summary: Llista tots els tipus d'incidència (Issue Types).
+      operationId: getAllIssueTypes
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+
+    post:
+      tags:
+        - Issue Types
+      summary: Crea un nou tipus d'incidència (Issue Type).
+      operationId: createIssueType
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades del nou tipus.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Question'
+                color:
+                  type: string
+                  example: '#00B19D'
+      responses:
+        '201':
+          description: Tipus creat correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+
+  /issue_types/{id}:
+    get:
+      tags:
+        - Issue Types
+      summary: Obté un tipus d'incidència (Issue Type) pel seu ID.
+      operationId: getIssueTypeById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Issue Types
+      summary: Actualitza un tipus d'incidència (Issue Type) existent.
+      operationId: updateIssueType
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Tipus actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Issue Types
+      summary: Elimina un tipus d'incidència (Issue Type).
+      operationId: deleteIssueType
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+
+  /severities:
+    get:
+      tags:
+        - Severities
+      summary: Llista totes les severitats (Severities).
+      operationId: getAllSeverities
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+
+    post:
+      tags:
+        - Severities
+      summary: Crea una nova severitat (Severity).
+      operationId: createSeverity
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades de la nova severitat.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Critical'
+                color:
+                  type: string
+                  example: '#FF0000'
+      responses:
+        '201':
+          description: Severitat creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable (Errors de validació).
+
+  /severities/{id}:
+    get:
+      tags:
+        - Severities
+      summary: Obté una severitat (Severity) pel seu ID.
+      operationId: getSeverityById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Severities
+      summary: Actualitza una severitat (Severity) existent.
+      operationId: updateSeverity
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Severitat actualitzada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Severity'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Severities
+      summary: Elimina una severitat (Severity).
+      operationId: deleteSeverity
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Recurs no trobat.
+      
+  /tags:
+    get:
+      tags:
+        - Tags
+      summary: Llista tots els tags (Tags).
+      operationId: getAllTags
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '401':
+          description: No autoritzat.
+
+    post:
+      tags:
+        - Tags
+      summary: Crea un nou tag (Tag).
+      operationId: createTag
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        description: Dades del nou tag.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'Backend'
+                color:
+                  type: string
+                  example: '#00b19d'
+      responses:
+        '201':
+          description: Tag creat correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Entitat no processable.
+
+  /tags/{id}:
+    get:
+      tags:
+        - Tags
+      summary: Obté un tag pel seu ID.
+      operationId: getTagById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Tags
+      summary: Actualitza un tag existent.
+      operationId: updateTag
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Tag actualitzat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Tags
+      summary: Elimina un tag.
+      operationId: deleteTag
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament.
+        '404':
+          description: Recurs no trobat.
+
+  /deadline_shortcuts:
+    get:
+      tags:
+        - Deadline Shortcuts
+      summary: Llista tots els dreceres de dates (Due Dates).
+      operationId: getAllDeadlineShortcuts
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeadlineShortcut'
+
+    post:
+      tags:
+        - Deadline Shortcuts
+      summary: Crea una nova drecera de data.
+      operationId: createDeadlineShortcut
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - offset_days
+              properties:
+                name:
+                  type: string
+                  example: 'Tomorrow'
+                offset_days:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Drecera creada correctament.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineShortcut'
+        '422':
+          description: Entitat no processable.
+
+  /deadline_shortcuts/{id}:
+    get:
+      tags:
+        - Deadline Shortcuts
+      summary: Obté una drecera pel seu ID.
+      operationId: getDeadlineShortcutById
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineShortcut'
+        '404':
+          description: Recurs no trobat.
+
+    put:
+      tags:
+        - Deadline Shortcuts
+      summary: Actualitza una drecera existent.
+      operationId: updateDeadlineShortcut
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                offset_days:
+                  type: integer
+      responses:
+        '200':
+          description: Drecera actualitzada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineShortcut'
+        '404':
+          description: Recurs no trobat.
+        '422':
+          description: Errors de validació.
+
+    delete:
+      tags:
+        - Deadline Shortcuts
+      summary: Elimina una drecera.
+      operationId: deleteDeadlineShortcut
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament.
+        '404':
+          description: Recurs no trobat.
+  
+  /issues/{issue_id}/attachments:
+    get:
+      tags:
+        - Attachments
+      summary: Llista els fitxers adjunts d'una incidència.
+      operationId: getIssueAttachments
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attachment'
+        '404':
+          description: Incidència no trobada.
+
+    post:
+      tags:
+        - Attachments
+      summary: Puja un fitxer adjunt a una incidència.
+      operationId: createIssueAttachment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: El fitxer a pujar.
+      responses:
+        '201':
+          description: Fitxer pujat correctament.
+        '401':
+          description: No autoritzat.
+        '422':
+          description: Error de validació o fitxer no proporcionat.
+
+  /attachments/{id}:
+    delete:
+      tags:
+        - Attachments
+      summary: Elimina un fitxer adjunt (només pel creador de la incidència).
+      operationId: deleteAttachment
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: id
+          in: path
+          description: ID del fitxer adjunt.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminat correctament (Sense contingut).
+        '401':
+          description: No autoritzat.
+        '403':
+          description: Prohibit. No ets el creador de la incidència.
+        '404':
+          description: Fitxer no trobat.
