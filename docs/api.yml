@@ -1669,8 +1669,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  issue_id:
-                    type: integer
                   due_date:
                     type: string
                     format: date-time
