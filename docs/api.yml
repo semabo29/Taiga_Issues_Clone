@@ -4,9 +4,12 @@ info:
   description: API RESTful para la gestió d'Issues del projecte ASW (Segon Lliurament).
   version: 1.0.0
 servers:
-  - url: /api/v1
-    description: Servidor principal
-    
+
+  - url: http://localhost:8080/api/v1
+    description: Servidor Local (AWS Cloud9)
+  - url: https://taiga-app.onrender.com/api/v1
+    description: Servidor de Producción (Render)
+
 # Seguretat a nivel global
 security:
   - ApiKeyHeader: []
@@ -71,7 +74,7 @@ components:
         color: { type: string, example: '#00b19d' }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
-    
+
     DeadlineShortcut:
       type: object
       properties:
@@ -80,7 +83,7 @@ components:
         offset_days: { type: integer, example: 7 }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
-        
+
     # models principals
     User:
       type: object
@@ -117,7 +120,7 @@ components:
         user_id: { type: integer, format: int64, example: 2 }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
-    
+
     Attachment:
       type: object
       properties:
@@ -132,7 +135,7 @@ components:
     ErrorResult:
       type: object
       properties:
-        error: 
+        error:
           type: string
           example: 'API Key invàlida o inexistent'
       required:
@@ -149,8 +152,101 @@ components:
     error422:
       value:
         error: "La validació ha fallat: Subject no pot estar en blanc"
-        
+
 paths:
+
+  /users/{id}:
+    get:
+      summary: Obtener perfil de un usuario
+      tags: [Users]
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Datos del usuario (incluye URL del avatar)
+        '404':
+          description: Usuario no encontrado
+
+  /users/{id}/assigned_issues:
+    get:
+      summary: Obtener issues asignadas a un usuario
+      tags: [Users]
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: sort
+          schema:
+            type: string
+          description: 'Columna de ordenación (ej: created_at, subject)'
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: 'Dirección de la ordenación'
+      responses:
+        '200':
+          description: Lista de issues
+
+  /users/{id}/watched_issues:
+    get:
+      summary: Obtener issues observadas (Solo el propio usuario)
+      tags: [Users]
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de issues
+        '403':
+          description: No tienes permiso para ver esto
+
+  /profile:
+    patch:
+      summary: Actualizar propio perfil (Bio y Avatar)
+      tags: [Users]
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: Nueva biografía
+                avatar:
+                  type: string
+                  format: binary
+                  description: Imagen para el avatar
+      responses:
+        '200':
+          description: Perfil actualizado
+        '422':
+          description: Error de validación
+
   /issues:
     get:
       tags:
@@ -1205,7 +1301,7 @@ paths:
           description: No autoritzat.
         '404':
           description: Recurs no trobat.
-      
+
   /tags:
     get:
       tags:
@@ -1485,7 +1581,7 @@ paths:
           description: Eliminat correctament.
         '404':
           description: Recurs no trobat.
-  
+
   /issues/{issue_id}/attachments:
     get:
       tags:
