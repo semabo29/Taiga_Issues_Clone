@@ -10,6 +10,7 @@ Rails.application.routes.draw do
         resources :comments, only: [:index, :create]
         resources :attachments, only: [:index, :create]
         resource :deadline, only: [:show, :create, :destroy]
+        resources :activities, only: [:index]
       end
 
       resources :comments, only: [:update, :destroy]
