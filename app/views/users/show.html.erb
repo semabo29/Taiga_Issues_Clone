@@ -34,11 +34,14 @@
         <span class="stat-label">Comments</span>
       </div>
     </div>
-    <div class="api-key-section">
-  <h3>La teva API KEY (Privada)</h3>
-  <code><%= @user.api_key %></code>
-  <button onclick="navigator.clipboard.writeText('<%= @user.api_key %>')">Copiar</button>
-</div>
+    <%# Busca este bloque en tu archivo show.html.erb %>
+    <% if current_user == @user %>
+      <div class="api-key-section">
+        <h3>La teva API KEY (Privada)</h3>
+        <code><%= @user.api_key %></code>
+        <button onclick="navigator.clipboard.writeText('<%= @user.api_key %>')">Copiar</button>
+      </div>
+    <% end %>
 
     <div class="profile-bio">
       <p><%= @user.description.presence || "No description provided yet." %></p>

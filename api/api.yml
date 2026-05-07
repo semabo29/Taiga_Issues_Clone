@@ -8,7 +8,9 @@ servers:
     description: Servidor de Producció (Render)
   - url: http://localhost:3000/api/v1
     description: Servidor Local
-    
+  - url: http://localhost:8080/api/v1
+    description: Servidor Local (AWS Cloud9)
+
 # Seguretat a nivel global
 security:
   - ApiKeyHeader: []
@@ -339,7 +341,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResult'
               example:
                 error: "S'ha produït un error inesperat a la base de dades"
-    
+
     post:
       tags:
         - Issues
@@ -632,7 +634,7 @@ paths:
           description: No autoritzat.
         '404':
           description: Incidència o usuari no trobat.
-          
+
     delete:
       tags:
         - Watchers
@@ -1816,7 +1818,7 @@ paths:
           description: Prohibit. No ets el creador de la incidència.
         '404':
           description: Fitxer no trobat.
-  
+
   /issues/{issue_id}/deadline:
     parameters:
       - name: issue_id
@@ -1895,7 +1897,7 @@ paths:
           description: No autoritzat.
         '404':
           description: Incidència no trobada.
-  
+
   /issues/{issue_id}/activities:
     get:
       tags:
