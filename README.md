@@ -60,9 +60,14 @@ bin/rails server -b 0.0.0.0
 El projecte inclou una API REST de Nivell 2 (Richardson Maturity Model) per gestionar les incidències, usuaris, comentaris i fitxers adjunts.
 
 * **Documentació (OpenAPI):** Podeu trobar l'especificació completa al fitxer `/api/api.yml`.
-* **Com provar-la:** 1. Aneu a [Swagger Editor](https://editor.swagger.io/) i carregueu el nostre fitxer `api.yml`.
+* **Com provar-la:**
+    
+    1. Aneu a [Swagger Editor](https://editor.swagger.io/) i carregueu el nostre fitxer `api.yml`.
+    
     2. Registreu-vos o feu login a la nostra [App a Render](https://taiga-app.onrender.com).
+    
     3. Aneu al vostre Perfil per copiar la vostra **API Key**.
+    
     4. A Swagger, feu clic a "Authorize" i enganxeu-hi la clau al header per començar a fer peticions.
 
 ---
