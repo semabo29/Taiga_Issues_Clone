@@ -27,7 +27,7 @@ Rails.application.routes.draw do
 
   # web
   resources :issues do
-    resource :watching, only: [:create, :destroy]
+    resource :watching, only: [:show, :create, :destroy]
     resources :comments, only: [:create, :edit, :update, :destroy]
 
     collection do
