@@ -21,6 +21,9 @@ Rails.application.routes.draw do
         end
       end
 
+      # Para el perfil del usuario actual (PATCH /api/v1/profile)
+      patch 'profile', to: 'users#update_profile'
+
       resources :statuses, except: [:new, :edit]
       resources :priorities, except: [:new, :edit]
       resources :severities, except: [:new, :edit]
