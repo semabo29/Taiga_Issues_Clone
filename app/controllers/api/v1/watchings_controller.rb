@@ -33,6 +33,11 @@ module Api
         @issue.watchers.delete(user_to_remove)
         head :no_content # Retorna un 204
       end
+      
+      #GET /api/v1/issues/{issue_id}/watching
+      def show
+        render json: @issue.watchers.select(:id, :username, :email)
+      end
 
       private
 
