@@ -8,14 +8,22 @@ Rails.application.routes.draw do
         end
         resource :watching, only: [:show, :create, :destroy]
         resources :comments, only: [:index, :create]
-        resources :attachments, only: [:index, :create] 
+        resources :attachments, only: [:index, :create]
         resource :deadline, only: [:show, :create, :destroy]
       end
-      
+
       resources :comments, only: [:update, :destroy]
       resources :attachments, only: [:destroy]
-      resources :users, only: [:index, :show] 
-      
+      resources :users, only: [:index, :show] do
+        member do
+          get :assigned_issues
+          get :watched_issues
+        end
+      end
+
+      # Para el perfil del usuario actual (PATCH /api/v1/profile)
+      patch 'profile', to: 'users#update_profile'
+
       resources :statuses, except: [:new, :edit]
       resources :priorities, except: [:new, :edit]
       resources :severities, except: [:new, :edit]
