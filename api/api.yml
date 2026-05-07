@@ -567,6 +567,36 @@ paths:
           description: Recurs no trobat.
 
   /issues/{issue_id}/watching:
+    get:
+      tags:
+        - Watchers
+      summary: Llista tots els watchers d'una incidència.
+      operationId: getIssueWatchers
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyParam: []
+      parameters:
+        - name: issue_id
+          in: path
+          description: ID de la incidència.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operació reeixida. Retorna la llista d'usuaris (watchers).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: No autoritzat.
+        '404':
+          description: Incidència no trobada.
+          
     post:
       tags:
         - Watchers
