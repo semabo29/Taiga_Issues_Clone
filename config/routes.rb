@@ -6,7 +6,7 @@ Rails.application.routes.draw do
         collection do
           post :bulk
         end
-        resource :watching, only: [:create, :destroy]
+        resource :watching, only: [:show, :create, :destroy]
         resources :comments, only: [:index, :create]
         resources :attachments, only: [:index, :create] 
         resource :deadline, only: [:show, :create, :destroy]
