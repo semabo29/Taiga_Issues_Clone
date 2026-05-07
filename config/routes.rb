@@ -1,6 +1,31 @@
 Rails.application.routes.draw do
-  # === Rutes web ===
+  # api
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resources :issues do
+        collection do
+          post :bulk
+        end
+        resource :watching, only: [:create, :destroy]
+        resources :comments, only: [:index, :create]
+        resources :attachments, only: [:index, :create] 
+        resource :deadline, only: [:show, :create, :destroy]
+      end
+      
+      resources :comments, only: [:update, :destroy]
+      resources :attachments, only: [:destroy]
+      resources :users, only: [:index, :show] 
+      
+      resources :statuses, except: [:new, :edit]
+      resources :priorities, except: [:new, :edit]
+      resources :severities, except: [:new, :edit]
+      resources :issue_types, except: [:new, :edit]
+      resources :tags, except: [:new, :edit]
+      resources :deadline_shortcuts, except: [:new, :edit]
+    end
+  end
 
+  # web
   resources :issues do
     resource :watching, only: [:create, :destroy]
     resources :comments, only: [:create, :edit, :update, :destroy]
@@ -33,39 +58,4 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
   root "issues#index"
-
-
-  # === API REST ===
-  # Namespace que agrupa las rutas bajo /api y espera les respostes en JSON
-  namespace :api, defaults: { format: :json } do
-    # v1
-    namespace :v1 do
-      resources :issues do
-        collection do
-          post :bulk
-        end
-        resource :watching, only: [:create, :destroy]
-        resources :comments, only: [:index, :create]
-        resources :attachments, only: [:index, :create] 
-        resource :deadline, only: [:show, :create, :destroy]
-        resources :activities, only: [:index]
-      end
-      resources :comments, only: [:update, :destroy]
-      resources :attachments, only: [:destroy]
-      resources :users, only: [:index, :show] do
-        member do
-          get :assigned_issues
-          get :watched_issues
-        end
-      end
-      patch 'profile', to: 'users#update_profile'
-
-      resources :statuses, except: [:new, :edit]
-      resources :priorities, except: [:new, :edit]
-      resources :severities, except: [:new, :edit]
-      resources :issue_types, except: [:new, :edit]
-      resources :tags, except: [:new, :edit]
-      resources :deadline_shortcuts, except: [:new, :edit]
-    end
-  end
 end

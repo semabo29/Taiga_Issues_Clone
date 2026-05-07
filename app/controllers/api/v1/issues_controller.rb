@@ -2,57 +2,41 @@ module Api
   module V1
     class IssuesController < Api::BaseController
       before_action :set_issue, only: %i[show update destroy]
-      
       before_action :authorize_creator!, only: %i[update destroy]
 
       # GET /api/v1/issues
-      # get /api/v1/issues
       def index
-        @issues = Issue.all
+        sort_mapping = {
+          "id"       => "issues.id",
+          "type"     => "issues.issue_type_id",
+          "severity" => "issues.severity_id",
+          "priority" => "issues.priority_id",
+          "status"   => "issues.status_id",
+          "deadline" => "issues.deadline",
+          "creator"  => "users.username",
+          "assignee" => "assignees.username"
+        }
+        
+        sort_column = sort_mapping[params[:sort]] || "issues.id"
+        
+        dir_param = params[:direction]&.downcase
+        sort_direction = %w[asc desc].include?(dir_param) ? dir_param : "desc"
+        
+        # 3. Joins para permitir los filtros de texto
+        @issues = Issue.left_outer_joins(:issue_type, :severity, :priority, :status, :user)
+                       .joins("LEFT OUTER JOIN users AS assignees ON assignees.id = issues.assigned_to_id")
+        
+        @issues = @issues.order("#{sort_column} #{sort_direction}")
 
-        # filtre per query de text (subject o description)
         if params[:query].present?
           search_term = "%#{params[:query]}%"
-          @issues = @issues.where("subject ilike ? or description ilike ?", search_term, search_term)
+          @issues = @issues.where("issues.subject LIKE ? OR issues.description LIKE ?", search_term, search_term)
         end
 
-        # filtres exactes per nom usant joins per relacionar les taules
-        @issues = @issues.joins(:issue_type).where(issue_types: { name: params[:type] }) if params[:type].present?
-        @issues = @issues.joins(:status).where(statuses: { name: params[:status] }) if params[:status].present?
-        @issues = @issues.joins(:severity).where(severities: { name: params[:severity] }) if params[:severity].present?
-        @issues = @issues.joins(:priority).where(priorities: { name: params[:priority] }) if params[:priority].present?
-
-        # ordenació
-        if params[:sort].present?
-          # assegurem que la direcció sigui vàlida, asc per defecte
-          direction = %w[asc desc].include?(params[:direction]&.downcase) ? params[:direction].downcase : 'asc'
-
-          case params[:sort].downcase
-          when 'id'
-            @issues = @issues.order(id: direction)
-          when 'deadline'
-            # utilitzem la columna real de la base de dades (due_date)
-            @issues = @issues.order(due_date: direction)
-          when 'type'
-            @issues = @issues.left_joins(:issue_type).order("issue_types.name #{direction}")
-          when 'status'
-            @issues = @issues.left_joins(:status).order("statuses.name #{direction}")
-          when 'severity'
-            @issues = @issues.left_joins(:severity).order("severities.name #{direction}")
-          when 'priority'
-            @issues = @issues.left_joins(:priority).order("priorities.name #{direction}")
-          when 'creator'
-            @issues = @issues.left_joins(:user).order("users.username #{direction}")
-          when 'assignee'
-            @issues = @issues.left_joins(:assigned_to).order("users.username #{direction}")
-          else
-            # ordre per defecte si el camp no coincideix amb cap dels anteriors
-            @issues = @issues.order(created_at: :desc)
-          end
-        else
-          # ordre per defecte si no s'envia paràmetre sort
-          @issues = @issues.order(created_at: :desc)
-        end
+        @issues = @issues.where(issue_types: { name: params[:type] }) if params[:type].present?
+        @issues = @issues.where(severities: { name: params[:severity] }) if params[:severity].present?
+        @issues = @issues.where(priorities: { name: params[:priority] }) if params[:priority].present?
+        @issues = @issues.where(statuses: { name: params[:status] }) if params[:status].present?
 
         render json: @issues
       end
@@ -65,7 +49,7 @@ module Api
       # POST /api/v1/issues
       def create
         @issue = Issue.new(issue_params)
-        @issue.user = @current_user
+        @issue.user = @current_user # Asignamos el dueño por la API Key
 
         if @issue.save
           render json: @issue, status: :created
@@ -117,7 +101,6 @@ module Api
         begin
           Issue.transaction do
             subjects.each do |subject_line|
-              # Creem la issue amb els valors per defecte de l'aplicació
               nova_issue = Issue.create!(
                 subject: subject_line,
                 user: @current_user,
@@ -148,7 +131,6 @@ module Api
         @issue = Issue.find(params[:id])
       end
 
-      # Comprova que l'usuari de l'API Key sigui el creador de la incidència
       def authorize_creator!
         unless @issue.user == @current_user
           render json: { error: "No tens permís per editar aquesta incidència" }, status: :forbidden
