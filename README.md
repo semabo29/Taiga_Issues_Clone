@@ -23,12 +23,9 @@ Projecte desenvolupat per a l'assignatura d'Aplicacions i Serveis Web (ASW) a la
 
 En el següent vídeo (1:30 min) es mostra el flux principal complet de l'aplicació:
 
-<div align="center">
-  <video src="[ENLLAÇ_DEL_TEU_VIDEO_AQUI.webm](https://github.com/user-attachments/assets/1831e4b5-19a0-4d83-a993-08b70420b00b)" width="100%" controls="controls"></video>
-</div>
+https://github.com/user-attachments/assets/1831e4b5-19a0-4d83-a993-08b70420b00b
 
-*(Nota: Si no pots visualitzar el vídeo directament, descarrega el fitxer `.webm` per reproduir-lo localment o obre'l des de Google Chrome).*
-
+*(Nota: Si no pots visualitzar el vídeo directament, descarrega el fitxer `.webm` o `.mp4` per reproduir-lo localment o obre'l des de Google Chrome).*
 ---
 
 ## 🛠️ Stack Tecnològic i Arquitectura
