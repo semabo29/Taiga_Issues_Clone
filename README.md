@@ -25,7 +25,7 @@ En el següent vídeo (1:30 min) es mostra el flux principal complet de l'aplica
 
 https://github.com/user-attachments/assets/1831e4b5-19a0-4d83-a993-08b70420b00b
 
-*(Nota: Si no pots visualitzar el vídeo directament, descarrega el fitxer `.webm` o `.mp4` per reproduir-lo localment o obre'l des de Google Chrome).*
+*(Nota: Funcionalitats com Visualitzar Perfil o Bulk Insert entre altres queden fora del Flux Principal del projecte pero estàn implementades).*
 ---
 
 ## 🛠️ Stack Tecnològic i Arquitectura
