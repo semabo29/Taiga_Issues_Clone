@@ -19,30 +19,15 @@ Projecte desenvolupat per a l'assignatura d'Aplicacions i Serveis Web (ASW) a la
 
 ---
 
-## ✨ Funcionalitats i Demostració
+## ✨ Demostració del Projecte
 
-*(Recomanació: Puja GIFs curts d'uns 5-10 segons a una carpeta `.github/assets/` del teu repo i enllaça'ls aquí)*
+En el següent vídeo (1:30 min) es mostra el flux principal complet de l'aplicació:
 
-### 1. Gestió d'Incidències (Tauler Principal)
-Visualització, filtrat avançat i ordenació dinàmica delegada a la base de dades.
-<details>
-  <summary>🖼️ Veure captura de pantalla</summary>
-  <img src="ruta/a/la/teva/imatge_llista.png" alt="Llista d'incidències" width="800"/>
-</details>
+<div align="center">
+  <video src="[ENLLAÇ_DEL_TEU_VIDEO_AQUI.webm](https://github.com/user-attachments/assets/1831e4b5-19a0-4d83-a993-08b70420b00b)" width="100%" controls="controls"></video>
+</div>
 
-### 2. Detall i Cicle de Vida
-Canvis d'estat, prioritat, assignació d'usuaris i gestió de fitxers adjunts mitjançant AWS S3.
-<details>
-  <summary>🖼️ Veure captura de pantalla</summary>
-  <img src="ruta/a/la/teva/imatge_detall.png" alt="Detall d'incidència" width="800"/>
-</details>
-
-### 3. Autenticació Segura
-Integració de login OAuth2 amb Google.
-<details>
-  <summary>🖼️ Veure captura de pantalla</summary>
-  <img src="ruta/a/la/teva/imatge_login.png" alt="Login OAuth" width="800"/>
-</details>
+*(Nota: Si no pots visualitzar el vídeo directament, descarrega el fitxer `.webm` per reproduir-lo localment o obre'l des de Google Chrome).*
 
 ---
 
