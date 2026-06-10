@@ -2,6 +2,10 @@
   <h1>ASW Taiga Issue Tracker</h1>
   <p><em>Aplicació web per a la gestió i seguiment d'incidències inspirada en Taiga.</em></p>
 
+  <p>
+    💬 <b>Català</b> | <a href="README.en.md">🌍 English</a>
+  </p>
+
   <img src="https://img.shields.io/badge/Ruby-CC342D?style=flat-square&logo=ruby&logoColor=white" alt="Ruby" />
   <img src="https://img.shields.io/badge/Rails-CC0000?style=flat-square&logo=ruby-on-rails&logoColor=white" alt="Rails" />
   <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" alt="Postgres" />
