@@ -23,7 +23,7 @@ Project developed for the Web Applications and Services (ASW) subject at the Uni
 
 ---
 
-# ✨ Project Demonstration
+## ✨ Project Demonstration
 
 The following video (1:30 min) shows the complete main flow of the application:
 
@@ -43,7 +43,7 @@ The following image shows the view of a profile that does not belong to the curr
 
 ---
 
-# 🛠️ Tech Stack and Architecture
+## 🛠️ Tech Stack and Architecture
 
 - **Web Framework:** Ruby on Rails 7.1.3 (API-first design)
 - **Language:** Ruby 3.3.6
@@ -55,7 +55,7 @@ The following image shows the view of a profile that does not belong to the curr
 
 ---
 
-# 🔌 REST API (Richardson Maturity Model Level 2)
+## 🔌 REST API (Richardson Maturity Model Level 2)
 
 The backend acts as a structured RESTful API designed to be consumed by any client. Special emphasis has been placed on security, validation, and data consistency.
 
@@ -78,7 +78,7 @@ Complete OpenAPI specification available at:
 
 ---
 
-# ⚙️ Deployment and CI/CD
+## ⚙️ Deployment and CI/CD
 
 The project features a continuous integration pipeline defined in:
 
@@ -95,7 +95,7 @@ Every integration into the `main` branch automatically:
 
 ---
 
-# 🚀 Local Setup
+## 🚀 Local Setup
 
 Before starting, make sure you have:
 
@@ -104,20 +104,20 @@ Before starting, make sure you have:
 * Node.js installed
 * PostgreSQL (optional for local production-like testing)
 
-## 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/semabo29/ASW_Taiga_Project.git
 cd ASW_Taiga_Project
 ```
 
-## 2. Install Dependencies
+### 2. Install Dependencies
 
 ```bash
 bundle install
 ```
 
-## 3. Configure Environment Variables
+### 3. Configure Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -131,13 +131,13 @@ AWS_REGION=us-east-1
 AWS_BUCKET=aswtaiga-bucket
 ```
 
-## 4. Prepare the Database
+### 4. Prepare the Database
 
 ```bash
 rails db:prepare
 ```
 
-## 5. Start the Server
+### 5. Start the Server
 
 ```bash
 bin/rails server -b 0.0.0.0
@@ -151,7 +151,7 @@ http://localhost:3000
 
 ---
 
-# 👥 Development Team
+## 👥 Development Team
 
 | Name                    |
 | ----------------------- |
@@ -168,7 +168,7 @@ http://localhost:3000
 
 ---
 
-# ⚖️ License and Copyright
+## ⚖️ License and Copyright
 
 © 2026 Clàudia Galán Rodoreda, Sergi Malaguilla Bombín, Adrià Aguilar Garcia and Victor Salinas Montanuy. All rights reserved.
 
