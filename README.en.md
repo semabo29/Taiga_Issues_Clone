@@ -20,6 +20,7 @@ Project developed for the Web Applications and Services (ASW) subject at the Uni
 🌍 **Production Environment:** [Taiga App (Render)](https://taiga-app.onrender.com) *(Note: The server may take a few seconds to start due to the free tier policies).* 
 
 🌲 **Organization:** [Project organization on Taiga](https://tree.taiga.io/project/victorsalinasmontanuy-asw2526q2-it212)
+
 ---
 
 # ✨ Project Demonstration
