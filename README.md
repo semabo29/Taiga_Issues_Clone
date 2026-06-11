@@ -37,67 +37,141 @@ En la següent imatge es pot apreciar la visualització d'un Perfil que no es el
 
 ---
 
-## 🛠️ Stack Tecnològic i Arquitectura
+## 🚀 Funcionalitats del Projecte
 
-* **Framework Web:** Ruby on Rails 7.1.3 (API-first design)
-* **Llenguatge:** Ruby 3.3.6
-* **Base de Dades:** SQLite3 (Desenvolupament) / PostgreSQL (Producció)
-* **Autenticació:** Google OAuth2 (OmniAuth)
-* **Storage:** Active Storage integrat amb AWS S3
-* **Infraestructura:** Dockeritzat i desplegat a Render
-* **CI/CD:** GitHub Actions per automatitzar tests i desplegaments.
+L'aplicació replica el nucli d'un Issue Tracker estil Taiga, adaptat amb regles de negoci específiques per a l'assignatura. Les característiques estan dividides en tres blocs principals:
+
+### 1. Gestió d'Issues (Incidències)
+*   **Cicle de vida complet:** Creació, visualització, edició i esborrat d'issues. Per seguretat, **només el creador** de la incidència té permisos per editar-la o eliminar-la.
+*   **Assignació directa:** Selector directe integrat a la vista per assignar de manera immediata una issue a qualsevol membre de l'equip.
+*   **File Attachments (Fitxers adjunts):** Pujada de fitxers mitjançant un botó d'acció directa i llistat senzill associat a la incidència. Només el creador de l'atttachment el pot eliminar (emmagatzemats de forma persistent a un **Bucket S3 d'AWS** via Active Storage).
+*   **Comentaris i Activitat:** Sistema de discussió integrat (afegir, llistar, editar i esborrar comentaris, restringit al seu autor). Inclou un **historial d'Activities** cronològic per a cada issue.
+*   **Cerca i Filtratge Avançat:**
+    *   Filtres de tipus "include" per acotar els llistats.
+    *   Cerca textual sobre els camps *Subject* (Assumpte) i *Description* que s'executa sota demanda en prémer el botó de cerca.
+*   **Bulk Insert:** Funcionalitat per a la creació massiva d'issues de cop per agilitzar la feina.
+*   **Deadlines i Watchers:** Control de dates límit (afegir, visualitzar i eliminar terminis) i sistema de subscripció (Watch/Unwatch) per seguir incidències.
+
+### 2. Control d'Usuaris i Perfils
+*   **Autenticació Externa (Social Login):** Sistema de registre i login unificat a través de **Google OAuth2**. El compte d'usuari es crea automàticament a la base de dades en fer el primer "Sign In".
+*   **Pàgines de Perfil Públiques:** Qualsevol usuari pot visitar el perfil d'un altre membre, on es renderitzen tres pestanyes dinàmiques:
+    *   **Open Assigned Issues:** Incidències obertes assignades a l'usuari (ordenables per *type*, *severity*, *issue #*, *status* i *modified*).
+    *   **Watched Issues:** Llistat de les incidències que l'usuari està seguint (visible **únicament** si el perfil correspon a l'usuari loguejat actualment).
+    *   **Comments:** Historial de comentaris realitzats, ordenats de més recents a menys. Inclouen enllaços directes amb ancoratge (anchor) que et porten exactament a la posició del comentari dins de l'issue, així com botons d'edició ràpida.
+*   **Edició del Perfil:** L'usuari pot personalitzar la seva biografia i la seva imatge de perfil (Avatar), la qual es gestiona també directament a l'emmagatzematge al núvol.
+
+### 3. Configuració del Projecte (Settings)
+*   Panell d'administració centralitzat de l'entorn de treball on es permet llistar, crear, modificar i eliminar els camps mestres i atributs globals del projecte:
+    *   *Statuses* (Estats de les incidències)
+    *   *Priorities* (Prioritats)
+    *   *Types* (Tipus)
+    *   *Severities* (Severitats)
+    *   *Tags* (Etiquetes)
+    *   *Due dates*
 
 ---
 
-## 🔌 API REST (Nivell 2 Richardson)
+## 🔌 API REST (Segon Lliurament)
 
-El backend actua com una API RESTful estructurada per ser consumida per qualsevol client. S'ha posat especial èmfasi en la seguretat, la validació i la coherència de les dades.
+El projecte inclou una API REST de Nivell 2 (Richardson Maturity Model) per gestionar les incidències, usuaris, comentaris i fitxers adjunts.
 
-* 📄 **Documentació:** Especificació completa OpenAPI a `/api/api.yml`.
-* 🧪 **Prova-ho tu mateix:**
-  1. Obre [Swagger Editor](https://editor.swagger.io/) i carrega el fitxer `api.yml`.
-  2. Registra't a la nostra [App a Render](https://taiga-app.onrender.com) amb Google.
-  3. Còpia la teva **API Key** des del teu perfil.
-  4. A Swagger, fes clic a "Authorize", enganxa la clau i comença a fer peticions a la base de dades en producció.
-
----
-
-## ⚙️ Desplegament i CI/CD
-
-El projecte compta amb un pipeline d'integració contínua definit a `.github/workflows/cd.yml`. Cada integració a la branca `main` dispara un procés automatitzat que:
-1. Construeix una imatge optimitzada a partir del `Dockerfile` inclòs.
-2. Executa automàticament les migracions de la base de dades (PostgreSQL).
-3. Desplega la nova versió a Render sense interrupció del servei.
+* **Documentació (OpenAPI):** Podeu trobar l'especificació completa al fitxer `/api/api.yml`.
+* **Com provar-la:**
+    
+    1. Aneu a [Swagger Editor](https://editor.swagger.io/) i carregueu el nostre fitxer `api.yml`.
+    
+    2. Registreu-vos o feu login a la nostra [App a Render](https://taiga-app.onrender.com).
+    
+    3. Aneu al vostre Perfil per copiar la vostra **API Key**.
+    
+    4. A Swagger, feu clic a "Authorize" i enganxeu-hi la clau al header per començar a fer peticions.
 
 ---
 
-## 🚀 Instal·lació Local
+## Requisits previs
 
-Si vols fer córrer el projecte al teu entorn local, necessitaràs Node i Ruby instal·lats.
+| Eina | Versió mínima |
+|------|---------------|
+| [Ruby](https://www.ruby-lang.org/es/downloads/) | 3.3.6 |
+| [Rails](https://rubyonrails.org/) | 7.1.3 |
+| SQLite3 | - |
+| [Docker](https://www.docker.com/) *(opcional, per a desplegament)* | 24+ |
+
+---
+
+## Instal·lació local
 
 ```bash
 # 1. Clonar el repositori
-git clone [URL_DEL_TEU_REPOSITORI]
-cd ASW_Taiga_Project
+git clone https://github.com/semabo29/Taiga_Clone_Project.git
+cd Taiga_Clone_Project
 
 # 2. Instal·lar dependències
 bundle install
 
 # 3. Configurar variables d'entorn
-# Crea un fitxer .env a l'arrel del projecte:
-GOOGLE_CLIENT_ID=el_teu_client_id
-GOOGLE_CLIENT_SECRET=el_teu_client_secret
-AWS_ACCESS_KEY_ID=la_teva_access_key
-AWS_SECRET_ACCESS_KEY=la_teva_secret_key
-AWS_REGION=us-east-1
-AWS_BUCKET=aswtaiga-bucket
+# Crea un fitxer .env a l'arrel del projecte i afegeix les teves credencials 
+# d'autenticació (Google) i d'emmagatzematge al núvol (AWS S3):
 
-# 4. Preparar la base de dades
+#   GOOGLE_CLIENT_ID=el_teu_client_id
+#   GOOGLE_CLIENT_SECRET=el_teu_client_secret
+#
+#   AWS_ACCESS_KEY_ID=la_teva_access_key
+#   AWS_SECRET_ACCESS_KEY=la_teva_secret_key
+#   AWS_SESSION_TOKEN=el_teu_session_token_temporal
+#   AWS_REGION=us-east-1
+#   AWS_BUCKET=aswtaiga-bucket
+
+# 4. Preparar la base de dades (creació i migracions)
 rails db:prepare
 
-# 5. Aixecar el servidor
+# 5. Executar l'aplicació
 bin/rails server -b 0.0.0.0
+
 ```
+
+---
+
+## Estructura del projecte
+
+```
+ASW_Taiga_Project/
+├── app/
+│   ├── controllers/      # Lògica de negoci i protecció de rutes (ex: authenticate_user!)
+│   ├── models/           # Models de dades (Issue, User, Status, Priority, Tags, Comments...)
+│   ├── views/            # Vistes dinàmiques (ERB) amb filtrat i llistats
+│   └── assets/           # Fulls d'estil i configuració de manifestos
+├── config/
+│   ├── routes.rb         # Definició d'endpoints HTTP
+│   ├── database.yml      # Configuració per SQLite (Local) i PostgreSQL (Producció)
+│   └── initializers/     # Configuracions d'arrencada (ex: omniauth.rb per a Google)
+├── db/                   # Migracions i fitxer schema.rb
+├── Dockerfile            # Recepta de construcció per a l'entorn de producció
+└── bin/docker-entrypoint # Script automàtic d'arrencada i migracions al servidor
+```
+
+---
+
+## CD
+
+- **CD** (`.github/workflows/cd.yml`): S'executa en fer merge a `main`. El desplegament a producció està totalment automatitzat. S'utilitza el Dockerfile del repositori per construir una imatge optimitzada que s'executa a Render, connectada a una base de dades PostgreSQL.
+
+---
+
+## Tecnologies clau
+
+| Capa | Tecnologia |
+|------|-----------|
+| Framework Web | Ruby on Rails 7.1.3 |
+| Llenguatge | Ruby 3.3.6 |
+| BDD (Local) | SQLite3 |
+| BDD (Producció) | PostgreSQL |
+| Autenticació | Google OAuth2 (OmniAuth) |
+| Gestió de Fitxers | Active Storage (AWS S3 ready) |
+| Entorn/Contenidors | Docker |
+| Hosting | Render |
+
+---
 
 ## Equip 
 
